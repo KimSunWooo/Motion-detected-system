@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>안전모 탈착 예방 · Pose Action Classifier</title>
+  <title>하이 앵글 CCTV · 안전모 탈착 예방</title>
   <style>
     :root {
       --bg: #080d18;
@@ -16,10 +16,9 @@
       --ok: #3dd68c;
       --alert: #ff5c5c;
       --amber: #f5c518;
-      --wrist: #ffd166;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: "Noto Sans KR", "WenQuanYi Micro Hei", "Apple SD Gothic Neo", sans-serif; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: "Noto Sans KR", "WenQuanYi Micro Hei", sans-serif; }
     body { min-height: 100vh; }
     header {
       display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
@@ -49,9 +48,7 @@
     .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
     input[type="range"] { width: 100%; }
     canvas { width: 100%; height: auto; background: #0b1220; border-radius: 12px; border: 1px solid var(--line); display: block; }
-    .result {
-      border-radius: 12px; padding: 14px 16px; border: 1px solid var(--line); margin-bottom: 12px;
-    }
+    .result { border-radius: 12px; padding: 14px 16px; border: 1px solid var(--line); margin-bottom: 12px; }
     .result.scratch { background: #0d2418; border-color: #1f6b45; }
     .result.helmet_off { background: #2a1010; border-color: #7a2a2a; }
     .result.no_contact, .result.unknown_contact { background: #1a1608; border-color: #6a5a1a; }
@@ -75,14 +72,14 @@
     <div class="brand">
       <div class="mark">!</div>
       <div>
-        <h1>공장 작업자 안전모 탈착 예방 알림</h1>
-        <p class="sub">YOLOv8-Pose / MediaPipe 2D 스켈레톤 · 어깨너비 정규화 · 동적 머리 Bounding Box</p>
+        <h1>하이 앵글 CCTV · 안전모 탈착 예방</h1>
+        <p class="sub">천장·벽면 상단에서 내려다보는 투시 왜곡을 전제로, 어깨너비만으로 정규화합니다.</p>
       </div>
     </div>
     <div class="pills">
-      <span class="pill">절대 픽셀 좌표 미사용</span>
+      <span class="pill">Y축 상승 미사용</span>
       <span class="pill">Shoulder Width = 1.0</span>
-      <span class="pill">30 fps 시뮬레이션</span>
+      <span class="pill">팽창 · 양손목 벌어짐</span>
     </div>
   </header>
 
@@ -101,7 +98,7 @@
     </section>
 
     <section class="card">
-      <h2>정규화 스켈레톤 재생</h2>
+      <h2>하이 앵글 정규화 스켈레톤</h2>
       <canvas id="stage" width="720" height="860"></canvas>
     </section>
 
@@ -120,25 +117,25 @@
 
   <section class="gallery">
     <div class="card">
-      <h2>정적 스켈레톤 모델</h2>
-      <img src="/outputs/static_skeleton.png" alt="정적 상체 스켈레톤" />
+      <h2>투시 왜곡 정적 스켈레톤</h2>
+      <img src="/outputs/static_skeleton.png" alt="하이 앵글 정적 스켈레톤" />
     </div>
     <div class="card">
-      <h2>긁기 궤적 · 분산</h2>
-      <img src="/outputs/scratch_timeline.png" alt="머리 긁기 Y 궤적" />
+      <h2>긁기 · 중심 거리</h2>
+      <img src="/outputs/scratch_timeline.png" alt="머리 긁기 특징량" />
     </div>
     <div class="card">
-      <h2>안전모 벗기 프레임 스트립</h2>
+      <h2>안전모 벗기 프레임</h2>
       <img src="/outputs/helmet_strip.png" alt="안전모 벗기 시퀀스" />
     </div>
     <div class="card">
-      <h2>안전모 벗기 궤적 · 동시 상승</h2>
-      <img src="/outputs/helmet_timeline.png" alt="안전모 벗기 Y 궤적" />
+      <h2>벗기 · 벌어짐과 팽창</h2>
+      <img src="/outputs/helmet_timeline.png" alt="안전모 벗기 특징량" />
     </div>
   </section>
 
   <footer>
-    머리 Bounding Box 는 목 원점 기준 어깨너비 비례로 매 프레임 재계산됩니다. 카메라 거리·체형이 달라도 같은 동작은 같은 라벨로 분류되어야 합니다.
+    손이 머리로 가는 동작은 화면 위쪽이 아니라 카메라 방향(겉보기 크기 증가)으로 관측됩니다. 목~골반 길이는 단축되어 스케일로 쓰지 않습니다.
   </footer>
 
   <script>
@@ -150,11 +147,11 @@
     let current = null;
     let frame = 0;
     let playing = true;
-    let timer = null;
 
     const colors = {
       idle: "#8aa0c4",
-      contact: "#f5c518",
+      center: "#3dd68c",
+      ear_grasp: "#ff8fab",
       scratch: "#3dd68c",
       helmet_off: "#ff5c5c",
     };
@@ -166,19 +163,31 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const sx = canvas.width / 2;
-      const sy = 210;
-      const s = 210;
+      const sy = 250;
+      const s = 240;
       const X = (x) => sx + x * s;
       const Y = (y) => sy + y * s;
 
       const [x0, y0, x1, y1] = fr.bbox;
-      ctx.fillStyle = "rgba(245,197,24,0.12)";
+      ctx.fillStyle = "rgba(245,197,24,0.10)";
       ctx.strokeStyle = "#f5c518";
       ctx.setLineDash([6, 4]);
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.rect(X(x0), Y(y0), X(x1) - X(x0), Y(y1) - Y(y0));
-      ctx.fill();
+      ctx.fill(); ctx.stroke();
+
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = "#3dd68c";
+      ctx.beginPath();
+      ctx.arc(X(fr.center[0]), Y(fr.center[1]), fr.center_r * s, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = "#ff8fab";
+      ctx.beginPath();
+      ctx.arc(X(fr.left_ear[0]), Y(fr.left_ear[1]), fr.ear_r * s, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(X(fr.right_ear[0]), Y(fr.right_ear[1]), fr.ear_r * s, 0, Math.PI * 2);
       ctx.stroke();
       ctx.setLineDash([]);
 
@@ -196,10 +205,6 @@
       ctx.lineTo(X(0), Y(0));
       ctx.lineTo(X(k[6][0]), Y(k[6][1]));
       ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(X(0), Y(0));
-      ctx.lineTo(X(k[0][0]), Y(k[0][1]));
-      ctx.stroke();
 
       for (let p = 0; p < k.length; p++) {
         ctx.fillStyle = (p === 9 || p === 10) ? "#ffd166" : "#d7ecff";
@@ -209,33 +214,26 @@
       }
       ctx.fillStyle = "#7cffb2";
       ctx.beginPath(); ctx.arc(X(0), Y(0), 6, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#f5c518";
-      ctx.beginPath();
-      ctx.moveTo(X(fr.head_top[0]), Y(fr.head_top[1]) - 7);
-      ctx.lineTo(X(fr.head_top[0]) - 6, Y(fr.head_top[1]) + 5);
-      ctx.lineTo(X(fr.head_top[0]) + 6, Y(fr.head_top[1]) + 5);
-      ctx.closePath(); ctx.fill();
 
-      const st = fr.state;
-      ctx.fillStyle = colors[st] || "#8aa0c4";
+      ctx.fillStyle = colors[fr.state] || "#8aa0c4";
       ctx.font = "600 18px sans-serif";
-      ctx.fillText("state: " + st, 24, 36);
+      ctx.fillText("state: " + fr.state, 24, 36);
       ctx.fillStyle = "#8aa0c4";
       ctx.font = "13px sans-serif";
-      ctx.fillText("정규화 공간 · 목=(0,0) · 어깨너비=1.0", 24, 58);
+      ctx.fillText("하이 앵글 · 목=(0,0) · 어깨너비=1.0  · 녹색=중심 / 분홍=귀", 24, 58);
     }
 
     function renderMetrics(sc) {
       const f = sc.result.features;
       const items = [
-        ["체류 프레임", f.contact_frames],
-        ["손목 Y std", f.wrist_y_std.toFixed(4)],
-        ["초반 손목 std", f.wrist_y_std_early.toFixed(4)],
-        ["머리 Y std", f.head_y_std.toFixed(4)],
+        ["중심부 체류", f.center_frames],
+        ["양귀 파지", f.both_ear_frames],
+        ["긁기 반경", f.scratch_radius.toFixed(3)],
+        ["긁기 σ_xy", f.scratch_std.toFixed(4)],
         ["진동 횟수", f.n_oscillations],
-        ["손목 상승량", f.rise_wrist.toFixed(3)],
-        ["머리 상승량", f.rise_head.toFixed(3)],
-        ["피어슨 상관", f.corr_wrist_head.toFixed(3)],
+        ["파지 σ", f.pause_std.toFixed(4)],
+        ["손목 벌어짐", f.wrist_spread.toFixed(3)],
+        ["머리 팽창률", f.head_scale_up.toFixed(3)],
       ];
       document.getElementById("metrics").innerHTML = items.map(([k, v]) =>
         `<div class="metric"><span>${k}</span><b>${v}</b></div>`
@@ -246,8 +244,7 @@
       document.getElementById("label").textContent = sc.result.label_ko;
       document.getElementById("conf").textContent = sc.result.confidence.toFixed(2);
       document.getElementById("expected").textContent = "기대 라벨: " + sc.expected_ko;
-      const ok = sc.match;
-      document.getElementById("match").innerHTML = ok
+      document.getElementById("match").innerHTML = sc.match
         ? '<span class="ok">시뮬레이션 기대값과 일치</span>'
         : '<span class="bad">불일치 — 알고리즘을 점검하세요</span>';
     }
@@ -284,7 +281,7 @@
       scenarios = data;
       sel.innerHTML = data.map((s, i) => `<option value="${i}">${s.name}</option>`).join("");
       load(0);
-      timer = setInterval(tick, 70);
+      setInterval(tick, 70);
     });
   </script>
 </body>

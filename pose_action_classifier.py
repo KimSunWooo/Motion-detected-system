@@ -1,25 +1,29 @@
 #!/usr/bin/env python3
-"""공장 작업자 2D 스켈레톤 기반 동작 분류 프로토타입.
+"""하이 앵글 CCTV용 2D 스켈레톤 동작 분류 프로토타입.
 
-YOLOv8-Pose / MediaPipe 형식의 17개 COCO 키포인트를 입력으로,
-'단순 머리 긁기(정상)'와 '안전모 벗기 시도(예방 알림)'을 구분한다.
+공장 천장/벽면 상단에서 작업자를 대각선으로 내려다보는 구도(YOLOv8-Pose 17점)를
+전제로, '단순 머리 긁기(정상)'와 '안전모 벗기 시도(예방 알림)'을 구분한다.
 
-핵심 제약
----------
-* 절대 픽셀 좌표(y=100 등)로 판단하지 않는다.
-* 어깨너비(Shoulder Width)를 기준 단위(scale = 1.0)로 정규화한다.
-* 머리 Bounding Box 는 목(Neck)과 어깨너비에 비례해 매 프레임 동적으로 계산한다.
+왜 눈높이 Y축 상승을 쓰지 않는가
+--------------------------------
+하이 앵글에서는 손이 머리로 가는 동작이 화면의 '위'가 아니라
+카메라(렌즈) 쪽으로 다가가는 Z 이동이다. 투영 평면에서는
+키포인트 덩어리가 커지는 팽창(scale-up)이나, 양손목이 귀 쪽에서
+좌우로 벌어지는 변화로 관측된다.
 
-이미지 좌표 규약
-----------------
-OpenCV / COCO 와 동일하게 원점은 좌상단, Y축은 아래 방향이 양수이다.
-따라서 '위쪽으로 이동'은 Y 좌표가 *감소*하는 것과 같다.
+정규화
+------
+목~골반 길이는 투시 왜곡으로 심하게 단축되므로 사용하지 않는다.
+양쪽 어깨 픽셀 거리만을 scale=1.0 으로 쓴다.
+
+    neck  = (L_shoulder + R_shoulder) / 2
+    s     = ||L_shoulder − R_shoulder||
+    p̂    = (p − neck) / s
 """
 
 from __future__ import annotations
 
 import argparse
-import json
 import math
 import os
 import sys
@@ -30,14 +34,13 @@ from typing import Iterable
 
 import matplotlib
 
-# 서버/헤드리스 환경에서도 이미지를 저장할 수 있도록 비대화형 백엔드를 우선 사용한다.
 if os.environ.get("DISPLAY") in (None, "") or os.environ.get("MPLBACKEND") == "Agg":
     matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import font_manager
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Circle, FancyArrowPatch, Rectangle
 
 _KOREAN_FONT = "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc"
 
@@ -54,7 +57,7 @@ def _configure_korean_font() -> None:
 _configure_korean_font()
 
 # ---------------------------------------------------------------------------
-# COCO / YOLOv8-Pose 17 키포인트 인덱스
+# COCO / YOLOv8-Pose 17 키포인트
 # ---------------------------------------------------------------------------
 NOSE, L_EYE, R_EYE, L_EAR, R_EAR = 0, 1, 2, 3, 4
 L_SHOULDER, R_SHOULDER = 5, 6
@@ -64,27 +67,6 @@ L_HIP, R_HIP = 11, 12
 L_KNEE, R_KNEE = 13, 14
 L_ANKLE, R_ANKLE = 15, 16
 
-KEYPOINT_NAMES = [
-    "nose",
-    "l_eye",
-    "r_eye",
-    "l_ear",
-    "r_ear",
-    "l_shoulder",
-    "r_shoulder",
-    "l_elbow",
-    "r_elbow",
-    "l_wrist",
-    "r_wrist",
-    "l_hip",
-    "r_hip",
-    "l_knee",
-    "r_knee",
-    "l_ankle",
-    "r_ankle",
-]
-
-# 상체가 한눈에 보이도록 그리는 스켈레톤 연결 (목은 어깨 중점으로 파생)
 SKELETON_BONES = [
     (L_SHOULDER, R_SHOULDER),
     (L_SHOULDER, L_ELBOW),
@@ -104,35 +86,38 @@ SKELETON_BONES = [
     (R_EYE, R_EAR),
 ]
 
-# ---------------------------------------------------------------------------
-# 정규화 공간(어깨너비 = 1.0)에서 정의한 머리 영역 비율
-# 성인 상체 비율: 머리 높이는 대략 어깨너비의 0.9~1.1 배, 너비는 0.7~0.9 배.
-# ---------------------------------------------------------------------------
-HEAD_HALF_WIDTH = 0.42  # bbox 가로 반폭  (단위: 어깨너비)
-HEAD_ABOVE_NECK = 1.05  # 목에서 정수리까지 (Y 음수 방향)
-HEAD_BELOW_NECK = 0.18  # 목 아래 챙/윗목까지 포함 (손을 챙에 올리는 동작 허용)
-HEAD_CROWN_OFFSET = 0.28  # 눈/귀보다 정수리가 위에 있는 정도
+FACE_IDX = (NOSE, L_EYE, R_EYE, L_EAR, R_EAR)
 
 # ---------------------------------------------------------------------------
-# 분류 임계값 — 전부 정규화 좌표(어깨너비 단위) 또는 무차원 통계량
+# 하이 앵글 머리 영역 (정규화 공간, 어깨너비 = 1.0)
+# 위에서 내려다보면 두상이 넓게 보이므로 bbox 를 눈높이보다 넓고 둥글게 잡는다.
 # ---------------------------------------------------------------------------
-MIN_CONTACT_FRAMES = 8  # 머리 영역 최소 체류 프레임 (~0.27s @ 30fps)
-PAUSE_FRAMES = 8  # 안전모 파지 후 '일시 정지'로 볼 최소 프레임
-RISE_FRAMES_MIN = 6
+HEAD_HALF_WIDTH = 0.52
+HEAD_HALF_HEIGHT = 0.46
+CENTER_RADIUS = 0.24  # 긁기: 두상 중심부
+EAR_RADIUS = 0.24  # 안전모: 귀/챙 모서리
 
-TAU_PAUSE_STD = 0.018  # 일시 정지: 손목 Y 표준편차 상한
-TAU_SCRATCH_STD = 0.045  # 긁기 진동: 손목 Y 표준편차 하한
-TAU_HEAD_STILL_STD = 0.022  # 긁기 시 머리 고정으로 볼 표준편차 상한
-TAU_RISE = 0.12  # 동시 상승량 하한 (어깨너비의 12%)
-TAU_CORR = 0.50  # 손목-머리 상승 구간 피어슨 상관계수
-MIN_OSCILLATIONS = 3  # 긁기 방향 전환 최소 횟수
+# ---------------------------------------------------------------------------
+# 분류 임계값 — 전부 어깨너비 단위 또는 무차원
+# ---------------------------------------------------------------------------
+MIN_CENTER_FRAMES = 8
+MIN_EAR_FRAMES = 8
+PAUSE_FRAMES = 8
+
+TAU_SCRATCH_RADIUS = 0.11  # 긁기 궤적의 국소 반경 상한
+TAU_SCRATCH_STD = 0.028  # 그 반경 안에서의 고주파 진동 (std)
+MIN_OSCILLATIONS = 4
+
+TAU_PAUSE_STD = 0.016  # 양손목 파지 후 일시 정지
+TAU_SPREAD = 0.10  # 양손목 사이 거리 증가량
+TAU_SCALE_UP = 0.07  # 머리 겉보기 크기(귀 간격) 상대 증가율
 
 
 class ActionLabel(str, Enum):
-    SCRATCH = "scratch"  # 단순 머리 긁기 (정상)
-    HELMET_OFF = "helmet_off"  # 안전모 벗기 시도 (예방 알림)
-    NO_CONTACT = "no_contact"  # 손목이 머리 영역에 들어오지 않음
-    UNKNOWN_CONTACT = "unknown_contact"  # 접촉은 있으나 두 동작 모두 미충족
+    SCRATCH = "scratch"
+    HELMET_OFF = "helmet_off"
+    NO_CONTACT = "no_contact"
+    UNKNOWN_CONTACT = "unknown_contact"
 
 
 LABEL_KO = {
@@ -144,182 +129,214 @@ LABEL_KO = {
 
 
 # ===========================================================================
-# 조건 3: 체형 / 카메라 거리 정규화
+# 하이 앵글 핀홀 카메라 (천장/벽면 상단 → 대각선 하향)
+# ===========================================================================
+@dataclass
+class HighAngleCamera:
+    """세계좌표(Y-up, X-right, Z-실내깊이)를 픽셀로 투영한다.
+
+    카메라가 작업자보다 높고 앞쪽(벽)에 있으므로, 머리·어깨는 렌즈에
+    가깝고 골반·다리는 멀다. 원근 나눗셈으로 다리가 짧게 겹쳐 보인다.
+    """
+
+    eye: np.ndarray
+    target: np.ndarray
+    up: np.ndarray
+    fx: float
+    fy: float
+    cx: float
+    cy: float
+
+    @classmethod
+    def factory_ceiling(cls) -> "HighAngleCamera":
+        # 높이 4.5 m, 작업자까지 수평 약 3.3 m → 하향각 ≈ 45°
+        return cls(
+            eye=np.array([0.18, 5.70, 1.45], dtype=np.float64),
+            target=np.array([0.00, 1.10, 3.50], dtype=np.float64),
+            up=np.array([0.00, 1.00, 0.00], dtype=np.float64),
+            fx=1180.0,
+            fy=1180.0,
+            cx=480.0,
+            cy=360.0,
+        )
+
+    def _extrinsics(self) -> tuple[np.ndarray, np.ndarray]:
+        eye, target, up = self.eye, self.target, self.up
+        z_cam = target - eye
+        z_cam = z_cam / np.linalg.norm(z_cam)
+        x_cam = np.cross(up, z_cam)
+        x_cam = x_cam / np.linalg.norm(x_cam)
+        y_cam = np.cross(z_cam, x_cam)
+        y_cam = y_cam / np.linalg.norm(y_cam)
+        # world → camera: Xc = R (Xw - eye), rows are camera axes
+        r = np.stack([x_cam, y_cam, z_cam], axis=0)
+        return r, eye
+
+    def project(self, points_xyz: np.ndarray) -> np.ndarray:
+        """(..., 3) 세계좌표 → (..., 2) 픽셀. v 는 아래가 양수."""
+        pts = np.asarray(points_xyz, dtype=np.float64)
+        r, eye = self._extrinsics()
+        cam = np.einsum("ij,...j->...i", r, pts - eye)
+        z = np.clip(cam[..., 2], 1e-6, None)
+        u = self.fx * (cam[..., 0] / z) + self.cx
+        # 카메라 Y 위쪽(+)을 이미지 아래가 양수가 되도록 뒤집는다.
+        v = -self.fy * (cam[..., 1] / z) + self.cy
+        return np.stack([u, v], axis=-1)
+
+
+def canonical_pose_3d() -> np.ndarray:
+    """서 있는 작업자의 세계좌표 (m). 원점은 발 사이 바닥, Y가 키."""
+    p = np.zeros((17, 3), dtype=np.float64)
+    # 얼굴이 카메라(작은 Z) 쪽을 향하게 두어 정수리와 얼굴이 함께 보이게 한다.
+    p[NOSE] = (0.00, 1.66, 3.44)
+    p[L_EYE] = (-0.035, 1.68, 3.45)
+    p[R_EYE] = (0.035, 1.68, 3.45)
+    p[L_EAR] = (-0.090, 1.64, 3.54)
+    p[R_EAR] = (0.090, 1.64, 3.54)
+    p[L_SHOULDER] = (-0.205, 1.42, 3.52)
+    p[R_SHOULDER] = (0.205, 1.42, 3.52)
+    p[L_ELBOW] = (-0.27, 1.12, 3.54)
+    p[R_ELBOW] = (0.27, 1.12, 3.54)
+    p[L_WRIST] = (-0.25, 0.86, 3.55)
+    p[R_WRIST] = (0.25, 0.86, 3.55)
+    p[L_HIP] = (-0.13, 0.94, 3.50)
+    p[R_HIP] = (0.13, 0.94, 3.50)
+    p[L_KNEE] = (-0.13, 0.50, 3.52)
+    p[R_KNEE] = (0.13, 0.50, 3.52)
+    p[L_ANKLE] = (-0.12, 0.07, 3.50)
+    p[R_ANKLE] = (0.12, 0.07, 3.50)
+    return p
+
+
+# ===========================================================================
+# 조건 3: 어깨너비만 사용하는 정규화
 # ===========================================================================
 @dataclass
 class NormalizeInfo:
-    """한 프레임의 정규화 파라미터.
-
-    origin : 목(양쪽 어깨 중점). 모든 좌표의 원점.
-    scale  : 어깨너비. 정규화 공간에서 1.0 에 해당.
-    torso_length : 목~골반 중점 거리. 어깨가 가려진 경우 scale 대체값.
-    """
-
-    origin: np.ndarray
-    scale: float
-    torso_length: float
-    shoulder_width: float
+    origin: np.ndarray  # 목 = 어깨 중점 (픽셀)
+    scale: float  # 어깨너비 (픽셀). 정규화 단위 1.0
 
 
 def _as_sequence(keypoints: np.ndarray) -> np.ndarray:
-    """(17, 2|3) → (1, 17, 2), (T, 17, 2|3) → (T, 17, 2)."""
     arr = np.asarray(keypoints, dtype=np.float64)
     if arr.ndim == 2:
         arr = arr[None, ...]
-    if arr.shape[-1] >= 2:
-        arr = arr[..., :2]
+    arr = arr[..., :2]
     if arr.shape[-2] != 17:
-        raise ValueError(f"COCO 17 키포인트가 필요합니다. 받은 shape={arr.shape}")
+        raise ValueError(f"COCO 17 키포인트가 필요합니다. shape={arr.shape}")
     return arr
 
 
-def compute_neck(keypoints: np.ndarray) -> np.ndarray:
-    """양쪽 어깨 중점 = 목. shape (..., 2)."""
-    kpts = np.asarray(keypoints, dtype=np.float64)[..., :2]
+def compute_neck(kpts: np.ndarray) -> np.ndarray:
     return 0.5 * (kpts[..., L_SHOULDER, :] + kpts[..., R_SHOULDER, :])
 
 
-def compute_mid_hip(keypoints: np.ndarray) -> np.ndarray:
-    kpts = np.asarray(keypoints, dtype=np.float64)[..., :2]
-    return 0.5 * (kpts[..., L_HIP, :] + kpts[..., R_HIP, :])
-
-
-def compute_shoulder_width(keypoints: np.ndarray) -> np.ndarray:
-    kpts = np.asarray(keypoints, dtype=np.float64)[..., :2]
-    delta = kpts[..., L_SHOULDER, :] - kpts[..., R_SHOULDER, :]
-    return np.linalg.norm(delta, axis=-1)
-
-
-def compute_torso_length(keypoints: np.ndarray) -> np.ndarray:
-    neck = compute_neck(keypoints)
-    hip = compute_mid_hip(keypoints)
-    return np.linalg.norm(neck - hip, axis=-1)
+def compute_shoulder_width(kpts: np.ndarray) -> np.ndarray:
+    return np.linalg.norm(
+        kpts[..., L_SHOULDER, :] - kpts[..., R_SHOULDER, :], axis=-1
+    )
 
 
 def normalize_keypoints(keypoints: np.ndarray) -> tuple[np.ndarray, list[NormalizeInfo]]:
-    """픽셀 좌표 → 목 원점 / 어깨너비 단위의 상대 좌표.
+    """픽셀 좌표 → 목 원점 / 어깨너비 단위.
 
-    변환식
-        p_hat = (p - neck) / max(shoulder_width, epsilon)
-    어깨가 거의 겹쳐 보이면(측면·가림) torso_length 로 대체한다.
+    하이 앵글에서는 몸통 길이가 프레임마다 심하게 변하므로
+    torso length 를 scale 로 쓰지 않는다. 어깨가 거의 겹치면
+    (측면 가림) 수치 폭주만 막기 위해 epsilon 을 둔다.
 
-    Returns
-    -------
-    normalized : (T, 17, 2)  정규화 좌표. 목이 (0, 0), 어깨너비가 1.0.
-    infos      : 프레임별 원점·스케일 (역변환 및 bbox 픽셀 투영에 사용)
+        p̂ = (p − neck) / max(||Ls − Rs||, ε)
     """
-    seq = _as_sequence(keypoints)  # (T, 17, 2)
-    t = seq.shape[0]
-    ls = seq[:, L_SHOULDER, :]
-    rs = seq[:, R_SHOULDER, :]
-    neck = 0.5 * (ls + rs)
-    shoulder_width = np.linalg.norm(ls - rs, axis=1)
-    mid_hip = 0.5 * (seq[:, L_HIP, :] + seq[:, R_HIP, :])
-    torso = np.linalg.norm(neck - mid_hip, axis=1)
-
-    scale = np.where(shoulder_width > 1e-6, shoulder_width, torso)
-    scale = np.maximum(scale, 1e-6)
-
+    seq = _as_sequence(keypoints)
+    neck = compute_neck(seq)
+    width = compute_shoulder_width(seq)
+    scale = np.maximum(width, 1e-6)
     normalized = (seq - neck[:, None, :]) / scale[:, None, None]
-
     infos = [
-        NormalizeInfo(
-            origin=neck[i],
-            scale=float(scale[i]),
-            torso_length=float(torso[i]),
-            shoulder_width=float(shoulder_width[i]),
-        )
-        for i in range(t)
+        NormalizeInfo(origin=neck[i], scale=float(scale[i]))
+        for i in range(seq.shape[0])
     ]
     return normalized, infos
 
 
-def denormalize_points(
-    points_norm: np.ndarray, info: NormalizeInfo
-) -> np.ndarray:
-    """정규화 좌표를 해당 프레임의 픽셀 좌표로 되돌린다."""
-    return np.asarray(points_norm, dtype=np.float64) * info.scale + info.origin
-
-
 # ===========================================================================
-# 동적 머리 Bounding Box (목 기준, 어깨너비 비례)
+# 동적 머리 영역: 중심부 vs 귀 모서리
 # ===========================================================================
 @dataclass
-class HeadBBox:
-    """정규화 공간의 축정렬 머리 영역. y_min 이 화면 상단(정수리)."""
+class HeadRegions:
+    """정규화 공간의 머리 bbox · 중심원 · 좌/우 귀 원."""
 
     x_min: float
     y_min: float
     x_max: float
     y_max: float
-
-    def contains(self, point: np.ndarray) -> bool:
-        x, y = float(point[0]), float(point[1])
-        return self.x_min <= x <= self.x_max and self.y_min <= y <= self.y_max
+    center: np.ndarray
+    center_r: float
+    left_ear: np.ndarray
+    right_ear: np.ndarray
+    ear_r: float
 
     def as_xywh(self) -> tuple[float, float, float, float]:
         return self.x_min, self.y_min, self.x_max - self.x_min, self.y_max - self.y_min
 
-    def to_pixel(self, info: NormalizeInfo) -> "HeadBBox":
-        corners = np.array(
-            [[self.x_min, self.y_min], [self.x_max, self.y_max]], dtype=np.float64
-        )
-        pix = denormalize_points(corners, info)
-        return HeadBBox(
-            x_min=float(min(pix[0, 0], pix[1, 0])),
-            y_min=float(min(pix[0, 1], pix[1, 1])),
-            x_max=float(max(pix[0, 0], pix[1, 0])),
-            y_max=float(max(pix[0, 1], pix[1, 1])),
-        )
+    def in_bbox(self, p: np.ndarray) -> bool:
+        return self.x_min <= float(p[0]) <= self.x_max and self.y_min <= float(p[1]) <= self.y_max
+
+    def in_center(self, p: np.ndarray) -> bool:
+        return float(np.linalg.norm(p - self.center)) <= self.center_r
+
+    def in_left_ear(self, p: np.ndarray) -> bool:
+        return float(np.linalg.norm(p - self.left_ear)) <= self.ear_r
+
+    def in_right_ear(self, p: np.ndarray) -> bool:
+        return float(np.linalg.norm(p - self.right_ear)) <= self.ear_r
 
 
-def estimate_head_top_norm(pose_norm: np.ndarray) -> np.ndarray:
-    """정규화 포즈에서 '머리 상단(정수리)' 좌표를 추정한다.
+def head_center_norm(pose: np.ndarray) -> np.ndarray:
+    return 0.5 * (pose[L_EAR] + pose[R_EAR])
 
-    얼굴 키포인트 중 가장 위(최소 Y)에서 정수리 오프셋을 더한다.
-    안전모 벗기 시뮬레이션에서는 얼굴 점이 함께 올라가므로 이 점도 같이 상승한다.
+
+def head_scale_norm(pose: np.ndarray) -> float:
+    """겉보기 머리 크기 ≈ 정규화된 귀-귀 거리. 카메라로 다가오면 커진다."""
+    return float(np.linalg.norm(pose[L_EAR] - pose[R_EAR]))
+
+
+def compute_head_regions(pose_norm: np.ndarray) -> HeadRegions:
+    """어깨너비에 비례한 동적 머리 영역.
+
+    bbox 중심은 귀 중점(두상 중심). 하이 앵글에서 안전모가 가장 크게
+    보이는 지점이다. 절대 픽셀 상수는 사용하지 않는다.
     """
-    face = pose_norm[[NOSE, L_EYE, R_EYE, L_EAR, R_EAR], :]
-    xy = face[np.argmin(face[:, 1])]
-    return np.array([float(pose_norm[NOSE, 0]), float(xy[1] - HEAD_CROWN_OFFSET)])
-
-
-def compute_head_bbox_norm(pose_norm: np.ndarray) -> HeadBBox:
-    """목(원점)과 코의 X 를 기준으로 어깨너비 비례 머리 bbox 를 만든다.
-
-    정규화 공간에서 목 = (0, 0) 이므로 절대 픽셀 상수는 일절 사용하지 않는다.
-        x ∈ [nose_x − 0.42, nose_x + 0.42]
-        y ∈ [−1.05, +0.18]
-    """
-    cx = float(pose_norm[NOSE, 0])
-    if not np.isfinite(cx):
-        cx = 0.0
-    return HeadBBox(
-        x_min=cx - HEAD_HALF_WIDTH,
-        y_min=-HEAD_ABOVE_NECK,
-        x_max=cx + HEAD_HALF_WIDTH,
-        y_max=HEAD_BELOW_NECK,
+    c = head_center_norm(pose_norm)
+    return HeadRegions(
+        x_min=float(c[0] - HEAD_HALF_WIDTH),
+        y_min=float(c[1] - HEAD_HALF_HEIGHT),
+        x_max=float(c[0] + HEAD_HALF_WIDTH),
+        y_max=float(c[1] + HEAD_HALF_HEIGHT),
+        center=c,
+        center_r=CENTER_RADIUS,
+        left_ear=pose_norm[L_EAR].copy(),
+        right_ear=pose_norm[R_EAR].copy(),
+        ear_r=EAR_RADIUS,
     )
 
 
 # ===========================================================================
-# 조건 2: 판단 기준 수식화
+# 조건 2: 하이 앵글 특화 분류
 # ===========================================================================
 @dataclass
 class FeatureReport:
-    """한 시퀀스에서 추출한 판정용 통계량 (모두 정규화 단위 / 무차원)."""
-
-    contact_frames: int = 0
+    center_frames: int = 0
+    both_ear_frames: int = 0
     active_wrist: str = "none"
-    wrist_y_std: float = 0.0
-    wrist_y_std_early: float = 0.0
-    head_y_std: float = 0.0
+    scratch_radius: float = 0.0
+    scratch_std: float = 0.0
     n_oscillations: int = 0
-    rise_wrist: float = 0.0  # 양수 = 화면 위쪽으로 이동량
-    rise_head: float = 0.0
-    corr_wrist_head: float = 0.0
     pause_detected: bool = False
-    co_rising: bool = False
+    pause_std: float = 0.0
+    wrist_spread: float = 0.0
+    head_scale_up: float = 0.0
+    d_wrist_pause: float = 0.0
+    d_wrist_late: float = 0.0
 
 
 @dataclass
@@ -331,7 +348,7 @@ class ClassificationResult:
     frame_labels: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
-        payload = {
+        return {
             "label": self.label.value,
             "label_ko": LABEL_KO[self.label],
             "confidence": self.confidence,
@@ -339,36 +356,21 @@ class ClassificationResult:
             "explanation": self.explanation,
             "frame_labels": self.frame_labels,
         }
-        return payload
 
 
 def _std(x: np.ndarray) -> float:
-    if x.size < 2:
+    if np.asarray(x).size < 2:
         return 0.0
-    return float(np.std(x, ddof=0))
-
-
-def _pearson(a: np.ndarray, b: np.ndarray) -> float:
-    if a.size < 3 or b.size < 3:
-        return 0.0
-    if _std(a) < 1e-12 or _std(b) < 1e-12:
-        return 0.0
-    corr = np.corrcoef(a, b)[0, 1]
-    return float(corr) if np.isfinite(corr) else 0.0
+    return float(np.std(np.asarray(x, dtype=np.float64), ddof=0))
 
 
 def _smooth(y: np.ndarray, k: int = 5) -> np.ndarray:
     if y.size < k:
         return y
-    kernel = np.ones(k) / k
-    return np.convolve(y, kernel, mode="same")
+    return np.convolve(y, np.ones(k) / k, mode="same")
 
 
-def _zero_crossings(y: np.ndarray, deadband: float = 0.012) -> int:
-    """평활화된 Y의 1차 차분 부호 반전 횟수 = 상하 진동(긁기) 대리 지표.
-
-    deadband 미만의 차분은 센서 노이즈로 보고 무시한다.
-    """
+def _zero_crossings(y: np.ndarray, deadband: float = 0.010) -> int:
     sm = _smooth(y)
     if sm.size < 3:
         return 0
@@ -376,28 +378,11 @@ def _zero_crossings(y: np.ndarray, deadband: float = 0.012) -> int:
     d = d[np.abs(d) > deadband]
     if d.size < 2:
         return 0
-    signs = np.sign(d)
-    return int(np.sum(signs[1:] * signs[:-1] < 0))
+    s = np.sign(d)
+    return int(np.sum(s[1:] * s[:-1] < 0))
 
 
-def _first_pause(y: np.ndarray, window: int = PAUSE_FRAMES, tau: float = TAU_PAUSE_STD) -> tuple[int | None, float]:
-    """체류 구간에서 손목 Y 표준편차가 tau 미만인 첫 창 = 파지 후 일시 정지."""
-    if y.size < window:
-        s = _std(y)
-        return (0 if s < tau else None), s
-    best_std = float("inf")
-    first = None
-    for i in range(0, y.size - window + 1):
-        s = _std(y[i : i + window])
-        if s < best_std:
-            best_std = s
-        if first is None and s < tau:
-            first = i
-    return first, float(best_std)
-
-
-def _longest_true_run(mask: np.ndarray) -> tuple[int, int]:
-    """True 구간의 가장 긴 (start, end) exclusive-end 인덱스를 반환."""
+def _longest_run(mask: np.ndarray) -> tuple[int, int]:
     best = (0, 0)
     start = None
     for i, flag in enumerate(mask):
@@ -412,187 +397,198 @@ def _longest_true_run(mask: np.ndarray) -> tuple[int, int]:
     return best
 
 
-def _pick_active_wrist(
-    seq_norm: np.ndarray, bboxes: list[HeadBBox]
-) -> tuple[np.ndarray, str, np.ndarray]:
-    """머리 bbox 안에 더 오래 머문 손목을 활성 손목으로 선택."""
-    t = seq_norm.shape[0]
-    left = seq_norm[:, L_WRIST, :]
-    right = seq_norm[:, R_WRIST, :]
-    in_l = np.array([bboxes[i].contains(left[i]) for i in range(t)])
-    in_r = np.array([bboxes[i].contains(right[i]) for i in range(t)])
-    if int(in_r.sum()) >= int(in_l.sum()):
-        return right, "right", in_r
-    return left, "left", in_l
+def _first_pause(xy: np.ndarray, window: int = PAUSE_FRAMES, tau: float = TAU_PAUSE_STD) -> tuple[int | None, float]:
+    """(T, 2) 궤적에서 창 표준편차(두 축 RMS)가 tau 미만인 첫 구간."""
+    t = xy.shape[0]
+    if t < window:
+        s = float(np.sqrt(_std(xy[:, 0]) ** 2 + _std(xy[:, 1]) ** 2))
+        return (0 if s < tau else None), s
+    best = float("inf")
+    first = None
+    for i in range(0, t - window + 1):
+        w = xy[i : i + window]
+        s = float(np.sqrt(_std(w[:, 0]) ** 2 + _std(w[:, 1]) ** 2))
+        best = min(best, s)
+        if first is None and s < tau:
+            first = i
+    return first, best
 
 
 def extract_features(seq_norm: np.ndarray) -> FeatureReport:
-    """정규화된 (T, 17, 2) 시퀀스에서 판정 통계량을 계산한다.
+    """하이 앵글 판정 통계량.
 
-    접촉 시작부터 시퀀스 끝(+짧은 꼬리)까지를 본다. 안전모를 들어 올리면
-    손목이 원래 머리 bbox 위로 빠져나가기 때문에, 최장 True 구간에만
-    묶으면 상승 벡터가 잘린다.
+    긁기
+        한 손목이 두상 *중심원* 안에 머물며, 국소 반경은 작고
+        (x,y) 표준편차·영점교차는 크다 → 짧은 고주파 진동.
+
+    안전모 벗기
+        왼손목∈왼귀원 AND 오른손목∈오른귀원 으로 파지(일시 정지)한 뒤
+        양손목 거리 증가(벌어짐) 또는 귀 간격 / 어깨너비 증가(팽창).
+        팽창은 헬멧이 천장 카메라 쪽으로 들어 올려질 때 생긴다.
     """
     t = seq_norm.shape[0]
-    bboxes = [compute_head_bbox_norm(seq_norm[i]) for i in range(t)]
-    head_top = np.stack([estimate_head_top_norm(seq_norm[i]) for i in range(t)])
-    wrist, which, in_head = _pick_active_wrist(seq_norm, bboxes)
+    regions = [compute_head_regions(seq_norm[i]) for i in range(t)]
+    lw = seq_norm[:, L_WRIST]
+    rw = seq_norm[:, R_WRIST]
 
-    feat = FeatureReport(active_wrist=which)
-    start, end = _longest_true_run(in_head)
-    feat.contact_frames = end - start
-    if feat.contact_frames < 1:
-        return feat
+    in_c_l = np.array([regions[i].in_center(lw[i]) for i in range(t)])
+    in_c_r = np.array([regions[i].in_center(rw[i]) for i in range(t)])
+    in_el = np.array([regions[i].in_left_ear(lw[i]) for i in range(t)])
+    in_er = np.array([regions[i].in_right_ear(rw[i]) for i in range(t)])
+    both_ears = in_el & in_er
 
-    trail_end = min(t, end + 12)
-    wy_contact = wrist[start:end, 1]
-    hy_contact = head_top[start:end, 1]
-    wy_all = wrist[start:trail_end, 1]
-    hy_all = head_top[start:trail_end, 1]
-
-    entry_trim = min(PAUSE_FRAMES, max(3, feat.contact_frames // 4))
-    wy_dwell = wy_contact[entry_trim:] if wy_contact.size > entry_trim else wy_contact
-    hy_dwell = hy_contact[entry_trim:] if hy_contact.size > entry_trim else hy_contact
-    feat.wrist_y_std = _std(wy_dwell)
-    feat.head_y_std = _std(hy_dwell)
-    feat.n_oscillations = _zero_crossings(wy_dwell)
-
-    pause_i, min_pause_std = _first_pause(wy_all)
-    feat.wrist_y_std_early = min_pause_std
-    feat.pause_detected = pause_i is not None
-
-    if pause_i is None:
-        pause_i = 0
-        pause_n = min(PAUSE_FRAMES, wy_all.size)
+    feat = FeatureReport()
+    c_l0, c_l1 = _longest_run(in_c_l)
+    c_r0, c_r1 = _longest_run(in_c_r)
+    if (c_r1 - c_r0) >= (c_l1 - c_l0):
+        feat.active_wrist = "right"
+        c0, c1 = c_r0, c_r1
+        active = rw
     else:
-        pause_n = min(PAUSE_FRAMES, wy_all.size - pause_i)
+        feat.active_wrist = "left"
+        c0, c1 = c_l0, c_l1
+        active = lw
+    feat.center_frames = c1 - c0
 
-    late_w = wy_all[pause_i + pause_n :]
-    late_h = hy_all[pause_i + pause_n :]
-    if late_w.size == 0:
-        late_w = wy_all[pause_i:]
-        late_h = hy_all[pause_i:]
-    baseline_w = float(np.median(wy_all[pause_i : pause_i + pause_n]))
-    baseline_h = float(np.median(hy_all[pause_i : pause_i + pause_n]))
-    feat.rise_wrist = float(baseline_w - np.min(late_w)) if late_w.size else 0.0
-    feat.rise_head = float(baseline_h - np.min(late_h)) if late_h.size else 0.0
-    feat.corr_wrist_head = _pearson(late_w, late_h)
-    feat.co_rising = (
-        feat.rise_wrist > TAU_RISE
-        and feat.rise_head > TAU_RISE
-        and feat.corr_wrist_head > TAU_CORR
-    )
+    e0, e1 = _longest_run(both_ears)
+    feat.both_ear_frames = e1 - e0
+
+    if feat.center_frames >= 3:
+        dwell = active[c0:c1]
+        centroid = dwell.mean(axis=0)
+        rad = np.linalg.norm(dwell - centroid, axis=1)
+        feat.scratch_radius = float(np.quantile(rad, 0.85))
+        feat.scratch_std = float(np.sqrt(_std(dwell[:, 0]) ** 2 + _std(dwell[:, 1]) ** 2))
+        feat.n_oscillations = _zero_crossings(dwell[:, 0]) + _zero_crossings(dwell[:, 1])
+
+    if feat.both_ear_frames >= 3:
+        # 파지 구간 + 그 이후(헬멧이 bbox 밖으로 팽창해도 추적)
+        trail_end = min(t, e1 + 16)
+        pair = np.stack([lw[e0:trail_end], rw[e0:trail_end]], axis=1)  # (T, 2, 2)
+        mean_xy = pair.mean(axis=1)
+        pause_i, pause_std = _first_pause(mean_xy)
+        feat.pause_std = pause_std
+        feat.pause_detected = pause_i is not None
+        if pause_i is None:
+            pause_i, pause_n = 0, min(PAUSE_FRAMES, pair.shape[0])
+        else:
+            pause_n = min(PAUSE_FRAMES, pair.shape[0] - pause_i)
+
+        d = np.linalg.norm(lw[e0:trail_end] - rw[e0:trail_end], axis=1)
+        hs = np.array([head_scale_norm(seq_norm[i]) for i in range(e0, trail_end)])
+        d_pause = float(np.median(d[pause_i : pause_i + pause_n]))
+        h_pause = float(np.median(hs[pause_i : pause_i + pause_n]))
+        late = slice(pause_i + pause_n, None)
+        if d[late].size == 0:
+            late = slice(pause_i, None)
+        feat.d_wrist_pause = d_pause
+        feat.d_wrist_late = float(np.max(d[late])) if d[late].size else d_pause
+        feat.wrist_spread = feat.d_wrist_late - d_pause
+        h_late = float(np.max(hs[late])) if hs[late].size else h_pause
+        feat.head_scale_up = (h_late / max(h_pause, 1e-6)) - 1.0
     return feat
 
 
 def classify_pose_sequence(keypoints: np.ndarray) -> ClassificationResult:
-    """시퀀스 전체를 보고 두 동작을 구분하는 핵심 알고리즘.
+    """시퀀스 분류. 안전 우선으로 헬멧 탈착을 먼저 검사한다.
 
-    판단 로직 (안전 우선: 헬멧 탈착을 먼저 검사)
-    ------------------------------------------
-    [공통] 정규화 후 손목이 동적 머리 bbox 에 MIN_CONTACT_FRAMES 이상 체류.
+    수식 요약
+    --------
+    정규화        p̂ = (p − neck) / ||Ls − Rs||
 
-    [안전모 벗기]
-        1) 체류 초반 손목 Y 표준편차가 작다 (일시 정지 / 파지).
-        2) 이후 손목 Y 와 머리 상단 Y 가 동시에 감소 (화면 위쪽 상승 벡터).
-        3) 상승량 > τ_rise 이고 두 궤적의 피어슨 상관이 > τ_corr.
+    긁기 (정상)
+        한 손목이 중심원(r=0.24)에 T≥Tmin 체류
+        radius_85% = Q_0.85( ||ŵ − mean(ŵ)|| )  ≤  τ_radius
+        σ_xy = sqrt(σx² + σy²)                 ≥  τ_std
+        osc  = ZC(ŵx) + ZC(ŵy)                 ≥  N_osc
+        (반경은 작고 진동은 큼 = 제자리 고주파)
 
-    [머리 긁기]
-        1) 체류 구간 손목 Y 표준편차가 크다 (상하 진동).
-        2) 머리 상단 Y 표준편차는 작다 (머리는 고정).
-        3) 차분 영점교차(진동 횟수) >= MIN_OSCILLATIONS.
-        4) 머리 상승량이 τ_rise 미만 (헬멧을 들어 올리지 않음).
+    안전모 벗기 (경보)
+        왼손목∈왼귀원 ∧ 오른손목∈오른귀원, T≥Tmin
+        파지 창에서 σ_xy < τ_pause
+        이후  spread = max||ŵL−ŵR|| − med_pause(||ŵL−ŵR||)  > τ_spread
+          또는  scale = max(d_ear)/med_pause(d_ear) − 1      > τ_scale
+        d_ear 는 이미 어깨너비로 나눠진 귀 간격이므로,
+        어깨는 그대로인데 헬멧만 렌즈로 다가오면 scale-up 이 관측된다.
     """
-    seq_norm, _infos = normalize_keypoints(keypoints)
+    seq_norm, _ = normalize_keypoints(keypoints)
     feat = extract_features(seq_norm)
-    notes: list[str] = []
-
-    notes.append(
-        "정규화: p̂ = (p − neck) / shoulder_width  "
-        f"(shoulder=1.0, torso는 대체 스케일)."
-    )
-    notes.append(
-        f"활성 손목={feat.active_wrist}, 머리영역 최장 체류={feat.contact_frames} 프레임."
-    )
-
-    if feat.contact_frames < MIN_CONTACT_FRAMES:
-        notes.append(
-            f"체류 프레임 {feat.contact_frames} < {MIN_CONTACT_FRAMES} → 비접촉."
-        )
-        timeline = _frame_timeline(seq_norm, ActionLabel.NO_CONTACT)
-        return ClassificationResult(
-            ActionLabel.NO_CONTACT, 0.95, feat, notes, timeline
-        )
-
-    notes.append(
-        "통계량 (모두 어깨너비 단위): "
-        f"std(wrist_y)={feat.wrist_y_std:.4f}, "
-        f"std(wrist_y)_early={feat.wrist_y_std_early:.4f}, "
-        f"std(head_y)={feat.head_y_std:.4f}, "
-        f"oscillations={feat.n_oscillations}, "
-        f"rise_wrist={feat.rise_wrist:.4f}, "
-        f"rise_head={feat.rise_head:.4f}, "
-        f"corr={feat.corr_wrist_head:.3f}."
-    )
+    notes: list[str] = [
+        "하이 앵글 정규화: p̂ = (p − neck) / shoulder_width  (torso 길이 미사용).",
+        f"중심부 체류={feat.center_frames}fr ({feat.active_wrist}), "
+        f"양귀 동시 파지={feat.both_ear_frames}fr.",
+    ]
 
     helmet_rule = (
-        feat.pause_detected
-        and feat.rise_wrist > TAU_RISE
-        and feat.rise_head > TAU_RISE
-        and feat.corr_wrist_head > TAU_CORR
+        feat.both_ear_frames >= MIN_EAR_FRAMES
+        and feat.pause_detected
+        and (feat.wrist_spread > TAU_SPREAD or feat.head_scale_up > TAU_SCALE_UP)
     )
     scratch_rule = (
-        feat.wrist_y_std >= TAU_SCRATCH_STD
-        and feat.head_y_std <= TAU_HEAD_STILL_STD
+        feat.center_frames >= MIN_CENTER_FRAMES
+        and feat.scratch_radius <= TAU_SCRATCH_RADIUS
+        and feat.scratch_std >= TAU_SCRATCH_STD
         and feat.n_oscillations >= MIN_OSCILLATIONS
-        and feat.rise_head < TAU_RISE
+        and feat.both_ear_frames < MIN_EAR_FRAMES
     )
 
-    if helmet_rule:
-        # 신뢰도: 상승량·상관이 임계값을 얼마나 여유 있게 넘었는지
+    if feat.center_frames < MIN_CENTER_FRAMES and feat.both_ear_frames < MIN_EAR_FRAMES:
+        notes.append("머리 중심부·귀 모서리 모두 최소 체류 미달 → 비접촉.")
+        label, conf = ActionLabel.NO_CONTACT, 0.95
+    elif helmet_rule:
         conf = float(
             np.clip(
-                0.55
-                + 0.20 * min(feat.rise_head / (2 * TAU_RISE), 1.0)
-                + 0.15 * min(max(feat.corr_wrist_head, 0.0), 1.0)
-                + 0.10 * float(feat.pause_detected),
-                0.55,
+                0.60
+                + 0.20 * min(max(feat.wrist_spread, 0) / (2 * TAU_SPREAD), 1)
+                + 0.20 * min(max(feat.head_scale_up, 0) / (2 * TAU_SCALE_UP), 1),
+                0.60,
                 0.99,
             )
         )
         notes.append(
-            "규칙 HELMET_OFF 충족: "
-            f"일시정지(std_early={feat.wrist_y_std_early:.4f} < {TAU_PAUSE_STD}) "
-            f"+ 동시 상승(Δŷ_wrist={feat.rise_wrist:.3f}, Δŷ_head={feat.rise_head:.3f} "
-            f"> {TAU_RISE}) + corr={feat.corr_wrist_head:.2f} > {TAU_CORR}."
+            "통계량: "
+            f"pause_std={feat.pause_std:.4f} (< {TAU_PAUSE_STD}), "
+            f"spread={feat.wrist_spread:.3f} (τ={TAU_SPREAD}), "
+            f"head_scale_up={feat.head_scale_up:.3f} (τ={TAU_SCALE_UP})."
         )
-        notes.append("예방 알림: 작업자가 안전모를 벗으려는 동작으로 판정합니다.")
+        notes.append(
+            "규칙 HELMET_OFF: 양손목이 귀 모서리에서 멈춘 뒤 "
+            "손목 간격이 벌어지거나 귀 간격이 어깨너비 대비 팽창 "
+            "(헬멧이 천장 카메라 쪽으로 들어 올려짐)."
+        )
+        notes.append("예방 알림: 안전모 벗기 시도로 판정합니다.")
         label = ActionLabel.HELMET_OFF
     elif scratch_rule:
         conf = float(
             np.clip(
-                0.55
-                + 0.20 * min(feat.wrist_y_std / (2 * TAU_SCRATCH_STD), 1.0)
-                + 0.15 * min(feat.n_oscillations / 8.0, 1.0)
-                + 0.10 * (1.0 - min(feat.head_y_std / TAU_HEAD_STILL_STD, 1.0)),
-                0.55,
+                0.58
+                + 0.22 * min(feat.scratch_std / (2 * TAU_SCRATCH_STD), 1)
+                + 0.20 * min(feat.n_oscillations / 10.0, 1),
+                0.58,
                 0.99,
             )
         )
         notes.append(
-            "규칙 SCRATCH 충족: "
-            f"손목 진동 std={feat.wrist_y_std:.4f} ≥ {TAU_SCRATCH_STD}, "
-            f"머리 고정 std={feat.head_y_std:.4f} ≤ {TAU_HEAD_STILL_STD}, "
-            f"영점교차={feat.n_oscillations} ≥ {MIN_OSCILLATIONS}, "
-            f"머리 상승={feat.rise_head:.3f} < {TAU_RISE}."
+            "통계량: "
+            f"radius_85%={feat.scratch_radius:.3f} (≤ {TAU_SCRATCH_RADIUS}), "
+            f"σ_xy={feat.scratch_std:.4f} (≥ {TAU_SCRATCH_STD}), "
+            f"osc={feat.n_oscillations} (≥ {MIN_OSCILLATIONS})."
         )
-        notes.append("정상: 단순 머리 긁기로 판정합니다. 알림을 울리지 않습니다.")
+        notes.append(
+            "규칙 SCRATCH: 한 손목만 두상 중심에서 짧은 반경의 고주파 진동. "
+            "양손 귀 파지/팽창이 없으므로 정상 긁기로 봅니다."
+        )
+        notes.append("정상: 알림을 울리지 않습니다.")
         label = ActionLabel.SCRATCH
     else:
         conf = 0.40
         notes.append(
-            "두 규칙 모두 미충족 → 머리 접촉은 있으나 동작 유형을 단정하지 않습니다."
+            "통계량: "
+            f"radius={feat.scratch_radius:.3f}, σ_xy={feat.scratch_std:.4f}, "
+            f"osc={feat.n_oscillations}, spread={feat.wrist_spread:.3f}, "
+            f"scale_up={feat.head_scale_up:.3f}."
         )
+        notes.append("중심 진동과 양귀 팽창 모두 임계값을 못 넘겨 판정을 보류합니다.")
         label = ActionLabel.UNKNOWN_CONTACT
 
     timeline = _frame_timeline(seq_norm, label)
@@ -600,21 +596,20 @@ def classify_pose_sequence(keypoints: np.ndarray) -> ClassificationResult:
 
 
 def _frame_timeline(seq_norm: np.ndarray, final: ActionLabel) -> list[str]:
-    """시각화용 프레임 라벨. 접촉 전에는 idle, 접촉 후 최종 라벨을 입힌다."""
     t = seq_norm.shape[0]
-    bboxes = [compute_head_bbox_norm(seq_norm[i]) for i in range(t)]
-    _, _, in_head = _pick_active_wrist(seq_norm, bboxes)
-    start, end = _longest_true_run(in_head)
+    regions = [compute_head_regions(seq_norm[i]) for i in range(t)]
     labels = ["idle"] * t
-    if end <= start:
-        return labels
-    contact_label = (
-        final.value
-        if final in (ActionLabel.SCRATCH, ActionLabel.HELMET_OFF)
-        else "contact"
-    )
-    for i in range(start, end):
-        labels[i] = contact_label
+    for i, rg in enumerate(regions):
+        lw, rw = seq_norm[i, L_WRIST], seq_norm[i, R_WRIST]
+        if rg.in_left_ear(lw) and rg.in_right_ear(rw):
+            labels[i] = "ear_grasp"
+        elif rg.in_center(lw) or rg.in_center(rw):
+            labels[i] = "center"
+    if final in (ActionLabel.SCRATCH, ActionLabel.HELMET_OFF):
+        key = "center" if final is ActionLabel.SCRATCH else "ear_grasp"
+        for i, v in enumerate(labels):
+            if v == key:
+                labels[i] = final.value
     return labels
 
 
@@ -630,49 +625,19 @@ def print_classification(name: str, result: ClassificationResult) -> None:
 
 
 # ===========================================================================
-# 조건 1: 정적 스켈레톤 시각화
+# 조건 1: 하이 앵글 정적 스켈레톤 시각화
 # ===========================================================================
-def canonical_pose_norm() -> np.ndarray:
-    """정규화 공간의 정면 상체 스탠딩 포즈. 목=(0,0), 어깨너비=1.0."""
-    pose = np.zeros((17, 2), dtype=np.float64)
-    pose[NOSE] = (0.00, -0.55)
-    pose[L_EYE] = (-0.10, -0.60)
-    pose[R_EYE] = (0.10, -0.60)
-    pose[L_EAR] = (-0.18, -0.52)
-    pose[R_EAR] = (0.18, -0.52)
-    pose[L_SHOULDER] = (-0.50, 0.00)
-    pose[R_SHOULDER] = (0.50, 0.00)
-    pose[L_ELBOW] = (-0.68, 0.58)
-    pose[R_ELBOW] = (0.68, 0.58)
-    pose[L_WRIST] = (-0.72, 1.08)
-    pose[R_WRIST] = (0.72, 1.08)
-    pose[L_HIP] = (-0.34, 1.38)
-    pose[R_HIP] = (0.34, 1.38)
-    pose[L_KNEE] = (-0.36, 2.28)
-    pose[R_KNEE] = (0.36, 2.28)
-    pose[L_ANKLE] = (-0.34, 3.18)
-    pose[R_ANKLE] = (0.34, 3.18)
-    return pose
-
-
-def pose_norm_to_pixels(
-    pose_norm: np.ndarray,
-    scale_px: float,
-    origin_px: tuple[float, float],
-) -> np.ndarray:
-    """정규화 포즈를 픽셀로 투영. scale_px = 어깨너비(px) = 카메라 거리 대리변수."""
-    origin = np.asarray(origin_px, dtype=np.float64)
-    return pose_norm * float(scale_px) + origin
+def project_canonical(camera: HighAngleCamera | None = None) -> np.ndarray:
+    cam = camera or HighAngleCamera.factory_ceiling()
+    return cam.project(canonical_pose_3d())
 
 
 def _bent_elbow(shoulder: np.ndarray, wrist: np.ndarray, outward: float) -> np.ndarray:
-    """어깨-손목 중점에서 바깥쪽으로 꺾인 팔꿈치. 시각화용 단순 IK."""
     mid = 0.5 * (shoulder + wrist)
     vec = wrist - shoulder
     length = np.linalg.norm(vec)
     if length < 1e-8:
         return mid
-    # 이미지 좌표에서 왼쪽으로 90도 회전 (x, y) → (y, -x)
     perp = np.array([vec[1], -vec[0]]) / length
     return mid + perp * outward
 
@@ -680,183 +645,153 @@ def _bent_elbow(shoulder: np.ndarray, wrist: np.ndarray, outward: float) -> np.n
 def plot_static_skeleton(
     keypoints: np.ndarray | None = None,
     ax: plt.Axes | None = None,
-    title: str = "정규화 상체 스켈레톤 (어깨너비 = 1.0)",
-    show_bbox: bool = True,
-    show_labels: bool = True,
-    highlight_wrist: str | None = None,
+    title: str = "하이 앵글 CCTV 상체 스켈레톤 (어깨너비 = 1.0)",
 ) -> plt.Axes:
-    """가상의 2D 상체 스켈레톤을 한 장의 정적 이미지로 플롯한다.
+    """투시 왜곡이 반영된 정적 2D 스켈레톤.
 
-    관절을 선으로 연결해 머리·어깨·팔·골반 형태가 보이도록 한다.
-    좌표는 정규화 공간이 기본이며, 머리 bbox 도 같은 단위로 겹쳐 그린다.
+    머리·어깨는 넓고, 골반·다리는 머리 쪽으로 단축·중첩되어 보인다.
     """
     _configure_korean_font()
-    pose = canonical_pose_norm() if keypoints is None else _as_sequence(keypoints)[0]
-    # 이미 정규화된 포즈라고 가정. 픽셀 입력이면 정규화한다.
-    if np.linalg.norm(pose[L_SHOULDER] - pose[R_SHOULDER]) > 2.5:
-        pose, _ = normalize_keypoints(pose)
+    if keypoints is None:
+        pix = project_canonical()
+        pose, _ = normalize_keypoints(pix)
         pose = pose[0]
-
-    created_fig = ax is None
-    if ax is None:
-        fig, ax = plt.subplots(figsize=(7.2, 9.2), facecolor="#0b1220")
-        fig.patch.set_facecolor("#0b1220")
     else:
-        fig = ax.figure
+        pose = _as_sequence(keypoints)[0]
+        if np.linalg.norm(pose[L_SHOULDER] - pose[R_SHOULDER]) > 2.5:
+            pose, _ = normalize_keypoints(pose)
+            pose = pose[0]
+
+    created = ax is None
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(7.4, 8.4), facecolor="#0b1220")
+        fig.patch.set_facecolor("#0b1220")
 
     ax.set_facecolor("#10182a")
-    bbox = compute_head_bbox_norm(pose)
-    neck = np.array([0.0, 0.0])
-    head_top = estimate_head_top_norm(pose)
-
-    if show_bbox:
-        x, y, w, h = bbox.as_xywh()
-        ax.add_patch(
-            Rectangle(
-                (x, y),
-                w,
-                h,
-                fill=True,
-                facecolor="#f5c518",
-                alpha=0.12,
-                edgecolor="#f5c518",
-                linewidth=1.8,
-                linestyle="--",
-                label="동적 머리 Bounding Box",
-                zorder=1,
-            )
+    rg = compute_head_regions(pose)
+    x, y, w, h = rg.as_xywh()
+    ax.add_patch(
+        Rectangle(
+            (x, y), w, h, fill=True, facecolor="#f5c518", alpha=0.08,
+            edgecolor="#f5c518", linewidth=1.6, linestyle="--",
+            label="머리 Bounding Box", zorder=1,
         )
+    )
+    ax.add_patch(
+        Circle(
+            rg.center, rg.center_r, fill=True, facecolor="#3dd68c", alpha=0.16,
+            edgecolor="#3dd68c", linewidth=1.4, linestyle=":",
+            label="긁기 중심부", zorder=1,
+        )
+    )
+    ax.add_patch(
+        Circle(
+            rg.left_ear, rg.ear_r, fill=False, edgecolor="#ff8fab",
+            linewidth=1.4, linestyle=":", label="귀 모서리 (파지)", zorder=1,
+        )
+    )
+    ax.add_patch(
+        Circle(rg.right_ear, rg.ear_r, fill=False, edgecolor="#ff8fab", linewidth=1.4, linestyle=":")
+    )
 
+    neck = np.array([0.0, 0.0])
     for a, b in SKELETON_BONES:
         ax.plot(
-            [pose[a, 0], pose[b, 0]],
-            [pose[a, 1], pose[b, 1]],
-            color="#5ee0ff",
-            linewidth=2.4,
-            solid_capstyle="round",
-            zorder=2,
+            [pose[a, 0], pose[b, 0]], [pose[a, 1], pose[b, 1]],
+            color="#5ee0ff", lw=2.5, solid_capstyle="round", zorder=2,
         )
-    # 목 파생점 연결
     ax.plot(
         [pose[L_SHOULDER, 0], neck[0], pose[R_SHOULDER, 0]],
         [pose[L_SHOULDER, 1], neck[1], pose[R_SHOULDER, 1]],
-        color="#5ee0ff",
-        linewidth=2.4,
-        zorder=2,
+        color="#5ee0ff", lw=2.5, zorder=2,
     )
-    ax.plot(
-        [neck[0], pose[NOSE, 0]],
-        [neck[1], pose[NOSE, 1]],
-        color="#5ee0ff",
-        linewidth=2.4,
-        zorder=2,
-    )
+    ax.plot([neck[0], pose[NOSE, 0]], [neck[1], pose[NOSE, 1]], color="#5ee0ff", lw=2.5, zorder=2)
 
-    joint_colors = np.full(17, "#d7ecff")
-    joint_colors[[L_SHOULDER, R_SHOULDER]] = "#7cffb2"
-    joint_colors[[L_WRIST, R_WRIST]] = "#ffd166"
-    joint_colors[NOSE] = "#ff8fab"
-    if highlight_wrist == "right":
-        joint_colors[R_WRIST] = "#ff4d4d"
-    elif highlight_wrist == "left":
-        joint_colors[L_WRIST] = "#ff4d4d"
+    colors = np.full(17, "#d7ecff")
+    colors[[L_SHOULDER, R_SHOULDER]] = "#7cffb2"
+    colors[[L_WRIST, R_WRIST]] = "#ffd166"
+    colors[list(FACE_IDX)] = "#ff8fab"
+    ax.scatter(pose[:, 0], pose[:, 1], c=colors, s=52, zorder=4, edgecolors="#0b1220", linewidths=0.6)
+    ax.scatter([0], [0], c="#7cffb2", s=70, zorder=5, edgecolors="#0b1220", label="목 (원점)")
 
-    ax.scatter(
-        pose[:, 0],
-        pose[:, 1],
-        c=joint_colors,
-        s=48,
-        zorder=4,
-        edgecolors="#0b1220",
-        linewidths=0.6,
-    )
-    ax.scatter(
-        [neck[0]], [neck[1]], c="#7cffb2", s=70, zorder=5, edgecolors="#0b1220", label="목 (원점)"
-    )
-    ax.scatter(
-        [head_top[0]],
-        [head_top[1]],
-        c="#f5c518",
-        s=70,
-        marker="^",
-        zorder=5,
-        label="머리 상단 (추정)",
-    )
-
-    # 어깨너비 = 1.0 스케일 막대
     ax.annotate(
         "",
-        xy=(pose[R_SHOULDER, 0], -0.08),
-        xytext=(pose[L_SHOULDER, 0], -0.08),
+        xy=(pose[R_SHOULDER, 0], pose[R_SHOULDER, 1] - 0.06),
+        xytext=(pose[L_SHOULDER, 0], pose[L_SHOULDER, 1] - 0.06),
         arrowprops=dict(arrowstyle="<->", color="#7cffb2", lw=1.6),
     )
     ax.text(
-        0.0,
-        -0.18,
-        "Shoulder Width = 1.0  (정규화 단위)",
-        ha="center",
-        va="top",
-        color="#7cffb2",
-        fontsize=9,
+        0.0, float(pose[L_SHOULDER, 1] - 0.14),
+        "Shoulder Width = 1.0  (유일한 정규화 단위)",
+        ha="center", color="#7cffb2", fontsize=9,
     )
 
-    if show_labels:
-        label_map = {
-            NOSE: "코",
-            L_SHOULDER: "왼어깨",
-            R_SHOULDER: "오른어깨",
-            L_ELBOW: "왼팔꿈치",
-            R_ELBOW: "오른팔꿈치",
-            L_WRIST: "왼손목",
-            R_WRIST: "오른손목",
-            L_HIP: "왼골반",
-            R_HIP: "오른골반",
-        }
-        for idx, name in label_map.items():
-            ax.text(
-                pose[idx, 0] + 0.06,
-                pose[idx, 1],
-                name,
-                color="#c9d6f0",
-                fontsize=8,
-                va="center",
-            )
+    hip_y = float(0.5 * (pose[L_HIP, 1] + pose[R_HIP, 1]))
+    ank_y = float(0.5 * (pose[L_ANKLE, 1] + pose[R_ANKLE, 1]))
+    ax.annotate(
+        "투시 왜곡: 골반·다리가 머리 쪽으로 단축",
+        xy=(0.02, hip_y),
+        xytext=(0.85, (hip_y + ank_y) * 0.5),
+        color="#c9d6f0",
+        fontsize=8,
+        arrowprops=dict(arrowstyle="->", color="#8aa0c4"),
+    )
+    ax.text(
+        -1.55, float(pose[NOSE, 1]) - 0.35,
+        "CCTV 하이 앵글\n(대각선 하향)",
+        color="#f5c518", fontsize=9, ha="left", va="top",
+    )
+    ax.add_patch(
+        FancyArrowPatch(
+            (-1.35, float(pose[NOSE, 1]) - 0.55),
+            (-0.15, float(pose[NOSE, 1]) - 0.05),
+            arrowstyle="-|>", mutation_scale=12, color="#f5c518", lw=1.3,
+        )
+    )
+
+    labels = {
+        NOSE: "코",
+        L_SHOULDER: "왼어깨",
+        R_SHOULDER: "오른어깨",
+        L_WRIST: "왼손목",
+        R_WRIST: "오른손목",
+        L_HIP: "골반",
+        L_ANKLE: "발",
+    }
+    for idx, name in labels.items():
+        ax.text(pose[idx, 0] + 0.05, pose[idx, 1], name, color="#c9d6f0", fontsize=8, va="center")
 
     ax.set_title(title, color="#f2f6ff", fontsize=13, pad=12)
     ax.set_xlabel("X (어깨너비 단위, 목=0)", color="#9db0d0")
-    ax.set_ylabel("Y (아래가 + / 위가 −)", color="#9db0d0")
+    ax.set_ylabel("Y (이미지 아래가 +)", color="#9db0d0")
     ax.tick_params(colors="#8aa0c4")
     for spine in ax.spines.values():
         spine.set_color("#2a3a58")
     ax.invert_yaxis()
     ax.set_aspect("equal")
-    ax.set_xlim(-1.6, 1.6)
-    ax.set_ylim(3.5, -1.5)
+    ax.set_xlim(-1.7, 1.7)
+    y_bottom = max(float(pose[L_ANKLE, 1]), float(pose[R_ANKLE, 1])) + 0.35
+    ax.set_ylim(y_bottom, float(rg.y_min) - 0.25)
     ax.grid(True, color="#1c2a44", linestyle=":", linewidth=0.8)
-    ax.legend(loc="lower right", facecolor="#152038", edgecolor="#2a3a58", labelcolor="#e8eefc")
-
-    if created_fig:
-        fig.tight_layout()
+    ax.legend(loc="lower right", facecolor="#152038", edgecolor="#2a3a58", labelcolor="#e8eefc", fontsize=8)
+    if created:
+        ax.figure.tight_layout()
     return ax
 
 
 def plot_sequence_strip(
     seq_pixels: np.ndarray,
-    infos: list[NormalizeInfo],
     frame_indices: Iterable[int],
     title: str,
     result: ClassificationResult,
     out_path: Path | None = None,
 ) -> plt.Figure:
-    """시퀀스에서 몇 프레임을 골라 스틱피겨 스트립으로 그린다."""
     _configure_korean_font()
     idx = list(frame_indices)
-    n = len(idx)
-    fig, axes = plt.subplots(1, n, figsize=(3.2 * n, 6.4), facecolor="#0b1220")
-    if n == 1:
+    fig, axes = plt.subplots(1, len(idx), figsize=(3.15 * len(idx), 5.8), facecolor="#0b1220")
+    if len(idx) == 1:
         axes = [axes]
     fig.patch.set_facecolor("#0b1220")
-
     seq_norm, _ = normalize_keypoints(seq_pixels)
     accent = {
         ActionLabel.SCRATCH: "#3dd68c",
@@ -868,36 +803,23 @@ def plot_sequence_strip(
     for ax, fi in zip(axes, idx):
         ax.set_facecolor("#10182a")
         pose = seq_norm[fi]
-        bbox = compute_head_bbox_norm(pose)
-        x, y, w, h = bbox.as_xywh()
-        ax.add_patch(
-            Rectangle(
-                (x, y), w, h, fill=True, facecolor="#f5c518", alpha=0.12,
-                edgecolor="#f5c518", linewidth=1.2, linestyle="--",
-            )
-        )
+        rg = compute_head_regions(pose)
+        x, y, w, h = rg.as_xywh()
+        ax.add_patch(Rectangle((x, y), w, h, fill=True, facecolor="#f5c518", alpha=0.10, edgecolor="#f5c518", lw=1.0, ls="--"))
+        ax.add_patch(Circle(rg.center, rg.center_r, fill=False, edgecolor="#3dd68c", lw=1.0, ls=":"))
+        ax.add_patch(Circle(rg.left_ear, rg.ear_r, fill=False, edgecolor="#ff8fab", lw=1.0, ls=":"))
+        ax.add_patch(Circle(rg.right_ear, rg.ear_r, fill=False, edgecolor="#ff8fab", lw=1.0, ls=":"))
         for a, b in SKELETON_BONES:
-            ax.plot(
-                [pose[a, 0], pose[b, 0]],
-                [pose[a, 1], pose[b, 1]],
-                color="#5ee0ff",
-                lw=2.0,
-            )
-        ax.scatter(pose[:, 0], pose[:, 1], c="#d7ecff", s=22, zorder=3)
-        ax.scatter(pose[R_WRIST, 0], pose[R_WRIST, 1], c=accent, s=46, zorder=4)
-        ax.scatter(*estimate_head_top_norm(pose), c="#f5c518", s=36, marker="^", zorder=4)
+            ax.plot([pose[a, 0], pose[b, 0]], [pose[a, 1], pose[b, 1]], color="#5ee0ff", lw=1.8)
+        ax.scatter(pose[:, 0], pose[:, 1], c="#d7ecff", s=18, zorder=3)
+        ax.scatter(pose[[L_WRIST, R_WRIST], 0], pose[[L_WRIST, R_WRIST], 1], c=accent, s=42, zorder=4)
         ax.set_title(f"t = {fi}", color="#e8eefc", fontsize=10)
         ax.set_xlim(-1.7, 1.7)
-        ax.set_ylim(3.5, -1.6)
+        ax.set_ylim(1.35, -0.95)
         ax.set_aspect("equal")
         ax.axis("off")
 
-    fig.suptitle(
-        f"{title}\n판정: {LABEL_KO[result.label]}",
-        color=accent,
-        fontsize=13,
-        y=0.98,
-    )
+    fig.suptitle(f"{title}\n판정: {LABEL_KO[result.label]}", color=accent, fontsize=13, y=0.98)
     fig.tight_layout()
     if out_path:
         fig.savefig(out_path, dpi=140, facecolor=fig.get_facecolor())
@@ -906,49 +828,38 @@ def plot_sequence_strip(
 
 def plot_feature_timeline(
     seq_pixels: np.ndarray,
-    result: ClassificationResult,
     title: str,
     out_path: Path | None = None,
 ) -> plt.Figure:
-    """손목·머리 Y 궤적과 머리영역 체류를 한 장에 그려 판정 근거를 보여 준다."""
     _configure_korean_font()
     seq_norm, _ = normalize_keypoints(seq_pixels)
     t = np.arange(seq_norm.shape[0])
-    bboxes = [compute_head_bbox_norm(seq_norm[i]) for i in range(len(t))]
-    wrist, which, in_head = _pick_active_wrist(seq_norm, bboxes)
-    head_y = np.array([estimate_head_top_norm(seq_norm[i])[1] for i in range(len(t))])
+    d_wrist = np.linalg.norm(seq_norm[:, L_WRIST] - seq_norm[:, R_WRIST], axis=1)
+    h_scale = np.array([head_scale_norm(seq_norm[i]) for i in range(len(t))])
+    regions = [compute_head_regions(seq_norm[i]) for i in range(len(t))]
+    rw = seq_norm[:, R_WRIST]
+    dist_center = np.array([np.linalg.norm(rw[i] - regions[i].center) for i in range(len(t))])
 
-    fig, axes = plt.subplots(2, 1, figsize=(10.5, 6.2), sharex=True, facecolor="#0b1220")
+    fig, axes = plt.subplots(2, 1, figsize=(10.6, 6.3), sharex=True, facecolor="#0b1220")
     fig.patch.set_facecolor("#0b1220")
     for ax in axes:
         ax.set_facecolor("#10182a")
         ax.tick_params(colors="#8aa0c4")
         for spine in ax.spines.values():
             spine.set_color("#2a3a58")
-        ax.grid(True, color="#1c2a44", linestyle=":", linewidth=0.8)
+        ax.grid(True, color="#1c2a44", linestyle=":", lw=0.8)
 
-    axes[0].plot(t, wrist[:, 1], color="#ffd166", lw=2.0, label=f"{which} wrist ŷ")
-    axes[0].plot(t, head_y, color="#f5c518", lw=2.0, label="머리 상단 ŷ")
-    start, end = _longest_true_run(in_head)
-    if end > start:
-        axes[0].axvspan(start, end - 1, color="#f5c518", alpha=0.12, zorder=0)
-    axes[0].invert_yaxis()
-    axes[0].set_ylabel("정규화 Y (위가 작음)", color="#9db0d0")
+    axes[0].plot(t, dist_center, color="#ffd166", lw=2.0, label="오른손목 → 두상 중심")
+    axes[0].axhline(CENTER_RADIUS, color="#3dd68c", ls="--", lw=1.2, label=f"중심원 r={CENTER_RADIUS}")
+    axes[0].set_ylabel("거리 (어깨너비 단위)", color="#9db0d0")
     axes[0].legend(facecolor="#152038", edgecolor="#2a3a58", labelcolor="#e8eefc")
     axes[0].set_title(title, color="#f2f6ff")
 
-    # rolling std of wrist y
-    win = 8
-    rstd = np.array(
-        [_std(wrist[max(0, i - win + 1) : i + 1, 1]) for i in range(len(t))]
-    )
-    axes[1].plot(t, rstd, color="#5ee0ff", lw=2.0, label=f"rolling std(wrist_y, w={win})")
-    axes[1].axhline(TAU_SCRATCH_STD, color="#3dd68c", ls="--", lw=1.2, label=f"τ_scratch={TAU_SCRATCH_STD}")
-    axes[1].axhline(TAU_PAUSE_STD, color="#ff5c5c", ls="--", lw=1.2, label=f"τ_pause={TAU_PAUSE_STD}")
+    axes[1].plot(t, d_wrist, color="#ff8fab", lw=2.0, label="양손목 사이 거리")
+    axes[1].plot(t, h_scale, color="#f5c518", lw=2.0, label="귀 간격 (머리 겉보기 크기)")
     axes[1].set_xlabel("프레임", color="#9db0d0")
-    axes[1].set_ylabel("표준편차 (어깨너비 단위)", color="#9db0d0")
+    axes[1].set_ylabel("정규화 길이", color="#9db0d0")
     axes[1].legend(facecolor="#152038", edgecolor="#2a3a58", labelcolor="#e8eefc")
-
     fig.tight_layout()
     if out_path:
         fig.savefig(out_path, dpi=140, facecolor=fig.get_facecolor())
@@ -956,7 +867,7 @@ def plot_feature_timeline(
 
 
 # ===========================================================================
-# 시뮬레이션 데이터 (가짜 키포인트 시퀀스)
+# 하이 앵글 가짜 시계열 (3D 동작 → 핀홀 투영)
 # ===========================================================================
 def _lerp(a: np.ndarray, b: np.ndarray, u: float) -> np.ndarray:
     return (1.0 - u) * a + u * b
@@ -967,158 +878,141 @@ def _ease(u: float) -> float:
     return u * u * (3.0 - 2.0 * u)
 
 
-def _apply_right_arm(pose: np.ndarray, wrist: np.ndarray) -> None:
-    pose[R_WRIST] = wrist
-    pose[R_ELBOW] = _bent_elbow(pose[R_SHOULDER], wrist, outward=0.22)
+def _place_arm_3d(pose: np.ndarray, side: str, wrist: np.ndarray) -> None:
+    sh_i, el_i, wr_i = (L_SHOULDER, L_ELBOW, L_WRIST) if side == "left" else (R_SHOULDER, R_ELBOW, R_WRIST)
+    pose[wr_i] = wrist
+    sh = pose[sh_i]
+    mid = 0.5 * (sh + wrist)
+    # 팔꿈치를 몸 바깥·약간 뒤로
+    sign = -1.0 if side == "left" else 1.0
+    pose[el_i] = mid + np.array([0.06 * sign, 0.0, -0.04])
 
 
-def _shift_head(pose: np.ndarray, dy: float) -> None:
-    """얼굴 키포인트를 수직 이동. 안전모(머리 상단) 상승을 모사."""
-    for idx in (NOSE, L_EYE, R_EYE, L_EAR, R_EAR):
-        pose[idx, 1] += dy
+def _scale_head_toward_camera(pose: np.ndarray, amount: float) -> None:
+    """헬멧이 렌즈 쪽으로 들어 올려질 때: 얼굴점을 카메라(작은 Z, 큰 Y) 쪽으로 팽창."""
+    c = 0.5 * (pose[L_EAR] + pose[R_EAR])
+    cam_dir = np.array([0.04, 0.89, -0.45], dtype=np.float64)  # 천장 카메라 대략 방향
+    cam_dir = cam_dir / np.linalg.norm(cam_dir)
+    for idx in FACE_IDX:
+        radial = pose[idx] - c
+        pose[idx] = c + radial * (1.0 + 0.85 * amount) + cam_dir * (0.18 * amount)
 
 
 def generate_scratch_sequence(
     n_frames: int = 60,
     fps: int = 30,
-    scale_px: float = 180.0,
-    origin_px: tuple[float, float] = (360.0, 240.0),
     seed: int = 7,
+    pixel_scale: float = 1.0,
+    pixel_shift: tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
-    """오른손목이 머리 bbox 에 들어간 뒤 Y축으로 진동하고, 머리는 거의 고정."""
+    """한 손목이 두상 중심으로 이동한 뒤 짧은 반경에서 고주파 진동."""
     rng = np.random.default_rng(seed)
-    rest = canonical_pose_norm()
-    target_wrist = np.array([0.28, -0.42])  # 머리 우측
+    cam = HighAngleCamera.factory_ceiling()
+    rest = canonical_pose_3d()
+    # 두상 중심 = 귀 중점. 하이 앵글에서 bbox 중심부와 일치시킨다.
+    scalp = 0.5 * (rest[L_EAR] + rest[R_EAR]) + np.array([0.00, 0.012, 0.015])
     seq = np.zeros((n_frames, 17, 2), dtype=np.float64)
-
     raise_end, scratch_end = 12, 50
     for i in range(n_frames):
         pose = rest.copy()
         if i < raise_end:
             u = _ease(i / max(raise_end - 1, 1))
-            wrist = _lerp(rest[R_WRIST], target_wrist, u)
+            wrist = _lerp(rest[R_WRIST], scalp, u)
         elif i < scratch_end:
-            # 3.4 Hz 상하 진동, 진폭 ≈ 0.09 어깨너비. X 는 소폭.
             t = (i - raise_end) / fps
-            wrist = target_wrist + np.array(
-                [0.025 * math.sin(2 * math.pi * 1.3 * t), 0.09 * math.sin(2 * math.pi * 3.4 * t)]
+            # 반경 ~2 cm, 3.6 Hz — 투영 후에도 중심원 안의 고주파
+            wrist = scalp + np.array(
+                [
+                    0.018 * math.sin(2 * math.pi * 3.6 * t),
+                    0.006 * math.cos(2 * math.pi * 3.6 * t),
+                    0.008 * math.sin(2 * math.pi * 4.1 * t + 0.4),
+                ]
             )
         else:
             u = _ease((i - scratch_end) / max(n_frames - scratch_end - 1, 1))
-            last = target_wrist + np.array([0.0, 0.09 * math.sin(2 * math.pi * 3.4 * (scratch_end - raise_end) / fps)])
-            wrist = _lerp(last, rest[R_WRIST], u)
-        _apply_right_arm(pose, wrist)
-        pose += rng.normal(0.0, 0.006, size=pose.shape)
-        # 어깨너비가 1.0 근처를 유지하도록 어깨는 고정에 가깝게
-        pose[L_SHOULDER] = rest[L_SHOULDER] + rng.normal(0.0, 0.003, size=2)
-        pose[R_SHOULDER] = rest[R_SHOULDER] + rng.normal(0.0, 0.003, size=2)
-        seq[i] = pose_norm_to_pixels(pose, scale_px, origin_px)
+            wrist = _lerp(scalp, rest[R_WRIST], u)
+        _place_arm_3d(pose, "right", wrist)
+        pose += rng.normal(0.0, 0.0015, size=pose.shape)
+        pix = cam.project(pose) * pixel_scale + np.asarray(pixel_shift)
+        seq[i] = pix
     return seq
 
 
 def generate_helmet_off_sequence(
-    n_frames: int = 60,
-    fps: int = 30,
-    scale_px: float = 180.0,
-    origin_px: tuple[float, float] = (360.0, 240.0),
+    n_frames: int = 64,
     seed: int = 11,
+    pixel_scale: float = 1.0,
+    pixel_shift: tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
-    """손목이 정수리로 들어가 일시 정지한 뒤, 손목과 머리 상단이 함께 상승."""
+    """양손목이 귀 모서리로 이동 → 일시 정지 → 벌어짐 + 머리 팽창(카메라 접근)."""
     rng = np.random.default_rng(seed)
-    rest = canonical_pose_norm()
-    grab = np.array([0.12, -0.72])  # 정수리/챙 부근
+    cam = HighAngleCamera.factory_ceiling()
+    rest = canonical_pose_3d()
+    grab_l = rest[L_EAR] + np.array([-0.03, 0.01, 0.02])
+    grab_r = rest[R_EAR] + np.array([0.03, 0.01, 0.02])
     seq = np.zeros((n_frames, 17, 2), dtype=np.float64)
-
-    raise_end, pause_end, lift_end = 10, 20, 48
-    lift_amount = -0.42  # 정규화 Y 감소 = 위쪽
-
+    raise_end, pause_end, lift_end = 11, 22, 52
     for i in range(n_frames):
         pose = rest.copy()
-        head_dy = 0.0
+        amount = 0.0
         if i < raise_end:
             u = _ease(i / max(raise_end - 1, 1))
-            wrist = _lerp(rest[R_WRIST], grab, u)
+            wl = _lerp(rest[L_WRIST], grab_l, u)
+            wr = _lerp(rest[R_WRIST], grab_r, u)
         elif i < pause_end:
-            # 일시 정지: 파지. 매우 작은 떨림만.
-            wrist = grab + rng.normal(0.0, 0.004, size=2)
-        elif i < lift_end:
-            u = _ease((i - pause_end) / max(lift_end - pause_end - 1, 1))
-            wrist = grab + np.array([0.02 * u, lift_amount * u])
-            head_dy = lift_amount * u
+            wl = grab_l + rng.normal(0.0, 0.0012, size=3)
+            wr = grab_r + rng.normal(0.0, 0.0012, size=3)
         else:
-            u = 1.0
-            wrist = grab + np.array([0.02, lift_amount])
-            head_dy = lift_amount
-        _apply_right_arm(pose, wrist)
-        _shift_head(pose, head_dy)
-        pose += rng.normal(0.0, 0.005, size=pose.shape)
-        pose[L_SHOULDER] = rest[L_SHOULDER] + rng.normal(0.0, 0.003, size=2)
-        pose[R_SHOULDER] = rest[R_SHOULDER] + rng.normal(0.0, 0.003, size=2)
-        seq[i] = pose_norm_to_pixels(pose, scale_px, origin_px)
+            u = _ease(min(1.0, (i - pause_end) / max(lift_end - pause_end - 1, 1)))
+            # 양손이 귀를 잡고 바깥·위·카메라 쪽으로 벌리며 들어 올림
+            wl = grab_l + np.array([-0.07 * u, 0.10 * u, -0.12 * u])
+            wr = grab_r + np.array([0.07 * u, 0.10 * u, -0.12 * u])
+            amount = 0.55 * u
+        _place_arm_3d(pose, "left", wl)
+        _place_arm_3d(pose, "right", wr)
+        _scale_head_toward_camera(pose, amount)
+        pose += rng.normal(0.0, 0.0014, size=pose.shape)
+        seq[i] = cam.project(pose) * pixel_scale + np.asarray(pixel_shift)
     return seq
 
 
 def generate_idle_sequence(
-    n_frames: int = 45,
-    scale_px: float = 180.0,
-    origin_px: tuple[float, float] = (360.0, 240.0),
+    n_frames: int = 40,
     seed: int = 3,
 ) -> np.ndarray:
-    """팔을 몸통 옆에서 흔들기만 하고 머리에는 닿지 않는 정상 보행 유사 동작."""
     rng = np.random.default_rng(seed)
-    rest = canonical_pose_norm()
+    cam = HighAngleCamera.factory_ceiling()
+    rest = canonical_pose_3d()
     seq = np.zeros((n_frames, 17, 2), dtype=np.float64)
     for i in range(n_frames):
         pose = rest.copy()
-        phase = 2 * math.pi * i / 18.0
-        wrist = rest[R_WRIST] + np.array([0.06 * math.sin(phase), 0.10 * math.sin(phase)])
-        _apply_right_arm(pose, wrist)
-        pose += rng.normal(0.0, 0.005, size=pose.shape)
-        seq[i] = pose_norm_to_pixels(pose, scale_px, origin_px)
-    return seq
-
-
-def generate_rest_on_helmet_sequence(
-    n_frames: int = 50,
-    scale_px: float = 180.0,
-    origin_px: tuple[float, float] = (360.0, 240.0),
-    seed: int = 19,
-) -> np.ndarray:
-    """안전모에 손을 올리기만 하고 들어 올리지는 않음 → unknown_contact 기대."""
-    rng = np.random.default_rng(seed)
-    rest = canonical_pose_norm()
-    grab = np.array([0.14, -0.70])
-    seq = np.zeros((n_frames, 17, 2), dtype=np.float64)
-    raise_end = 12
-    for i in range(n_frames):
-        pose = rest.copy()
-        if i < raise_end:
-            u = _ease(i / max(raise_end - 1, 1))
-            wrist = _lerp(rest[R_WRIST], grab, u)
-        else:
-            wrist = grab + rng.normal(0.0, 0.005, size=2)
-        _apply_right_arm(pose, wrist)
-        pose += rng.normal(0.0, 0.004, size=pose.shape)
-        seq[i] = pose_norm_to_pixels(pose, scale_px, origin_px)
+        phase = 2 * math.pi * i / 16.0
+        wr = rest[R_WRIST] + np.array([0.03 * math.sin(phase), 0.04 * math.sin(phase), 0.0])
+        _place_arm_3d(pose, "right", wr)
+        pose += rng.normal(0.0, 0.0015, size=pose.shape)
+        seq[i] = cam.project(pose)
     return seq
 
 
 # ===========================================================================
-# 시퀀스 → 대시보드 JSON
+# 대시보드 / 자가 검증
 # ===========================================================================
 def sequence_payload(name: str, seq_pixels: np.ndarray, expected: ActionLabel) -> dict:
     result = classify_pose_sequence(seq_pixels)
     seq_norm, infos = normalize_keypoints(seq_pixels)
     frames = []
     for i, pose in enumerate(seq_norm):
-        bbox = compute_head_bbox_norm(pose)
-        head_top = estimate_head_top_norm(pose)
+        rg = compute_head_regions(pose)
+        x, y, w, h = rg.as_xywh()
         frames.append(
             {
                 "keypoints": pose.tolist(),
-                "bbox": [bbox.x_min, bbox.y_min, bbox.x_max, bbox.y_max],
-                "head_top": head_top.tolist(),
-                "neck": [0.0, 0.0],
+                "bbox": [rg.x_min, rg.y_min, rg.x_max, rg.y_max],
+                "center": rg.center.tolist(),
+                "center_r": rg.center_r,
+                "left_ear": rg.left_ear.tolist(),
+                "right_ear": rg.right_ear.tolist(),
+                "ear_r": rg.ear_r,
                 "scale_px": infos[i].scale,
                 "origin_px": infos[i].origin.tolist(),
                 "state": result.frame_labels[i] if i < len(result.frame_labels) else "idle",
@@ -1137,51 +1031,25 @@ def sequence_payload(name: str, seq_pixels: np.ndarray, expected: ActionLabel) -
 
 
 def build_demo_scenarios() -> list[dict]:
-    """체형·카메라 거리가 다른 여러 스케일로 동일 동작이 같은 라벨이 나오는지 검증."""
-    cameras = [
-        ("근거리·대형", 240.0, (420.0, 260.0)),
-        ("원거리·소형", 95.0, (180.0, 150.0)),
-        ("측면 이동 카메라", 160.0, (520.0, 310.0)),
+    """필수 2개(긁기/벗기) + 스케일 불변 + 비접촉."""
+    scratch = generate_scratch_sequence()
+    helmet = generate_helmet_off_sequence()
+    scratch_far = generate_scratch_sequence(pixel_scale=0.55, pixel_shift=(80.0, 40.0), seed=7)
+    helmet_near = generate_helmet_off_sequence(pixel_scale=1.45, pixel_shift=(-60.0, 30.0), seed=11)
+    return [
+        sequence_payload("하이 앵글 · 단순 머리 긁기", scratch, ActionLabel.SCRATCH),
+        sequence_payload("하이 앵글 · 안전모 벗기", helmet, ActionLabel.HELMET_OFF),
+        sequence_payload("원거리 축소 카메라 · 긁기", scratch_far, ActionLabel.SCRATCH),
+        sequence_payload("근거리 확대 카메라 · 벗기", helmet_near, ActionLabel.HELMET_OFF),
+        sequence_payload("팔만 흔들기 · 머리 비접촉", generate_idle_sequence(), ActionLabel.NO_CONTACT),
     ]
-    scenarios: list[dict] = []
-    for tag, scale, origin in cameras:
-        scenarios.append(
-            sequence_payload(
-                f"머리 긁기 · {tag} (scale={scale:.0f}px)",
-                generate_scratch_sequence(scale_px=scale, origin_px=origin, seed=7),
-                ActionLabel.SCRATCH,
-            )
-        )
-        scenarios.append(
-            sequence_payload(
-                f"안전모 벗기 · {tag} (scale={scale:.0f}px)",
-                generate_helmet_off_sequence(scale_px=scale, origin_px=origin, seed=11),
-                ActionLabel.HELMET_OFF,
-            )
-        )
-    scenarios.append(
-        sequence_payload(
-            "팔 흔들기 · 머리 비접촉",
-            generate_idle_sequence(),
-            ActionLabel.NO_CONTACT,
-        )
-    )
-    scenarios.append(
-        sequence_payload(
-            "안전모에 손만 올림 · 미상승",
-            generate_rest_on_helmet_sequence(),
-            ActionLabel.UNKNOWN_CONTACT,
-        )
-    )
-    return scenarios
 
 
 def render_all_figures(out_dir: Path) -> dict[str, str]:
-    """대시보드/README 용 matplotlib 이미지를 저장한다."""
     out_dir.mkdir(parents=True, exist_ok=True)
     paths: dict[str, str] = {}
 
-    fig, ax = plt.subplots(figsize=(7.2, 9.0), facecolor="#0b1220")
+    fig, ax = plt.subplots(figsize=(7.4, 8.4), facecolor="#0b1220")
     fig.patch.set_facecolor("#0b1220")
     plot_static_skeleton(ax=ax)
     fig.tight_layout()
@@ -1190,74 +1058,53 @@ def render_all_figures(out_dir: Path) -> dict[str, str]:
     plt.close(fig)
     paths["static_skeleton"] = str(p)
 
-    scratch = generate_scratch_sequence(scale_px=180, origin_px=(360, 240))
-    helmet = generate_helmet_off_sequence(scale_px=180, origin_px=(360, 240))
-    r_scratch = classify_pose_sequence(scratch)
-    r_helmet = classify_pose_sequence(helmet)
+    scratch = generate_scratch_sequence()
+    helmet = generate_helmet_off_sequence()
+    r_s = classify_pose_sequence(scratch)
+    r_h = classify_pose_sequence(helmet)
 
     p = out_dir / "scratch_strip.png"
-    fig = plot_sequence_strip(
-        scratch, [], [0, 12, 22, 34, 48], "단순 머리 긁기 시뮬레이션", r_scratch, p
-    )
+    fig = plot_sequence_strip(scratch, [0, 12, 24, 36, 50], "하이 앵글 · 머리 긁기", r_s, p)
     plt.close(fig)
     paths["scratch_strip"] = str(p)
 
     p = out_dir / "helmet_strip.png"
-    fig = plot_sequence_strip(
-        helmet, [], [0, 10, 18, 32, 48], "안전모 벗기 시뮬레이션", r_helmet, p
-    )
+    fig = plot_sequence_strip(helmet, [0, 11, 20, 36, 52], "하이 앵글 · 안전모 벗기", r_h, p)
     plt.close(fig)
     paths["helmet_strip"] = str(p)
 
     p = out_dir / "scratch_timeline.png"
-    fig = plot_feature_timeline(scratch, r_scratch, "긁기: 손목 Y 분산 ↑ / 머리 고정", p)
+    fig = plot_feature_timeline(scratch, "긁기: 한 손목이 중심원에 들어가 고주파 진동", p)
     plt.close(fig)
     paths["scratch_timeline"] = str(p)
 
     p = out_dir / "helmet_timeline.png"
-    fig = plot_feature_timeline(helmet, r_helmet, "안전모: 일시정지 후 손목·머리 동시 상승", p)
+    fig = plot_feature_timeline(helmet, "벗기: 양손목 거리 증가 + 귀 간격 팽창(카메라 접근)", p)
     plt.close(fig)
     paths["helmet_timeline"] = str(p)
-
     return paths
 
 
 def run_self_test(verbose: bool = True) -> bool:
-    """가짜 데이터로 분류기가 스케일 불변인지 검증한다."""
-    print("\n[알고리즘 개요]")
     print(
         """
-  좌표 정규화
-      neck = (L_shoulder + R_shoulder) / 2
-      scale = ||L_shoulder − R_shoulder||     # 어깨너비 = 1.0
-      p̂ = (p − neck) / scale
+[하이 앵글 알고리즘 개요]
+  카메라   : 천장/벽면 상단, 대각선 하향 (하향각 ≈ 45°)
+  정규화   : p̂ = (p − neck) / ||L_shoulder − R_shoulder||
+             ※ 목~골반 길이는 투시 단축 때문에 사용하지 않음
 
-  동적 머리 bbox (정규화 공간, 목 = 원점)
-      x ∈ [nose_x − 0.42, nose_x + 0.42]
-      y ∈ [−1.05, +0.18]
+  긁기     : 한 손목 ∈ 두상 중심원(r=0.24)
+             국소 반경 ≤ {:.2f}  이면서  σ_xy ≥ {:.3f},  영점교차 ≥ {}
 
-  긁기 (정상)
-      손목 ∈ bbox 유지,  std(wrist_y) ≥ {:.3f},
-      std(head_y) ≤ {:.3f},  진동횟수 ≥ {},  rise_head < {:.2f}
-
-  안전모 벗기 (예방 알림)
-      초반 일시정지 std(wrist_y)_early < {:.3f}
-      이후 rise_wrist, rise_head > {:.2f}  그리고  corr(wrist_y, head_y) > {:.2f}
-      (rise = Δy의 부호 반전: 이미지에서 y 감소 = 위쪽)
+  안전모   : 왼손목∈왼귀원 ∧ 오른손목∈오른귀원 → 일시정지
+             이후 양손목 거리 증가 > {:.2f}
+             또는 귀간격/어깨너비 상대증가 > {:.2f}  (렌즈 방향 팽창)
 """.format(
-            TAU_SCRATCH_STD,
-            TAU_HEAD_STILL_STD,
-            MIN_OSCILLATIONS,
-            TAU_RISE,
-            TAU_PAUSE_STD,
-            TAU_RISE,
-            TAU_CORR,
+            TAU_SCRATCH_RADIUS, TAU_SCRATCH_STD, MIN_OSCILLATIONS, TAU_SPREAD, TAU_SCALE_UP
         )
     )
-
-    scenarios = build_demo_scenarios()
     ok = True
-    for sc in scenarios:
+    for sc in build_demo_scenarios():
         result = ClassificationResult(
             label=ActionLabel(sc["result"]["label"]),
             confidence=sc["result"]["confidence"],
@@ -1276,7 +1123,6 @@ def run_self_test(verbose: bool = True) -> bool:
 
 
 def maybe_show(fig: plt.Figure | None = None) -> None:
-    """디스플레이가 있으면 창을 띄우고, 헤드리스면 건너뛴다."""
     if os.environ.get("DISPLAY") and matplotlib.get_backend().lower() != "agg":
         plt.show()
     elif fig is not None:
@@ -1284,23 +1130,22 @@ def maybe_show(fig: plt.Figure | None = None) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="2D 스켈레톤 안전모/긁기 동작 분류 프로토타입")
-    parser.add_argument("--out", default="outputs", help="시각화 저장 디렉터리")
-    parser.add_argument("--serve", action="store_true", help="대시보드 HTTP 서버 시작")
+    parser = argparse.ArgumentParser(description="하이 앵글 CCTV 안전모/긁기 분류 프로토타입")
+    parser.add_argument("--out", default="outputs")
+    parser.add_argument("--serve", action="store_true")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--skip-plots", action="store_true")
     args = parser.parse_args(argv)
 
-    out_dir = Path(args.out)
     passed = run_self_test(verbose=True)
+    out_dir = Path(args.out)
     if not args.skip_plots:
         paths = render_all_figures(out_dir)
         print("\n[시각화 저장]")
         for k, v in paths.items():
             print(f"  {k}: {v}")
-        # 조건 1: 정적 스켈레톤을 화면에 출력 시도
-        fig, ax = plt.subplots(figsize=(7.2, 9.0), facecolor="#0b1220")
+        fig, ax = plt.subplots(figsize=(7.4, 8.4), facecolor="#0b1220")
         fig.patch.set_facecolor("#0b1220")
         plot_static_skeleton(ax=ax)
         fig.tight_layout()
@@ -1310,7 +1155,6 @@ def main(argv: list[str] | None = None) -> int:
         from dashboard_server import serve
 
         serve(host=args.host, port=args.port, out_dir=out_dir)
-
     return 0 if passed else 1
 
 
