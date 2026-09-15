@@ -150,7 +150,7 @@
 
     const colors = {
       idle: "#8aa0c4",
-      center: "#3dd68c",
+      bbox: "#3dd68c",
       ear_grasp: "#ff8fab",
       scratch: "#3dd68c",
       helmet_off: "#ff5c5c",
@@ -220,20 +220,20 @@
       ctx.fillText("state: " + fr.state, 24, 36);
       ctx.fillStyle = "#8aa0c4";
       ctx.font = "13px sans-serif";
-      ctx.fillText("하이 앵글 · 목=(0,0) · 어깨너비=1.0  · 녹색=중심 / 분홍=귀", 24, 58);
+      ctx.fillText("하이 앵글 상체 · 목=(0,0) · 어깨너비=1.0  · 녹색=bbox / 분홍=귀", 24, 58);
     }
 
     function renderMetrics(sc) {
       const f = sc.result.features;
       const items = [
-        ["중심부 체류", f.center_frames],
+        ["bbox 체류", f.bbox_frames],
         ["양귀 파지", f.both_ear_frames],
         ["긁기 반경", f.scratch_radius.toFixed(3)],
         ["긁기 σ_xy", f.scratch_std.toFixed(4)],
         ["진동 횟수", f.n_oscillations],
-        ["파지 σ", f.pause_std.toFixed(4)],
-        ["손목 벌어짐", f.wrist_spread.toFixed(3)],
-        ["머리 팽창률", f.head_scale_up.toFixed(3)],
+        ["Δ|x_R−x_L|", f.dx_spread.toFixed(3)],
+        ["−Δȳ (상승)", f.co_rise_y.toFixed(3)],
+        ["방사형 팽창", f.radial_expand.toFixed(3)],
       ];
       document.getElementById("metrics").innerHTML = items.map(([k, v]) =>
         `<div class="metric"><span>${k}</span><b>${v}</b></div>`
