@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>안전모 탈착 예방 · Pose Action Classifier</title>
+  <style>
+    :root {
+      --bg: #080d18;
+      --panel: #121a2c;
+      --panel-2: #0e1626;
+      --line: #24344f;
+      --text: #e8eefc;
+      --muted: #8aa0c4;
+      --cyan: #5ee0ff;
+      --ok: #3dd68c;
+      --alert: #ff5c5c;
+      --amber: #f5c518;
+      --wrist: #ffd166;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: "Noto Sans KR", "WenQuanYi Micro Hei", "Apple SD Gothic Neo", sans-serif; }
+    body { min-height: 100vh; }
+    header {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+      padding: 22px 28px 10px; border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #10192c 0%, #080d18 100%);
+    }
+    .brand { display: flex; gap: 14px; align-items: center; }
+    .mark {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: #1a1404; border: 1px solid var(--amber); color: var(--amber);
+      display: grid; place-items: center; font-weight: 800; font-size: 20px;
+    }
+    h1 { margin: 0; font-size: 20px; letter-spacing: -0.02em; }
+    .sub { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill { font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: #0c1322; }
+    main { display: grid; grid-template-columns: 280px 1fr 340px; gap: 16px; padding: 16px 20px 28px; }
+    @media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+    h2 { margin: 0 0 10px; font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+    select, button {
+      width: 100%; border-radius: 10px; border: 1px solid var(--line); background: #0c1322; color: var(--text);
+      padding: 10px 12px; font-size: 14px;
+    }
+    button.primary { background: #12383f; border-color: #2a6b76; color: var(--cyan); font-weight: 700; cursor: pointer; }
+    button.primary:hover { background: #164650; }
+    .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    input[type="range"] { width: 100%; }
+    canvas { width: 100%; height: auto; background: #0b1220; border-radius: 12px; border: 1px solid var(--line); display: block; }
+    .result {
+      border-radius: 12px; padding: 14px 16px; border: 1px solid var(--line); margin-bottom: 12px;
+    }
+    .result.scratch { background: #0d2418; border-color: #1f6b45; }
+    .result.helmet_off { background: #2a1010; border-color: #7a2a2a; }
+    .result.no_contact, .result.unknown_contact { background: #1a1608; border-color: #6a5a1a; }
+    .result .k { font-size: 12px; color: var(--muted); }
+    .result .v { font-size: 22px; font-weight: 800; margin: 4px 0 8px; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .metric { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+    .metric b { display: block; font-size: 15px; color: var(--cyan); }
+    .metric span { color: var(--muted); font-size: 11px; }
+    .notes { font-size: 12.5px; line-height: 1.55; color: #c9d6f0; max-height: 280px; overflow: auto; }
+    .notes li { margin: 0 0 8px; }
+    .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 20px 24px; }
+    @media (max-width: 900px) { .gallery { grid-template-columns: 1fr; } }
+    .gallery img { width: 100%; border-radius: 12px; border: 1px solid var(--line); background: #0b1220; }
+    .ok { color: var(--ok); } .bad { color: var(--alert); }
+    footer { color: var(--muted); font-size: 12px; padding: 8px 24px 24px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="mark">!</div>
+      <div>
+        <h1>공장 작업자 안전모 탈착 예방 알림</h1>
+        <p class="sub">YOLOv8-Pose / MediaPipe 2D 스켈레톤 · 어깨너비 정규화 · 동적 머리 Bounding Box</p>
+      </div>
+    </div>
+    <div class="pills">
+      <span class="pill">절대 픽셀 좌표 미사용</span>
+      <span class="pill">Shoulder Width = 1.0</span>
+      <span class="pill">30 fps 시뮬레이션</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>시나리오</h2>
+      <select id="scenario"></select>
+      <div class="controls">
+        <button class="primary" id="play" type="button">재생</button>
+        <button id="pause" type="button">일시정지</button>
+      </div>
+      <label class="sub">프레임 <span id="frameNum">0</span></label>
+      <input id="scrub" type="range" min="0" max="59" value="0" />
+      <p class="sub" id="expected" style="margin-top:12px"></p>
+      <p class="sub" id="match"></p>
+    </section>
+
+    <section class="card">
+      <h2>정규화 스켈레톤 재생</h2>
+      <canvas id="stage" width="720" height="860"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>분류 결과</h2>
+      <div class="result" id="resultBox">
+        <div class="k">판정</div>
+        <div class="v" id="label">불러오는 중…</div>
+        <div class="k">신뢰도 <span id="conf"></span></div>
+      </div>
+      <div class="metrics" id="metrics"></div>
+      <h2 style="margin-top:16px">수식 · 판단 근거</h2>
+      <ul class="notes" id="notes"></ul>
+    </section>
+  </main>
+
+  <section class="gallery">
+    <div class="card">
+      <h2>정적 스켈레톤 모델</h2>
+      <img src="/outputs/static_skeleton.png" alt="정적 상체 스켈레톤" />
+    </div>
+    <div class="card">
+      <h2>긁기 궤적 · 분산</h2>
+      <img src="/outputs/scratch_timeline.png" alt="머리 긁기 Y 궤적" />
+    </div>
+    <div class="card">
+      <h2>안전모 벗기 프레임 스트립</h2>
+      <img src="/outputs/helmet_strip.png" alt="안전모 벗기 시퀀스" />
+    </div>
+    <div class="card">
+      <h2>안전모 벗기 궤적 · 동시 상승</h2>
+      <img src="/outputs/helmet_timeline.png" alt="안전모 벗기 Y 궤적" />
+    </div>
+  </section>
+
+  <footer>
+    머리 Bounding Box 는 목 원점 기준 어깨너비 비례로 매 프레임 재계산됩니다. 카메라 거리·체형이 달라도 같은 동작은 같은 라벨로 분류되어야 합니다.
+  </footer>
+
+  <script>
+    const canvas = document.getElementById("stage");
+    const ctx = canvas.getContext("2d");
+    const sel = document.getElementById("scenario");
+    const scrub = document.getElementById("scrub");
+    let scenarios = [];
+    let current = null;
+    let frame = 0;
+    let playing = true;
+    let timer = null;
+
+    const colors = {
+      idle: "#8aa0c4",
+      contact: "#f5c518",
+      scratch: "#3dd68c",
+      helmet_off: "#ff5c5c",
+    };
+
+    function draw(sc, i) {
+      const fr = sc.frames[i];
+      const k = fr.keypoints;
+      ctx.fillStyle = "#0b1220";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const sx = canvas.width / 2;
+      const sy = 210;
+      const s = 210;
+      const X = (x) => sx + x * s;
+      const Y = (y) => sy + y * s;
+
+      const [x0, y0, x1, y1] = fr.bbox;
+      ctx.fillStyle = "rgba(245,197,24,0.12)";
+      ctx.strokeStyle = "#f5c518";
+      ctx.setLineDash([6, 4]);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.rect(X(x0), Y(y0), X(x1) - X(x0), Y(y1) - Y(y0));
+      ctx.fill();
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = "#5ee0ff";
+      ctx.lineWidth = 3.2;
+      ctx.lineCap = "round";
+      for (const [a, b] of sc.bones) {
+        ctx.beginPath();
+        ctx.moveTo(X(k[a][0]), Y(k[a][1]));
+        ctx.lineTo(X(k[b][0]), Y(k[b][1]));
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.moveTo(X(k[5][0]), Y(k[5][1]));
+      ctx.lineTo(X(0), Y(0));
+      ctx.lineTo(X(k[6][0]), Y(k[6][1]));
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(X(0), Y(0));
+      ctx.lineTo(X(k[0][0]), Y(k[0][1]));
+      ctx.stroke();
+
+      for (let p = 0; p < k.length; p++) {
+        ctx.fillStyle = (p === 9 || p === 10) ? "#ffd166" : "#d7ecff";
+        ctx.beginPath();
+        ctx.arc(X(k[p][0]), Y(k[p][1]), 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = "#7cffb2";
+      ctx.beginPath(); ctx.arc(X(0), Y(0), 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#f5c518";
+      ctx.beginPath();
+      ctx.moveTo(X(fr.head_top[0]), Y(fr.head_top[1]) - 7);
+      ctx.lineTo(X(fr.head_top[0]) - 6, Y(fr.head_top[1]) + 5);
+      ctx.lineTo(X(fr.head_top[0]) + 6, Y(fr.head_top[1]) + 5);
+      ctx.closePath(); ctx.fill();
+
+      const st = fr.state;
+      ctx.fillStyle = colors[st] || "#8aa0c4";
+      ctx.font = "600 18px sans-serif";
+      ctx.fillText("state: " + st, 24, 36);
+      ctx.fillStyle = "#8aa0c4";
+      ctx.font = "13px sans-serif";
+      ctx.fillText("정규화 공간 · 목=(0,0) · 어깨너비=1.0", 24, 58);
+    }
+
+    function renderMetrics(sc) {
+      const f = sc.result.features;
+      const items = [
+        ["체류 프레임", f.contact_frames],
+        ["손목 Y std", f.wrist_y_std.toFixed(4)],
+        ["초반 손목 std", f.wrist_y_std_early.toFixed(4)],
+        ["머리 Y std", f.head_y_std.toFixed(4)],
+        ["진동 횟수", f.n_oscillations],
+        ["손목 상승량", f.rise_wrist.toFixed(3)],
+        ["머리 상승량", f.rise_head.toFixed(3)],
+        ["피어슨 상관", f.corr_wrist_head.toFixed(3)],
+      ];
+      document.getElementById("metrics").innerHTML = items.map(([k, v]) =>
+        `<div class="metric"><span>${k}</span><b>${v}</b></div>`
+      ).join("");
+      document.getElementById("notes").innerHTML = sc.result.explanation.map(t => `<li>${t}</li>`).join("");
+      const box = document.getElementById("resultBox");
+      box.className = "result " + sc.result.label;
+      document.getElementById("label").textContent = sc.result.label_ko;
+      document.getElementById("conf").textContent = sc.result.confidence.toFixed(2);
+      document.getElementById("expected").textContent = "기대 라벨: " + sc.expected_ko;
+      const ok = sc.match;
+      document.getElementById("match").innerHTML = ok
+        ? '<span class="ok">시뮬레이션 기대값과 일치</span>'
+        : '<span class="bad">불일치 — 알고리즘을 점검하세요</span>';
+    }
+
+    function load(idx) {
+      current = scenarios[idx];
+      frame = 0;
+      scrub.max = current.n_frames - 1;
+      scrub.value = 0;
+      document.getElementById("frameNum").textContent = "0";
+      renderMetrics(current);
+      draw(current, 0);
+    }
+
+    function tick() {
+      if (!playing || !current) return;
+      frame = (frame + 1) % current.n_frames;
+      scrub.value = frame;
+      document.getElementById("frameNum").textContent = String(frame);
+      draw(current, frame);
+    }
+
+    document.getElementById("play").onclick = () => { playing = true; };
+    document.getElementById("pause").onclick = () => { playing = false; };
+    scrub.oninput = () => {
+      playing = false;
+      frame = Number(scrub.value);
+      document.getElementById("frameNum").textContent = String(frame);
+      if (current) draw(current, frame);
+    };
+    sel.onchange = () => load(Number(sel.value));
+
+    fetch("/api/scenarios").then(r => r.json()).then(data => {
+      scenarios = data;
+      sel.innerHTML = data.map((s, i) => `<option value="${i}">${s.name}</option>`).join("");
+      load(0);
+      timer = setInterval(tick, 70);
+    });
+  </script>
+</body>
+</html>
