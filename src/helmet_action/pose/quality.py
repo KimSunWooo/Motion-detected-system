@@ -8,7 +8,7 @@ import numpy as np
 
 from helmet_action.config import load_config
 from helmet_action.pose.confidence import interpolation_max_gap, mask_invalid
-from helmet_action.pose.constants import HEAD_IDX, L_WRIST, R_WRIST, SHOULDER_IDX, WRIST_IDX
+from helmet_action.pose.constants import HEAD_IDX, L_EAR, L_WRIST, R_EAR, R_WRIST, SHOULDER_IDX, WRIST_IDX
 from helmet_action.pose.types import DecisionStatus
 
 
@@ -62,9 +62,13 @@ class PoseQualityScore:
     mean_confidence: float
     longest_missing_streak: int
     longest_wrist_streak: int
+    longest_ear_streak: int
+    both_wrist_streak: int
     buffer_completeness: float
     interpolation_ratio: float
     decision_status: str
+    wrist_quality: float = 1.0
+    ear_quality: float = 1.0
     notes: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -74,9 +78,13 @@ class PoseQualityScore:
             "mean_confidence": float(self.mean_confidence),
             "longest_missing_streak": int(self.longest_missing_streak),
             "longest_wrist_streak": int(self.longest_wrist_streak),
+            "longest_ear_streak": int(self.longest_ear_streak),
+            "both_wrist_streak": int(self.both_wrist_streak),
             "buffer_completeness": float(self.buffer_completeness),
             "interpolation_ratio": float(self.interpolation_ratio),
             "decision_status": self.decision_status,
+            "wrist_quality": float(self.wrist_quality),
+            "ear_quality": float(self.ear_quality),
             "notes": list(self.notes),
         }
 
@@ -100,15 +108,43 @@ def compute_pose_quality_score(
     req_ok = (conf[:, required] >= low).all(axis=1) if required else np.ones(seq.shape[0], dtype=bool)
     wrist_missing = (conf[:, list(WRIST_IDX)] < low).any(axis=1)
     both_wrists_missing = (conf[:, list(WRIST_IDX)] < low).all(axis=1)
+    ear_missing = (conf[:, [L_EAR, R_EAR]] < low).any(axis=1)
+    both_ears_missing = (conf[:, [L_EAR, R_EAR]] < low).all(axis=1)
     required_missing = ~req_ok
 
     streak = longest_missing_streak(required_missing)
     wrist_streak = longest_missing_streak(wrist_missing)
     both_wrist_streak = longest_missing_streak(both_wrists_missing)
+    ear_streak = longest_missing_streak(ear_missing)
+    both_ear_streak = longest_missing_streak(both_ears_missing)
     availability = float(req_ok.mean()) if req_ok.size else 0.0
     mean_conf = float(np.nanmean(conf[:, required])) if required else float(np.nanmean(conf))
     if not np.isfinite(mean_conf):
         mean_conf = 0.0
+    wrist_conf_mean = float(np.nanmean(conf[:, list(WRIST_IDX)]))
+    ear_conf_mean = float(np.nanmean(conf[:, [L_EAR, R_EAR]]))
+    if not np.isfinite(wrist_conf_mean):
+        wrist_conf_mean = 0.0
+    if not np.isfinite(ear_conf_mean):
+        ear_conf_mean = 0.0
+    wrist_quality = float(
+        np.clip(
+            0.55 * wrist_conf_mean
+            + 0.25 * (1.0 - min(1.0, wrist_streak / 20.0))
+            + 0.20 * (1.0 - min(1.0, both_wrist_streak / 15.0)),
+            0.0,
+            1.0,
+        )
+    )
+    ear_quality = float(
+        np.clip(
+            0.50 * ear_conf_mean
+            + 0.25 * (1.0 - min(1.0, ear_streak / 20.0))
+            + 0.25 * (1.0 - min(1.0, both_ear_streak / 20.0)),
+            0.0,
+            1.0,
+        )
+    )
 
     if interpolation_ratio is None and repaired is not None:
         masked = mask_invalid(seq, confidence)
@@ -139,15 +175,27 @@ def compute_pose_quality_score(
         notes.append(f"buffer completeness {completeness:.2f}")
     if interp > 0.25:
         notes.append(f"interpolation filled {interp:.0%} of joints")
+    if ear_streak >= 20:
+        notes.append(f"ear missing streak {ear_streak}")
+    if both_ear_streak >= 20:
+        notes.append(f"both ears missing {both_ear_streak} frames consecutively")
+
+    score = float(np.clip(score - 0.08 * min(1.0, both_ear_streak / 30.0), 0.0, 1.0))
 
     if score < 0.32 or availability < 0.35 or both_wrist_streak >= 15:
         status = DecisionStatus.INSUFFICIENT_POSE.value
     elif score < 0.52 or wrist_streak >= 8 or both_wrist_streak > max_gap:
         status = DecisionStatus.UNKNOWN.value
-    elif score < 0.70 or wrist_streak > max_gap:
+    elif score < 0.70 or wrist_streak > max_gap or both_ear_streak >= 20:
         status = DecisionStatus.LOW_CONFIDENCE.value
     else:
         status = DecisionStatus.VALID.value
+
+    # Long ear occlusion must not look "VALID" — SAFE confirmation is refused downstream.
+    if both_ear_streak >= 30 or ear_streak >= 30:
+        if status == DecisionStatus.VALID.value:
+            status = DecisionStatus.LOW_CONFIDENCE.value
+        notes.append("long ear occlusion: insufficient to confirm a SAFE class")
 
     return PoseQualityScore(
         score=score,
@@ -155,9 +203,13 @@ def compute_pose_quality_score(
         mean_confidence=mean_conf,
         longest_missing_streak=streak,
         longest_wrist_streak=wrist_streak,
+        longest_ear_streak=int(ear_streak),
+        both_wrist_streak=int(both_wrist_streak),
         buffer_completeness=completeness,
         interpolation_ratio=interp,
         decision_status=status,
+        wrist_quality=wrist_quality,
+        ear_quality=ear_quality,
         notes=notes,
     )
 
@@ -172,3 +224,20 @@ def phase_confidence(saw_approach: bool, saw_grasp: bool, saw_lift: bool, ordere
     if saw_approach:
         return 0.25
     return 0.08
+
+
+def phase_score_from_confidences(
+    grasp_confidence: float,
+    lift_confidence: float,
+    separation_confidence: float,
+    ordered: bool,
+) -> float:
+    """Continuous phase evidence in [0, 1]. One weak boolean does not zero the score."""
+    score = (
+        0.38 * float(np.clip(grasp_confidence, 0.0, 1.0))
+        + 0.40 * float(np.clip(lift_confidence, 0.0, 1.0))
+        + 0.22 * float(np.clip(separation_confidence, 0.0, 1.0))
+    )
+    if ordered:
+        score = min(1.0, score + 0.06)
+    return float(np.clip(score, 0.0, 1.0))

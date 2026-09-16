@@ -1,0 +1,5 @@
+subject_id,video_file,label,camera_pitch,camera_distance,dominant_hand,speed,occlusion,notes
+P001,P001/helmet_remove/take_01.mp4,HELMET_REMOVE,45,medium,right,normal,none,lateral lift
+P001,P001/helmet_adjust/take_01.mp4,HELMET_ADJUST,40,near,left,slow,partial,
+P002,P002/head_scratch/take_01.mp4,HEAD_SCRATCH,35,far,right,fast,none,
+P003,P003/head_touch/take_01.mp4,HEAD_TOUCH,50,medium,both,normal,ear,example row — replace during capture

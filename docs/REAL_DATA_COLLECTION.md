@@ -17,39 +17,39 @@ Stage 4 of this repo is **ready and waiting for data**. Do not commit raw video.
 - Use anonymized subject IDs only: `P001`, `P002`, … never names.
 - Folder names like `person_01` are converted to `P001` by the extractor.
 
-`data/real/raw/` and `data/real/processed/` are gitignored except `.gitkeep`.
+`data/real/raw/` and `data/real/processed/` are gitignored except `.gitkeep`
+and the empty capture folders.
 
-## Recommended capture
+## Pilot protocol (first 180 clips)
 
-People: **3–5 or more** (`P001` …).
+This data is **not used for training**. The only goal of the first pilot is
+**zero-shot measurement of the synthetic-trained model**.
 
-Camera: high-angle CCTV-like, pitch about **30–70°**.
-
-Distance: `near`, `medium`, `far` (separate folders if you can).
-
-Actions (folder names under each person):
-
-| Folder | Meaning |
+| | Count |
 |---|---|
-| `helmet_remove` | take the helmet / hard-hat off |
-| `helmet_put_on` | put it on |
-| `helmet_adjust` | tug / straighten, do not remove |
-| `head_scratch` | one-hand scratch |
-| `head_touch` | rest a hand on the head |
-| `wipe_sweat` | brow wipe |
-| `raise_arms` | stretch / raise without grasping a helmet |
-| `phone_near_head` | phone to ear |
+| Subjects | 3 (`P001`, `P002`, `P003`) |
+| Actions per subject | HELMET_REMOVE 15, HELMET_ADJUST 15, HEAD_SCRATCH 15, HEAD_TOUCH 15 |
+| Total clips | 3 × 4 × 15 = **180** |
 
-Each action: **10–20 takes per person**.
+Do not expand the label set for this pilot. Additional actions
+(HELMET_PUT_ON, WIPE_SWEAT, RAISE_ARMS, PHONE_NEAR_HEAD) can wait until
+after the 180-clip freeze.
 
-Variations (spread them across takes):
+## Capture conditions
 
-- fast / slow
-- left-hand first / right-hand first / both hands
-- one hand then two
-- frontal / side
-- head turned
-- partial occlusion (a pole, another worker, a sleeve)
+Camera: high-angle CCTV-like, pitch **30–70°**.
+
+Distance (spread across takes): `near` / `medium` / `far`.
+
+Speed (spread across takes): `slow` / `normal` / `fast`.
+
+Handedness: left- and right-dominant variation.
+
+HELMET_REMOVE takes should include, if possible:
+
+- brim grasp
+- lateral lift (left / right)
+- one-hand then two-hand
 
 A real safety helmet or a similar cap is fine. Capture only in an environment
 that does not put the wearer at risk.
@@ -60,14 +60,12 @@ that does not put the wearer at risk.
 data/real/raw/
   P001/
     helmet_remove/
-    helmet_put_on/
     helmet_adjust/
     head_scratch/
     head_touch/
-    wipe_sweat/
-    raise_arms/
-    phone_near_head/
   P002/
+    ...
+  P003/
     ...
 ```
 
@@ -76,6 +74,26 @@ Optional camera folder between subject and action:
 ```
 data/real/raw/P001/near/helmet_remove/take_01.mp4
 ```
+
+## Hand-written manifest
+
+Copy `docs/real_dataset_manifest_template.csv` and fill one row per clip
+while shooting (do not rely on memory later):
+
+```
+subject_id,video_file,label,camera_pitch,camera_distance,dominant_hand,speed,occlusion,notes
+```
+
+Allowed `label` values:
+
+- HELMET_REMOVE
+- HELMET_PUT_ON
+- HELMET_ADJUST
+- HEAD_SCRATCH
+- HEAD_TOUCH
+- WIPE_SWEAT
+- RAISE_ARMS
+- PHONE_NEAR_HEAD
 
 ## Extract / validate / zero-shot
 
@@ -96,8 +114,27 @@ python scripts/evaluate_real_pose.py \
 Zero-shot means the **synthetic-trained** sklearn model is frozen.
 Real sequences are never used to fit weights in this stage.
 
+When no videos are present the evaluator prints `REAL DATASET: NOT AVAILABLE`
+and does **not** write dummy numeric metrics.
+
 Subject IDs are stored on every sequence so a later leave-one-subject
 fine-tune cannot leak the same person into both splits.
+
+## Zero-shot report schema (once 180 clips exist)
+
+Overall: Accuracy, Macro F1
+
+HELMET_REMOVE: Precision, Recall, F1, FNR, FPR
+
+Decision: ALERT / WATCH / UNKNOWN / SAFE rates
+
+Safety: False Safe Rate, False Alarm Rate
+
+Pose: PoseQuality mean/std, missing wrist ratio, missing ear ratio
+
+Per subject: P001, P002, P003
+
+Per condition: near / medium / far and slow / normal / fast
 
 ## What this will not tell you
 

@@ -62,6 +62,16 @@ class HeadRegions:
             return False
         return float(np.linalg.norm(p - self.right_ear)) <= self.ear_r
 
+    def in_brim(self, p: np.ndarray) -> bool:
+        """Front/top of the helmet: near head center, not required to sit on an ear."""
+        if not np.isfinite(p).all():
+            return False
+        if self.in_center(p):
+            return True
+        # Slightly in front of the crown, still inside the head bbox.
+        brim = self.center + np.array([0.0, 0.04])
+        return float(np.linalg.norm(p - brim)) <= self.center_r * 1.15
+
 
 def compute_neck(kpts: np.ndarray) -> np.ndarray:
     return 0.5 * (kpts[..., L_SHOULDER, :] + kpts[..., R_SHOULDER, :])

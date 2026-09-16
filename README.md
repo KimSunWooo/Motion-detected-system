@@ -51,7 +51,8 @@ Helmet State는 기본적으로 **UNKNOWN** 입니다. 가짜 착용 검출을 �
 * 하이 앵글 핀홀 카메라 + canonical 3D pose + synthetic scratch / helmet-off / idle
 * Domain-randomized synthetic dataset (14 시나리오)
 * Engineered temporal feature + HistGradientBoosting 분류기
-* Rule + ML + Temporal State Machine 하이브리드 판정
+* Rule + ML + Phase State Machine 하이브리드 판정 (V1 hard-gate 유지, V2 evidence fusion)
+* RiskLevel SAFE / WATCH / ALERT / UNKNOWN (UNKNOWN은 SAFE가 아님)
 * Track ID별 pose buffer, keypoint 신뢰도 / 결측 처리
 * Flask 대시보드 (기존 호환)
 * Ultralytics Pose 영상 입력 (optional)
@@ -85,7 +86,8 @@ Video / Webcam / RTSP / Synthetic
         └─► ActionPhaseMachine            IDLE→APPROACH→GRASP→LIFT→CONFIRMED
         │
         ▼
- Hybrid decision + hysteresis
+ Hybrid V1 (hard AND-gate) or Hybrid V2 (evidence fusion) + hysteresis
+        │  RiskLevel: SAFE | WATCH | ALERT | UNKNOWN  (UNKNOWN ≠ SAFE)
         │
         ├─► Action event (REMOVE_INTENT / REMOVE_CONFIRMED / …)
         └─► HelmetStateMachine  +  HelmetPresenceDetector (지금은 Dummy=UNKNOWN)
@@ -287,6 +289,7 @@ PYTHONPATH=src python scripts/compare_v1_v2.py --samples 10000 --seeds 42 101 20
 PYTHONPATH=src python scripts/analyze_remove_c.py --model models/action_classifier.joblib
 PYTHONPATH=src python scripts/hard_occlusion_stress.py --model models/action_classifier.joblib
 PYTHONPATH=src python scripts/eval_temporal_ordering.py
+PYTHONPATH=src python scripts/eval_hybrid_arbitration.py --model models/action_classifier.joblib
 PYTHONPATH=src python scripts/evaluate_real_pose.py --data data/real/processed --model models/action_classifier.joblib
 ```
 

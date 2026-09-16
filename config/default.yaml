@@ -53,6 +53,18 @@ decision:
   min_buffer_completeness: 0.45
   insufficient_min_wrist_ratio: 0.50
   insufficient_min_shoulder_ratio: 0.70
+  hybrid_version: v1
+  pose_critical: 0.32
+  ear_refuse_safe_streak: 20
+  fusion:
+    # Frozen after validation-only search. Do not retune on test/OOD.
+    w_ml: 0.40
+    w_rule: 0.20
+    w_phase: 0.30
+    w_motion: 0.10
+    alert_threshold: 0.62
+    watch_threshold: 0.48
+    min_windows_for_alert: 2
 
 state:
   approach_radial_tau: -0.015

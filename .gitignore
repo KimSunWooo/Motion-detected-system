@@ -22,6 +22,8 @@ data/synthetic/*.npz
 data/synthetic/metadata.json
 data/real/raw/**
 !data/real/raw/.gitkeep
+!data/real/raw/**/
+!data/real/raw/**/.gitkeep
 data/real/processed/**
 !data/real/processed/.gitkeep
 src/helmet_action.egg-info/

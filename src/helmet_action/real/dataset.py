@@ -36,6 +36,9 @@ LABEL_ALIASES = {
 
 VIDEO_SUFFIXES = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"}
 
+PILOT_ACTIONS = ("helmet_remove", "helmet_adjust", "head_scratch", "head_touch")
+PILOT_SUBJECTS = ("P001", "P002", "P003")
+
 
 def anonymize_subject(raw: str) -> str:
     text = str(raw).strip()
@@ -280,3 +283,34 @@ def load_processed_dataset(processed_root: Path) -> list[RealSequence]:
         except Exception as exc:
             errors.append({"path": str(path), "error": str(exc)})
     return out
+
+
+def smoke_raw_capture_layout(raw_root: Path) -> dict[str, Any]:
+    """Empty-directory / invalid-file handling. Never invents dummy metrics."""
+    raw_root = Path(raw_root)
+    missing_dirs = []
+    present_dirs = []
+    invalid_files = []
+    videos = list(iter_raw_videos(raw_root)) if raw_root.exists() else []
+    for subject in PILOT_SUBJECTS:
+        for action in PILOT_ACTIONS:
+            folder = raw_root / subject / action
+            if folder.is_dir():
+                present_dirs.append(str(folder.relative_to(raw_root)))
+                for path in folder.iterdir():
+                    if path.is_file() and path.suffix.lower() not in VIDEO_SUFFIXES and path.name != ".gitkeep":
+                        invalid_files.append(str(path.relative_to(raw_root)))
+            else:
+                missing_dirs.append(str(Path(subject) / action))
+    return {
+        "raw_root": str(raw_root),
+        "exists": raw_root.exists(),
+        "n_videos": len(videos),
+        "videos": [str(p) for p in videos],
+        "present_action_dirs": present_dirs,
+        "missing_action_dirs": missing_dirs,
+        "invalid_non_video_files": invalid_files,
+        "dataset_present": len(videos) > 0,
+        "status": "READY_FOR_CAPTURE" if not videos else "VIDEOS_PRESENT",
+        "note": "No dummy real metrics. Empty dirs are valid before the 180-clip pilot.",
+    }

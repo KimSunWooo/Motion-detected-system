@@ -27,9 +27,17 @@ class ActionClass(str, Enum):
 class RemovalPhase(str, Enum):
     IDLE = "IDLE"
     HAND_APPROACH = "HAND_APPROACH"
+    PARTIAL_GRASP = "PARTIAL_GRASP"
     HELMET_GRASP = "HELMET_GRASP"
     LIFT_OR_SEPARATE = "LIFT_OR_SEPARATE"
     REMOVAL_CONFIRMED = "REMOVAL_CONFIRMED"
+
+
+class RiskLevel(str, Enum):
+    SAFE = "SAFE"
+    WATCH = "WATCH"
+    ALERT = "ALERT"
+    UNKNOWN = "UNKNOWN"
 
 
 LABEL_KO = {
