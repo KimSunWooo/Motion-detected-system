@@ -1,0 +1,134 @@
+# Helmet-action detection defaults. All geometry thresholds are in
+# shoulder-width units (or dimensionless). Never use absolute pixels.
+
+pose:
+  model_path: ${POSE_MODEL_PATH:-yolo11n-pose.pt}
+  confidence_threshold: 0.35
+  keypoint_low_confidence: 0.25
+  keypoint_missing: 0.10
+  required_keypoints: [5, 6, 9, 10, 0]  # shoulders, wrists, nose
+  short_gap_frames: 3
+  long_gap_frames: 8
+
+window:
+  seconds: 2.0
+  target_fps: 20
+  min_frames: 12
+  max_frames: 80
+
+geometry:
+  head_center_offset_y: -0.30
+  head_half_width: 0.52
+  head_half_height: 0.42
+  center_radius: 0.24
+  ear_radius: 0.24
+  shoulder_width_eps: 1.0e-6
+
+rules:
+  min_center_frames: 8
+  min_ear_frames: 8
+  pause_frames: 8
+  scratch:
+    radius: 0.11
+    std: 0.028
+    min_oscillations: 4
+  helmet_remove:
+    pause_std: 0.016
+    dx_spread: 0.08
+    co_rise_y: 0.05
+    radial: 0.08
+    scale_up: 0.07
+
+decision:
+  alert_enter: 0.75
+  alert_exit: 0.45
+  confirm_window: 5
+  confirm_hits: 3
+  ml_remove_threshold: 0.55
+  ml_high_threshold: 0.75
+  insufficient_min_wrist_ratio: 0.50
+  insufficient_min_shoulder_ratio: 0.70
+
+state:
+  approach_radial_tau: -0.015
+  grasp_std: 0.020
+  grasp_min_frames: 6
+  lift_spread_tau: 0.06
+  lift_rise_tau: 0.04
+  lift_radial_tau: 0.06
+
+synthetic:
+  generator_version: "1.0.0"
+  n_frames: 60
+  fps: 20
+  camera:
+    height: [3.8, 6.4]
+    distance: [2.6, 4.4]
+    pitch_deg: [32.0, 52.0]
+    yaw_deg: [-12.0, 12.0]
+    focal: [900.0, 1400.0]
+  body:
+    height_scale: [0.92, 1.10]
+    shoulder_width_scale: [0.88, 1.14]
+    arm_length_scale: [0.90, 1.12]
+    forearm_scale: [0.90, 1.12]
+    head_size_scale: [0.90, 1.12]
+  action:
+    speed: [0.80, 1.25]
+    pause: [0.08, 0.22]
+    lift_height: [0.14, 0.30]
+    wrist_separation: [0.05, 0.14]
+    amplitude: [0.70, 1.20]
+  noise:
+    gaussian_sigma: 0.0016
+    dropout_prob: 0.02
+    low_conf_prob: 0.04
+    occlusion_prob: 0.03
+    jitter: 0.002
+    scale_jitter: 0.03
+    translation_jitter: 4.0
+    frame_drop_prob: 0.02
+  ood:
+    camera:
+      height: [3.2, 7.2]
+      distance: [2.0, 5.8]
+      pitch_deg: [18.0, 66.0]
+      yaw_deg: [-28.0, 28.0]
+      focal: [700.0, 1700.0]
+    body:
+      height_scale: [0.84, 1.18]
+      shoulder_width_scale: [0.78, 1.24]
+      arm_length_scale: [0.82, 1.22]
+      forearm_scale: [0.82, 1.22]
+      head_size_scale: [0.82, 1.22]
+    action:
+      speed: [0.50, 1.80]
+      pause: [0.04, 0.32]
+      lift_height: [0.10, 0.38]
+      wrist_separation: [0.03, 0.20]
+      amplitude: [0.55, 1.45]
+    noise:
+      gaussian_sigma: 0.0045
+      dropout_prob: 0.08
+      low_conf_prob: 0.10
+      occlusion_prob: 0.08
+      jitter: 0.006
+      scale_jitter: 0.08
+      translation_jitter: 12.0
+      frame_drop_prob: 0.06
+
+ml:
+  model_path: models/action_classifier.joblib
+  estimator: hist_gradient_boosting
+  max_iter: 250
+  max_depth: 6
+  learning_rate: 0.08
+  random_state: 17
+  classes:
+    - IDLE
+    - HEAD_SCRATCH
+    - HEAD_TOUCH
+    - HELMET_ADJUST
+    - HELMET_REMOVE
+    - HELMET_PUT_ON
+    - UNKNOWN

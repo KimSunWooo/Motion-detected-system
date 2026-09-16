@@ -5,3 +5,8 @@ venv/
 outputs/
 .DS_Store
 .pytest_cache/
+*.egg-info/
+.mypy_cache/
+data/synthetic/*.npz
+data/synthetic/metadata.json
+src/helmet_action.egg-info/

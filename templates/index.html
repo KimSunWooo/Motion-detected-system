@@ -105,11 +105,12 @@
     <section class="card">
       <h2>분류 결과</h2>
       <div class="result" id="resultBox">
-        <div class="k">판정</div>
+        <div class="k">최종 판정 (Rule + ML + Phase)</div>
         <div class="v" id="label">불러오는 중…</div>
         <div class="k">신뢰도 <span id="conf"></span></div>
       </div>
-      <div class="metrics" id="metrics"></div>
+      <div class="metrics" id="hybridMetrics"></div>
+      <div class="metrics" id="metrics" style="margin-top:8px"></div>
       <h2 style="margin-top:16px">수식 · 판단 근거</h2>
       <ul class="notes" id="notes"></ul>
     </section>
@@ -225,6 +226,19 @@
 
     function renderMetrics(sc) {
       const f = sc.result.features;
+      const hybrid = [
+        ["Synthetic", sc.synthetic_scenario || sc.expected],
+        ["Expected", sc.expected_label || sc.expected],
+        ["Rule", sc.rule_prediction],
+        ["ML", sc.ml_prediction || "untrained"],
+        ["Final", sc.final_prediction],
+        ["Phase", sc.state_machine_phase],
+        ["Helmet", sc.helmet_state],
+        ["Risk", Number(sc.risk).toFixed(2)],
+      ];
+      document.getElementById("hybridMetrics").innerHTML = hybrid.map(([k, v]) =>
+        `<div class="metric"><span>${k}</span><b>${v}</b></div>`
+      ).join("");
       const items = [
         ["bbox 체류", f.bbox_frames],
         ["양귀 파지", f.both_ear_frames],
@@ -238,14 +252,15 @@
       document.getElementById("metrics").innerHTML = items.map(([k, v]) =>
         `<div class="metric"><span>${k}</span><b>${v}</b></div>`
       ).join("");
-      document.getElementById("notes").innerHTML = sc.result.explanation.map(t => `<li>${t}</li>`).join("");
+      const notes = (sc.hybrid && sc.hybrid.explanation) ? sc.hybrid.explanation : sc.result.explanation;
+      document.getElementById("notes").innerHTML = notes.map(t => `<li>${t}</li>`).join("");
       const box = document.getElementById("resultBox");
       box.className = "result " + sc.result.label;
-      document.getElementById("label").textContent = sc.result.label_ko;
-      document.getElementById("conf").textContent = sc.result.confidence.toFixed(2);
-      document.getElementById("expected").textContent = "기대 라벨: " + sc.expected_ko;
+      document.getElementById("label").textContent = (sc.final_prediction || sc.result.label) + " · " + sc.result.label_ko;
+      document.getElementById("conf").textContent = Number(sc.confidence || sc.result.confidence).toFixed(2);
+      document.getElementById("expected").textContent = "기대 라벨: " + sc.expected_ko + " / scenario " + (sc.synthetic_scenario || "");
       document.getElementById("match").innerHTML = sc.match
-        ? '<span class="ok">시뮬레이션 기대값과 일치</span>'
+        ? '<span class="ok">Rule baseline이 시뮬레이션 기대값과 일치</span>'
         : '<span class="bad">불일치 — 알고리즘을 점검하세요</span>';
     }
 

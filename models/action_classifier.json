@@ -1,0 +1,14 @@
+{
+  "model": "models/action_classifier.joblib",
+  "train_n": 1280,
+  "val_acc_synthetic": 1.0,
+  "classes": [
+    "HEAD_SCRATCH",
+    "HEAD_TOUCH",
+    "HELMET_ADJUST",
+    "HELMET_PUT_ON",
+    "HELMET_REMOVE",
+    "IDLE",
+    "UNKNOWN"
+  ]
+}
