@@ -237,7 +237,7 @@ def extract_feature_dict(seq_norm: np.ndarray) -> dict[str, float]:
     stats["rule_dx_spread"] = float(base.dx_spread)
     stats["rule_co_rise_y"] = float(base.co_rise_y)
     stats["rule_radial_expand"] = float(base.radial_expand)
-    stats["rule_head_scale_up"] = float(base.wrist_spread)
+    stats["rule_head_scale_up"] = float(base.head_scale_up)
     stats["rule_wrist_spread"] = float(base.wrist_spread)
     return {k: (0.0 if not np.isfinite(v) else float(v)) for k, v in stats.items()}
 
