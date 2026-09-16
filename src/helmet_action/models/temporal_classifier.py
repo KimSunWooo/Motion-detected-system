@@ -7,11 +7,14 @@ from typing import Protocol
 import joblib
 import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import ExtraTreesClassifier, HistGradientBoostingClassifier, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 from helmet_action.config import load_config, repo_root
 from helmet_action.features.temporal_features import extract_feature_vector, feature_names
+from helmet_action.features.v2 import FEATURE_NAMES_V2, extract_feature_vector_v2
 from helmet_action.models.labels import ActionClass, ML_CLASSES
 from helmet_action.pose.confidence import prepare_sequence
 from helmet_action.pose.normalizer import normalize_keypoints
@@ -34,7 +37,7 @@ class TemporalActionModel(Protocol):
 
 def _estimator(name: str, cfg):
     seed = int(cfg.get("ml.random_state", 17))
-    if name == "random_forest":
+    if name in ("random_forest", "rf"):
         return RandomForestClassifier(
             n_estimators=int(cfg.get("ml.n_estimators", 250)),
             max_depth=int(cfg.get("ml.max_depth", 12)),
@@ -42,6 +45,30 @@ def _estimator(name: str, cfg):
             class_weight="balanced",
             random_state=seed,
             n_jobs=-1,
+        )
+    if name in ("extra_trees", "et"):
+        return ExtraTreesClassifier(
+            n_estimators=int(cfg.get("ml.n_estimators", 250)),
+            max_depth=int(cfg.get("ml.max_depth", 12)),
+            min_samples_leaf=2,
+            class_weight="balanced",
+            random_state=seed,
+            n_jobs=-1,
+        )
+    if name in ("logistic_regression", "logreg", "lr"):
+        return Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "clf",
+                    LogisticRegression(
+                        max_iter=int(cfg.get("ml.logreg_max_iter", 800)),
+                        class_weight="balanced",
+                        C=float(cfg.get("ml.logreg_C", 1.0)),
+                        random_state=seed,
+                    ),
+                ),
+            ]
         )
     return HistGradientBoostingClassifier(
         max_iter=int(cfg.get("ml.max_iter", 250)),
@@ -58,10 +85,13 @@ class SklearnActionClassifier:
     encoder: LabelEncoder
     feature_names: list[str]
     classes_: list[str]
+    feature_version: str = "v1"
 
     def vectorize(self, keypoints: np.ndarray, confidence: np.ndarray | None = None) -> np.ndarray:
         seq, _ = prepare_sequence(keypoints, confidence)
         seq_norm, _ = normalize_keypoints(seq)
+        if self.feature_version == "v2":
+            return extract_feature_vector_v2(seq_norm)
         return extract_feature_vector(seq_norm)
 
     def predict_proba(self, keypoints: np.ndarray, confidence: np.ndarray | None = None) -> dict[str, float]:
@@ -88,6 +118,7 @@ class SklearnActionClassifier:
                 "feature_names": self.feature_names,
                 "classes": self.classes_,
                 "kind": "sklearn_hgb_v1",
+                "feature_version": self.feature_version,
             },
             dest,
         )
@@ -103,6 +134,7 @@ class SklearnActionClassifier:
             encoder=blob["encoder"],
             feature_names=list(blob["feature_names"]),
             classes_=list(blob.get("classes", [c.value for c in ML_CLASSES])),
+            feature_version=str(blob.get("feature_version", "v1")),
         )
 
     @classmethod
@@ -121,9 +153,12 @@ def train_sklearn_classifier(
     estimator_name: str | None = None,
     X_calibrate: np.ndarray | None = None,
     y_calibrate: np.ndarray | None = None,
+    feature_version: str | None = None,
+    feature_names_list: list[str] | None = None,
 ) -> SklearnActionClassifier:
     cfg = load_config()
     name = estimator_name or str(cfg.get("ml.estimator", "hist_gradient_boosting"))
+    version = feature_version or str(cfg.get("ml.feature_version", "v1"))
     enc = LabelEncoder()
     y_idx = enc.fit_transform(y)
     est = _estimator(name, cfg)
@@ -133,9 +168,11 @@ def train_sklearn_classifier(
         est = CalibratedClassifierCV(est, method="sigmoid", cv="prefit")
         est.fit(X_calibrate, y_cal)
     classes = [str(c) for c in enc.classes_]
+    names = feature_names_list or (FEATURE_NAMES_V2 if version == "v2" else feature_names())
     return SklearnActionClassifier(
         estimator=est,
         encoder=enc,
-        feature_names=feature_names(),
+        feature_names=list(names),
         classes_=classes,
+        feature_version=version,
     )

@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from helmet_action.config import load_config
+from helmet_action.features.v1_names import FEATURE_DIM_V1, FEATURE_NAMES_V1
 from helmet_action.pose.constants import L_EAR, L_ELBOW, L_SHOULDER, L_WRIST, R_EAR, R_ELBOW, R_SHOULDER, R_WRIST
 from helmet_action.pose.geometry import (
     compute_head_regions,
@@ -207,20 +208,6 @@ def temporal_stats(ff: FrameFeatures, seq_norm: np.ndarray) -> dict[str, float]:
     return out
 
 
-FEATURE_ORDER: list[str] | None = None
-
-
-def feature_names() -> list[str]:
-    global FEATURE_ORDER
-    if FEATURE_ORDER is None:
-        dummy = np.zeros((16, 17, 2), dtype=np.float64)
-        dummy[:, 5] = [-0.5, 0.0]
-        dummy[:, 6] = [0.5, 0.0]
-        names = list(extract_feature_dict(dummy).keys())
-        FEATURE_ORDER = names
-    return FEATURE_ORDER
-
-
 def extract_feature_dict(seq_norm: np.ndarray) -> dict[str, float]:
     from helmet_action.features.extractor import extract_features as baseline_extract
 
@@ -240,6 +227,14 @@ def extract_feature_dict(seq_norm: np.ndarray) -> dict[str, float]:
     stats["rule_head_scale_up"] = float(base.head_scale_up)
     stats["rule_wrist_spread"] = float(base.wrist_spread)
     return {k: (0.0 if not np.isfinite(v) else float(v)) for k, v in stats.items()}
+
+
+FEATURE_ORDER: list[str] = list(FEATURE_NAMES_V1)
+FEATURE_DIM_V1_PUBLIC = FEATURE_DIM_V1
+
+
+def feature_names() -> list[str]:
+    return list(FEATURE_ORDER)
 
 
 def extract_feature_vector(seq_norm: np.ndarray) -> np.ndarray:

@@ -46,6 +46,9 @@ decision:
   confirm_hits: 3
   ml_remove_threshold: 0.55
   ml_high_threshold: 0.75
+  reject_top_margin: 0.06
+  reject_inconsistent_phase: true
+  min_buffer_completeness: 0.45
   insufficient_min_wrist_ratio: 0.50
   insufficient_min_shoulder_ratio: 0.70
 
@@ -58,9 +61,26 @@ state:
   lift_radial_tau: 0.06
 
 synthetic:
-  generator_version: "1.0.0"
-  n_frames: 60
-  fps: 20
+  generator_version: "2.0.0"
+  fps: 20.0
+  holdout_families:
+    - REMOVE_C
+    - TOUCH_B
+    - ADJUST_B
+    - SCRATCH_B
+  train_families:
+    - REMOVE_A
+    - REMOVE_B
+    - TOUCH_A
+    - ADJUST_A
+    - SCRATCH_A
+    - PUTON_A
+    - WIPE_A
+    - PHONE_A
+    - STRETCH_A
+    - RAISE_A
+    - IDLE_A
+    - RAND_A
   camera:
     height: [3.8, 6.4]
     distance: [2.6, 4.4]
@@ -73,6 +93,10 @@ synthetic:
     arm_length_scale: [0.90, 1.12]
     forearm_scale: [0.90, 1.12]
     head_size_scale: [0.90, 1.12]
+    neck_length_scale: [0.90, 1.12]
+    body_yaw_deg: [-18.0, 18.0]
+    body_pitch_deg: [-8.0, 8.0]
+    torso_lean: [-0.08, 0.12]
   action:
     speed: [0.80, 1.25]
     pause: [0.08, 0.22]
@@ -96,11 +120,15 @@ synthetic:
       yaw_deg: [-28.0, 28.0]
       focal: [700.0, 1700.0]
     body:
-      height_scale: [0.84, 1.18]
-      shoulder_width_scale: [0.78, 1.24]
-      arm_length_scale: [0.82, 1.22]
-      forearm_scale: [0.82, 1.22]
-      head_size_scale: [0.82, 1.22]
+      height_scale: [0.88, 1.16]
+      shoulder_width_scale: [0.82, 1.22]
+      arm_length_scale: [0.84, 1.20]
+      forearm_scale: [0.84, 1.20]
+      head_size_scale: [0.84, 1.20]
+      neck_length_scale: [0.82, 1.20]
+      body_yaw_deg: [-40.0, 40.0]
+      body_pitch_deg: [-16.0, 16.0]
+      torso_lean: [-0.14, 0.18]
     action:
       speed: [0.50, 1.80]
       pause: [0.04, 0.32]
@@ -124,6 +152,7 @@ ml:
   max_depth: 6
   learning_rate: 0.08
   random_state: 17
+  feature_version: v1
   classes:
     - IDLE
     - HEAD_SCRATCH

@@ -15,6 +15,7 @@ from sklearn.metrics import (
 
 from helmet_action.config import repo_root
 from helmet_action.features.temporal_features import extract_feature_vector
+from helmet_action.features.v2 import extract_feature_vector_v2
 from helmet_action.models.labels import ActionClass
 from helmet_action.pose.confidence import prepare_sequence
 from helmet_action.pose.normalizer import normalize_keypoints
@@ -22,13 +23,18 @@ from helmet_action.pose.normalizer import normalize_keypoints
 REMOVE = ActionClass.HELMET_REMOVE.value
 
 
-def vectorize_dataset(keypoints: np.ndarray, confidences: np.ndarray | None = None) -> np.ndarray:
+def vectorize_dataset(
+    keypoints: np.ndarray,
+    confidences: np.ndarray | None = None,
+    feature_version: str = "v1",
+) -> np.ndarray:
     rows = []
+    extract = extract_feature_vector_v2 if feature_version == "v2" else extract_feature_vector
     for i in range(len(keypoints)):
         conf = None if confidences is None else confidences[i]
         repaired, _ = prepare_sequence(keypoints[i], conf)
         seq_norm, _ = normalize_keypoints(repaired)
-        rows.append(extract_feature_vector(seq_norm))
+        rows.append(extract(seq_norm))
     return np.stack(rows, axis=0)
 
 

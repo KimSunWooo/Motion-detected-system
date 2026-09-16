@@ -96,6 +96,7 @@ class HybridActionClassifier:
         self,
         keypoints: np.ndarray,
         confidence: np.ndarray | None = None,
+        buffer_completeness: float = 1.0,
     ) -> HybridDecision:
         cfg = load_config()
         seq, quality = prepare_sequence(keypoints, confidence)
@@ -201,6 +202,41 @@ class HybridActionClassifier:
                 action = ActionClass.HELMET_ADJUST
                 risk = 0.2
                 notes.append("ADJUST가 REMOVE보다 높고 양손 리프트가 없어 강등.")
+
+        # UNKNOWN rejection: never confirm REMOVE without phase history or usable pose.
+        min_comp = float(cfg.get("decision.min_buffer_completeness", 0.45))
+        reject_margin = float(cfg.get("decision.reject_top_margin", 0.06))
+        reject_inconsistent = bool(cfg.get("decision.reject_inconsistent_phase", True))
+        if buffer_completeness < min_comp:
+            notes.append(f"PoseBuffer completeness {buffer_completeness:.2f} < {min_comp:.2f} → UNKNOWN.")
+            if action is ActionClass.HELMET_REMOVE:
+                event = ActionEvent.REMOVE_INTENT if physically_intent else ActionEvent.NONE
+            action = ActionClass.UNKNOWN
+            conf = min(conf, 0.35)
+            risk = min(risk, 0.25)
+        if ml_proba:
+            ordered_p = sorted(ml_proba.values(), reverse=True)
+            max_p = float(ordered_p[0]) if ordered_p else 0.0
+            margin = float(ordered_p[0] - ordered_p[1]) if len(ordered_p) > 1 else max_p
+            if action is ActionClass.HELMET_REMOVE and not physically_ok:
+                action = ActionClass.UNKNOWN
+                event = ActionEvent.REMOVE_INTENT if physically_intent else ActionEvent.NONE
+                conf = min(conf, 0.45)
+                notes.append("HELMET_REMOVE without complete grasp→lift history → UNKNOWN / REMOVE_INTENT.")
+            if (
+                reject_inconsistent
+                and action is ActionClass.HELMET_REMOVE
+                and not phase.ordered
+            ):
+                action = ActionClass.UNKNOWN
+                event = ActionEvent.REMOVE_INTENT if physically_intent else ActionEvent.NONE
+                notes.append("phase sequence inconsistent → UNKNOWN.")
+            if action not in (ActionClass.IDLE, ActionClass.INSUFFICIENT_POSE) and margin < reject_margin and not physically_ok:
+                notes.append(f"top1-top2 margin {margin:.3f} < {reject_margin:.3f} → UNKNOWN.")
+                action = ActionClass.UNKNOWN
+                conf = min(conf, 0.40)
+                if event is ActionEvent.REMOVE_CONFIRMED:
+                    event = ActionEvent.REMOVE_INTENT if physically_intent else ActionEvent.NONE
 
         helmet = self.helmet_sm.update(event)
         alert = self.gate.update(risk)

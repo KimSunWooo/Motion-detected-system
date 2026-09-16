@@ -1,0 +1,323 @@
+{
+  "name": "baseline-v2",
+  "git_commit": "f86f0954947fa658306ccecf84143e621038eb82",
+  "generator_version": "1.0.0",
+  "feature_version": "v1",
+  "classifier": "HistGradientBoostingClassifier",
+  "feature_count": 139,
+  "config_note": "Frozen metrics from the verified pre-robustness HistGradientBoosting V1 run. Current generator_version in tree is 2.0.0; do not confuse with these numbers.",
+  "dataset_seed": 42,
+  "dataset_size": 500,
+  "accuracy": 0.89,
+  "macro_f1": 0.89,
+  "helmet_remove_precision": 1.0,
+  "helmet_remove_recall": 0.857,
+  "helmet_remove_fnr": 0.143,
+  "helmet_remove_fpr": 0.0,
+  "helmet_remove_tp": 12,
+  "helmet_remove_fp": 0,
+  "helmet_remove_fn": 2,
+  "fn_pattern": "HELMET_REMOVE → HEAD_TOUCH (2/2)",
+  "hard_negative_remove_fp": 0,
+  "ood_test_n": 100,
+  "ood_remove_positives": 14,
+  "disclaimer": "Synthetic OOD only. Not construction-site CCTV performance.",
+  "config": {
+    "pose": {
+      "model_path": "yolo11n-pose.pt",
+      "confidence_threshold": 0.35,
+      "keypoint_low_confidence": 0.25,
+      "keypoint_missing": 0.1,
+      "required_keypoints": [
+        5,
+        6,
+        9,
+        10,
+        0
+      ],
+      "short_gap_frames": 3,
+      "long_gap_frames": 8
+    },
+    "window": {
+      "seconds": 2.0,
+      "target_fps": 20,
+      "min_frames": 12,
+      "max_frames": 80
+    },
+    "geometry": {
+      "head_center_offset_y": -0.3,
+      "head_half_width": 0.52,
+      "head_half_height": 0.42,
+      "center_radius": 0.24,
+      "ear_radius": 0.24,
+      "shoulder_width_eps": 1e-06
+    },
+    "rules": {
+      "min_center_frames": 8,
+      "min_ear_frames": 8,
+      "pause_frames": 8,
+      "scratch": {
+        "radius": 0.11,
+        "std": 0.028,
+        "min_oscillations": 4
+      },
+      "helmet_remove": {
+        "pause_std": 0.016,
+        "dx_spread": 0.08,
+        "co_rise_y": 0.05,
+        "radial": 0.08,
+        "scale_up": 0.07
+      }
+    },
+    "decision": {
+      "alert_enter": 0.75,
+      "alert_exit": 0.45,
+      "confirm_window": 5,
+      "confirm_hits": 3,
+      "ml_remove_threshold": 0.55,
+      "ml_high_threshold": 0.75,
+      "reject_top_margin": 0.06,
+      "reject_inconsistent_phase": true,
+      "min_buffer_completeness": 0.45,
+      "insufficient_min_wrist_ratio": 0.5,
+      "insufficient_min_shoulder_ratio": 0.7
+    },
+    "state": {
+      "approach_radial_tau": -0.015,
+      "grasp_std": 0.02,
+      "grasp_min_frames": 6,
+      "lift_spread_tau": 0.06,
+      "lift_rise_tau": 0.04,
+      "lift_radial_tau": 0.06
+    },
+    "synthetic": {
+      "generator_version": "2.0.0",
+      "fps": 20.0,
+      "holdout_families": [
+        "REMOVE_C",
+        "TOUCH_B",
+        "ADJUST_B",
+        "SCRATCH_B"
+      ],
+      "train_families": [
+        "REMOVE_A",
+        "REMOVE_B",
+        "TOUCH_A",
+        "ADJUST_A",
+        "SCRATCH_A",
+        "PUTON_A",
+        "WIPE_A",
+        "PHONE_A",
+        "STRETCH_A",
+        "RAISE_A",
+        "IDLE_A",
+        "RAND_A"
+      ],
+      "camera": {
+        "height": [
+          3.8,
+          6.4
+        ],
+        "distance": [
+          2.6,
+          4.4
+        ],
+        "pitch_deg": [
+          32.0,
+          52.0
+        ],
+        "yaw_deg": [
+          -12.0,
+          12.0
+        ],
+        "focal": [
+          900.0,
+          1400.0
+        ]
+      },
+      "body": {
+        "height_scale": [
+          0.92,
+          1.1
+        ],
+        "shoulder_width_scale": [
+          0.88,
+          1.14
+        ],
+        "arm_length_scale": [
+          0.9,
+          1.12
+        ],
+        "forearm_scale": [
+          0.9,
+          1.12
+        ],
+        "head_size_scale": [
+          0.9,
+          1.12
+        ],
+        "neck_length_scale": [
+          0.9,
+          1.12
+        ],
+        "body_yaw_deg": [
+          -18.0,
+          18.0
+        ],
+        "body_pitch_deg": [
+          -8.0,
+          8.0
+        ],
+        "torso_lean": [
+          -0.08,
+          0.12
+        ]
+      },
+      "action": {
+        "speed": [
+          0.8,
+          1.25
+        ],
+        "pause": [
+          0.08,
+          0.22
+        ],
+        "lift_height": [
+          0.14,
+          0.3
+        ],
+        "wrist_separation": [
+          0.05,
+          0.14
+        ],
+        "amplitude": [
+          0.7,
+          1.2
+        ]
+      },
+      "noise": {
+        "gaussian_sigma": 0.0016,
+        "dropout_prob": 0.02,
+        "low_conf_prob": 0.04,
+        "occlusion_prob": 0.03,
+        "jitter": 0.002,
+        "scale_jitter": 0.03,
+        "translation_jitter": 4.0,
+        "frame_drop_prob": 0.02
+      },
+      "ood": {
+        "camera": {
+          "height": [
+            3.2,
+            7.2
+          ],
+          "distance": [
+            2.0,
+            5.8
+          ],
+          "pitch_deg": [
+            18.0,
+            66.0
+          ],
+          "yaw_deg": [
+            -28.0,
+            28.0
+          ],
+          "focal": [
+            700.0,
+            1700.0
+          ]
+        },
+        "body": {
+          "height_scale": [
+            0.88,
+            1.16
+          ],
+          "shoulder_width_scale": [
+            0.82,
+            1.22
+          ],
+          "arm_length_scale": [
+            0.84,
+            1.2
+          ],
+          "forearm_scale": [
+            0.84,
+            1.2
+          ],
+          "head_size_scale": [
+            0.84,
+            1.2
+          ],
+          "neck_length_scale": [
+            0.82,
+            1.2
+          ],
+          "body_yaw_deg": [
+            -40.0,
+            40.0
+          ],
+          "body_pitch_deg": [
+            -16.0,
+            16.0
+          ],
+          "torso_lean": [
+            -0.14,
+            0.18
+          ]
+        },
+        "action": {
+          "speed": [
+            0.5,
+            1.8
+          ],
+          "pause": [
+            0.04,
+            0.32
+          ],
+          "lift_height": [
+            0.1,
+            0.38
+          ],
+          "wrist_separation": [
+            0.03,
+            0.2
+          ],
+          "amplitude": [
+            0.55,
+            1.45
+          ]
+        },
+        "noise": {
+          "gaussian_sigma": 0.0045,
+          "dropout_prob": 0.08,
+          "low_conf_prob": 0.1,
+          "occlusion_prob": 0.08,
+          "jitter": 0.006,
+          "scale_jitter": 0.08,
+          "translation_jitter": 12.0,
+          "frame_drop_prob": 0.06
+        }
+      }
+    },
+    "ml": {
+      "model_path": "models/action_classifier.joblib",
+      "estimator": "hist_gradient_boosting",
+      "max_iter": 250,
+      "max_depth": 6,
+      "learning_rate": 0.08,
+      "random_state": 17,
+      "feature_version": "v1",
+      "classes": [
+        "IDLE",
+        "HEAD_SCRATCH",
+        "HEAD_TOUCH",
+        "HELMET_ADJUST",
+        "HELMET_REMOVE",
+        "HELMET_PUT_ON",
+        "UNKNOWN"
+      ]
+    }
+  },
+  "config_snapshot_note": "Config snapshot of the robustness tree. Frozen metrics belong to git_commit f86f095 / generator 1.0.0 / 139-D V1."
+}

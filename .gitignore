@@ -3,7 +3,15 @@ __pycache__/
 .venv/
 .venv-test/
 venv/
-outputs/
+outputs/*
+!outputs/evaluation/
+outputs/evaluation/*
+!outputs/evaluation/*.json
+!outputs/evaluation/*.csv
+outputs/evaluation/runs/
+outputs/evaluation/regression/
+outputs/failures/
+outputs/stress/
 .DS_Store
 .pytest_cache/
 *.egg-info/

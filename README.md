@@ -252,36 +252,73 @@ Helmet detector가 없으면 Helmet State는 **UNKNOWN** 이라고 표시됩니�
 
 ```bash
 PYTHONPATH=src python -m pytest tests -q
+PYTHONPATH=src python scripts/run_benchmark.py --samples 500 --seeds 42 --regression
+PYTHONPATH=src python scripts/run_benchmark.py --samples 10000 --seeds 42 101 202 303 404 --compare-features --compare-models
+PYTHONPATH=src python scripts/stress_test.py --model models/action_classifier.joblib --output outputs/stress
 ```
 
 정규화 후 어깨너비 ≈ 1, translation/scale 불변, scratch가 HELMET_REMOVE로 가지 않음,
 helmet-off의 removal probability, idle 오탐 없음, keypoint missing 시 crash 없음,
 confidence 부족 시 UNKNOWN, 동일 seed 재현, 모델 save/load 후 예측 동일,
-track buffer 격리, Helmet UNKNOWN 유지.
+track buffer 격리, Helmet UNKNOWN 유지,
+counterfactual pair, trajectory-family holdout, Feature V2 차원, reverse timing,
+FPS resampling, targeted dropout, track fragmentation / ID switch, failure dump, benchmark aggregation.
+
+## Synthetic Benchmark Methodology
+
+단일 synthetic accuracy는 신뢰하지 않습니다. Generator가 같은 template에 노이즈만 조금 넣으면
+train/test가 사실상 같은 궤적이 되고, n=100 / positive=14 같은 작은 OOD split의 FNR=0.143은
+표본 오차가 큽니다. 그래서 다음을 함께 봅니다.
+
+**왜 multiple seed인가.** 한 seed의 10000-sample run도 그 generator 실현 하나에 불과합니다.
+seed 42, 101, 202, 303, 404에서 각각 **데이터셋을 새로 만들고 모델을 새로 학습**한 뒤
+Accuracy / Macro F1 / HELMET_REMOVE Recall·FNR의 mean ± std (및 bootstrap CI)를 보고합니다.
+기존 모델을 재사용해 seed만 바꾸면 안 됩니다.
+
+**OOD split.** Test는 train과 같은 분포를 shuffle한 것이 아닙니다. 카메라 pitch/yaw/distance,
+신체 비율, 동작 속도, detector-like noise 범위를 의도적으로 넓힙니다.
+
+**Trajectory family holdout.** `HELMET_REMOVE_A/B`만 학습하고 `REMOVE_C`는 test에만 둡니다.
+parameter jitter가 아니라 **학습 때 존재하지 않은 동작 궤적 family**를 넣는 것이 목적입니다.
+exact sequence hash leakage = 0이어도 family leakage는 별도로 0이어야 합니다.
+
+**Counterfactual pair.** 같은 사람·카메라·초기 hand trajectory·noise를 공유하고
+마지막 phase만 다릅니다 (ADJUST/TOUCH vs REMOVE). 모델이 “양손이 머리에 접근했다”만
+외우지 않고 grasp 이후 lift/separation/시간 순서를 쓰는지 보기 위함입니다.
+
+**Stress test.** FPS (8–60), 관절별 dropout 10–40%, 카메라 pitch/yaw/distance,
+부분 sequence, track gap, ID switch. `alert_enter=0.75`는 test에 맞춰 바꾸지 않습니다.
+
+**경고: 이 숫자들은 실제 CCTV 성능이 아닙니다.** Synthetic generator가 현실과 닮을수록
+스트레스 숫자는 더 나빠질 수 있습니다. 그건 실패가 아니라 generator가 쉬워지지 않았다는 신호일 수 있습니다.
+
+Baseline은 `outputs/evaluation/baseline_v2.json`에 고정합니다. 이후 모든 개선은 이 파일과 비교합니다.
 
 ## Artifact policy
 
 - `data/synthetic/*.npz` 와 `metadata.json` 은 Git에 올리지 않습니다. seed로 재생성하세요.
 - `models/action_classifier.joblib` 는 작은 sklearn 모델만 demo로 포함합니다. YOLO weight(`.pt`)나 대용량 네트워크는 Git에 올리지 마세요.
-- `outputs/`, `.venv*`, `__pycache__`, `.pytest_cache` 는 ignore 됩니다.
+- `outputs/evaluation/*.json|csv` 요약은 추적합니다. failure npz/png, stress plots, 대량 run 디렉터리는 ignore 합니다.
 
 ## 설정
 
 임계값은 `config/default.yaml` 에 있습니다. pose confidence, window seconds, head geometry,
 scratch/helmet rules, alert/clear, synthetic camera/noise.
+`decision.alert_enter` 는 test 보고 올리지 않습니다. threshold가 필요하면 validation only.
 
 ## 패키지 구조
 
 ```
 src/helmet_action/
   pose/          constants, geometry, normalizer, pose_buffer, confidence
-  features/      baseline extractor, temporal features
-  synthetic/     camera, skeleton, generator, scenarios, augmentation
+  features/      V1 temporal features, FeatureExtractorV2
+  synthetic/     camera, skeleton, kinematics, families, generator, detector noise
   models/        rule_based, temporal_classifier, hybrid, training
   state/         action_state_machine, helmet_state
+  evaluation/    aggregate metrics, FN dump, stress plots
   inference/     pose_provider, ultralytics, video_pipeline
   visualization/ plots, dashboard payloads
-scripts/         generate_dataset, train, evaluate, run_video, smoke_ultralytics
+scripts/         generate_dataset, train, evaluate, run_benchmark, stress_test, run_video
 tests/
 config/default.yaml
 pose_action_classifier.py   # 기존 CLI 호환 엔트리

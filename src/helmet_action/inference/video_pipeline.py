@@ -80,6 +80,8 @@ def run_video(
             min_frames = int(cfg.get("window.min_frames", 12))
             if kpts.shape[0] < min_frames:
                 continue
+            if buffers.has_long_gap(obs.track_id, 0.40):
+                engines.pop(obs.track_id, None)
             eng = engines.get(obs.track_id)
             if eng is None:
                 eng = HybridActionClassifier(
@@ -90,7 +92,7 @@ def run_video(
                     ),
                 )
                 engines[obs.track_id] = eng
-            decision = eng.predict(kpts, conf)
+            decision = eng.predict(kpts, conf, buffer_completeness=buffers.completeness(obs.track_id))
             seq_norm, _ = normalize_keypoints(kpts)
             vis = _draw(vis, obs, decision, seq_norm[-1])
         if writer is not None:

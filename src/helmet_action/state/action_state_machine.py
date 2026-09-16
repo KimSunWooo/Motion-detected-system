@@ -81,7 +81,7 @@ def infer_phases(keypoints: np.ndarray) -> PhaseTrace:
 
     saw_approach = bool(np.any(approach))
     saw_grasp = bool(np.max(np.convolve(grasp.astype(float), np.ones(grasp_min), mode="same")) >= grasp_min)
-    saw_lift = bool(np.any(lift))
+    saw_lift = bool(np.sum(lift) >= 3)
     # order: first approach or grasp, then grasp, then lift
     first = {p: (history.index(p) if p in history else 10**9) for p in (
         RemovalPhase.HAND_APPROACH.value,

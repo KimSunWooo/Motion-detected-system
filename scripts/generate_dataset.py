@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from helmet_action.config import load_config
+from helmet_action.synthetic.families import family_split_report
 from helmet_action.synthetic.generator import GENERATOR_VERSION, generate_one, scenario_mix
 
 
@@ -41,7 +42,7 @@ def _pad(seq: np.ndarray, conf: np.ndarray, t_max: int) -> tuple[np.ndarray, np.
 
 
 def generate_split(n: int, split: str, bag: list[str], seed0: int, t_max: int) -> tuple[dict, list[dict]]:
-    keypoints, confs, labels, scenarios, lengths, seeds = [], [], [], [], [], []
+    keypoints, confs, labels, scenarios, lengths, seeds, families = [], [], [], [], [], [], []
     metas: list[dict] = []
     split_salt = {"train": 0, "validation": 1, "test": 2}[split]
     shuffle_rng = np.random.default_rng(seed0 + 9973 + split_salt)
@@ -62,20 +63,8 @@ def generate_split(n: int, split: str, bag: list[str], seed0: int, t_max: int) -
         scenarios.append(meta.scenario)
         lengths.append(meta.n_frames)
         seeds.append(meta.seed)
-        metas.append(
-            {
-                "seed": meta.seed,
-                "split": meta.split,
-                "scenario": meta.scenario,
-                "label": meta.label,
-                "generator_version": meta.generator_version,
-                "camera": meta.camera,
-                "body": meta.body,
-                "action": meta.action,
-                "noise": meta.noise,
-                "n_frames": meta.n_frames,
-            }
-        )
+        families.append(meta.family)
+        metas.append(meta.to_dict())
     return {
         "keypoints": np.stack(keypoints),
         "confidences": np.stack(confs),
@@ -83,6 +72,7 @@ def generate_split(n: int, split: str, bag: list[str], seed0: int, t_max: int) -
         "scenarios": np.array(scenarios),
         "lengths": np.array(lengths, dtype=np.int32),
         "seeds": np.array(seeds, dtype=np.int64),
+        "families": np.array(families),
     }, metas
 
 
@@ -107,10 +97,16 @@ def leakage_report(splits: dict[str, dict], metas: dict[str, list[dict]]) -> dic
     hashes = {name: {_hash_array(arr["keypoints"][i]) for i in range(len(arr["keypoints"]))} for name, arr in splits.items()}
     seeds = {name: set(map(int, arr["seeds"])) for name, arr in splits.items()}
     params = {name: {_param_key(m) for m in metas[name]} for name in metas}
+    families = {name: {str(m.get("family", "")) for m in metas[name]} for name in metas}
 
     def _inter(a: str, b: str, table: dict) -> int:
         return len(table[a] & table[b])
 
+    fam_report = family_split_report(
+        [str(m.get("family", "")) for m in metas["train"]],
+        [str(m.get("family", "")) for m in metas["validation"]],
+        [str(m.get("family", "")) for m in metas["test"]],
+    )
     report = {
         "sequence_hash": {
             "train_val": _inter("train", "validation", hashes),
@@ -126,6 +122,12 @@ def leakage_report(splits: dict[str, dict], metas: dict[str, list[dict]]) -> dic
             "train_val": _inter("train", "validation", params),
             "train_test": _inter("train", "test", params),
             "val_test": _inter("validation", "test", params),
+        },
+        "families": fam_report,
+        "family_set_overlap": {
+            "train_val": _inter("train", "validation", families),
+            "train_test": _inter("train", "test", families),
+            "val_test": _inter("validation", "test", families),
         },
     }
     return report
@@ -168,9 +170,14 @@ def main(argv: list[str] | None = None) -> int:
         print_split_stats(split, arrays)
 
     leak = leakage_report(all_arrays, all_meta)
-    print("[leakage]", json.dumps(leak))
-    if any(v != 0 for table in leak.values() for v in table.values()):
+    print("[leakage]", json.dumps({k: leak[k] for k in leak if k != "families"}))
+    print("[families]", json.dumps(leak.get("families", {})))
+    hard = leak["sequence_hash"] | leak["seed"] | leak["parameters"]
+    if any(v != 0 for v in hard.values()):
         print("ERROR: train/val/test overlap detected")
+        return 1
+    if leak.get("families", {}).get("holdout_leakage", 0):
+        print("ERROR: holdout trajectory family leaked into train")
         return 1
 
     payload = {
@@ -181,8 +188,8 @@ def main(argv: list[str] | None = None) -> int:
         "counts": counts,
         "scenarios": bag if args.quick else sorted(set(bag)),
         "split_policy": {
-            "train_val": "in-distribution camera/body/noise ranges",
-            "test": "OOD: wider pitch/distance, higher keypoint noise, different speed and body proportion",
+            "train_val": "in-distribution camera/body/noise ranges + train trajectory families",
+            "test": "OOD camera/body/noise AND holdout trajectory families (not just a new seed)",
         },
         "leakage": leak,
         "records": all_meta,

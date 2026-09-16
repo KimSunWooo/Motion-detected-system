@@ -17,6 +17,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from helmet_action.config import load_config
 from helmet_action.models.temporal_classifier import train_sklearn_classifier
 from helmet_action.models.training import vectorize_dataset
 
@@ -43,6 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--quick", action="store_true")
     parser.add_argument("--estimator", default=None)
     parser.add_argument("--calibrate", action="store_true", help="fit sigmoid calibration on the validation split")
+    parser.add_argument("--feature-version", default=None, help="v1 or v2")
     args = parser.parse_args(argv)
 
     if not (args.data / "train.npz").exists():
@@ -56,14 +58,17 @@ def main(argv: list[str] | None = None) -> int:
     kv, cv, yv, lv = _load_split(args.data, "validation")
     k_list, c_list = _trim(k, c, lengths)
     print(f"vectorizing {len(k_list)} train sequences…")
-    X = vectorize_dataset(k_list, c_list)
+    version = args.feature_version or str(load_config().get("ml.feature_version", "v1"))
+    X = vectorize_dataset(k_list, c_list, feature_version=version)
     Xv = yc = None
     kvl, cvl = _trim(kv, cv, lv)
     if args.calibrate:
         print(f"vectorizing {len(kvl)} validation sequences for calibration…")
-        Xv = vectorize_dataset(kvl, cvl)
+        Xv = vectorize_dataset(kvl, cvl, feature_version=version)
         yc = yv
-    clf = train_sklearn_classifier(X, y, estimator_name=args.estimator, X_calibrate=Xv, y_calibrate=yc)
+    clf = train_sklearn_classifier(
+        X, y, estimator_name=args.estimator, X_calibrate=Xv, y_calibrate=yc, feature_version=version
+    )
     dest = clf.save(args.out)
     print(f"saved {dest}")
     print("classes:", clf.classes_)

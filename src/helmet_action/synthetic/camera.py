@@ -16,6 +16,11 @@ class HighAngleCamera:
     fy: float
     cx: float
     cy: float
+    height: float = 5.70
+    distance: float = 3.50
+    pitch_deg: float = 42.0
+    yaw_deg: float = 0.0
+    worker_z: float = 3.50
 
     @classmethod
     def factory_ceiling(cls) -> "HighAngleCamera":
@@ -62,6 +67,11 @@ class HighAngleCamera:
             fy=float(focal),
             cx=cx,
             cy=cy,
+            height=float(height),
+            distance=float(distance),
+            pitch_deg=float(pitch_deg),
+            yaw_deg=float(yaw_deg),
+            worker_z=float(worker_z),
         )
 
     def _extrinsics(self) -> tuple[np.ndarray, np.ndarray]:
@@ -91,4 +101,33 @@ class HighAngleCamera:
             "fy": self.fy,
             "cx": self.cx,
             "cy": self.cy,
+            "height": float(self.height),
+            "distance": float(self.distance),
+            "pitch_deg": float(self.pitch_deg),
+            "yaw_deg": float(self.yaw_deg),
+            "focal": float(self.fx),
+            "worker_z": float(self.worker_z),
         }
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "HighAngleCamera":
+        if "height" in d and "pitch_deg" in d:
+            return cls.from_params(
+                height=float(d["height"]),
+                distance=float(d.get("distance", 3.5)),
+                pitch_deg=float(d["pitch_deg"]),
+                yaw_deg=float(d.get("yaw_deg", 0.0)),
+                focal=float(d.get("focal", d.get("fx", 1180.0))),
+                cx=float(d.get("cx", 480.0)),
+                cy=float(d.get("cy", 360.0)),
+                worker_z=float(d.get("worker_z", 3.5)),
+            )
+        return cls(
+            eye=np.asarray(d["eye"], dtype=np.float64),
+            target=np.asarray(d["target"], dtype=np.float64),
+            up=np.array([0.0, 1.0, 0.0], dtype=np.float64),
+            fx=float(d["fx"]),
+            fy=float(d.get("fy", d["fx"])),
+            cx=float(d.get("cx", 480.0)),
+            cy=float(d.get("cy", 360.0)),
+        )

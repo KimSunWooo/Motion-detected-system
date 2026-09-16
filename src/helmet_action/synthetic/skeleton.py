@@ -24,6 +24,7 @@ from helmet_action.pose.constants import (
     R_SHOULDER,
     R_WRIST,
 )
+from helmet_action.synthetic.kinematics import apply_torso_transform, limb_lengths, two_bone_ik
 
 
 def canonical_pose_3d() -> np.ndarray:
@@ -56,6 +57,10 @@ class BodyParams:
     arm_length_scale: float = 1.0
     forearm_scale: float = 1.0
     head_size_scale: float = 1.0
+    neck_length_scale: float = 1.0
+    body_yaw_deg: float = 0.0
+    body_pitch_deg: float = 0.0
+    torso_lean: float = 0.0
     handedness: str = "right"
 
     def to_dict(self) -> dict:
@@ -72,18 +77,26 @@ def apply_body_params(pose: np.ndarray, body: BodyParams) -> np.ndarray:
     head_c = 0.5 * (p[L_EAR] + p[R_EAR])
     for idx in FACE_IDX:
         p[idx] = head_c + (p[idx] - head_c) * body.head_size_scale
+    p = apply_torso_transform(
+        p,
+        yaw_deg=body.body_yaw_deg,
+        pitch_deg=body.body_pitch_deg,
+        lean=body.torso_lean,
+        neck_length_scale=body.neck_length_scale,
+    )
     return p
 
 
 def place_arm_3d(pose: np.ndarray, side: str, wrist: np.ndarray, body: BodyParams | None = None) -> None:
     sh_i, el_i, wr_i = (L_SHOULDER, L_ELBOW, L_WRIST) if side == "left" else (R_SHOULDER, R_ELBOW, R_WRIST)
-    pose[wr_i] = wrist
-    sh = pose[sh_i]
-    mid = 0.5 * (sh + wrist)
-    sign = -1.0 if side == "left" else 1.0
     arm_s = 1.0 if body is None else body.arm_length_scale
     fore_s = 1.0 if body is None else body.forearm_scale
-    pose[el_i] = mid + np.array([0.06 * sign * arm_s, -0.02 * (arm_s - 1.0), -0.04 * fore_s])
+    upper, fore = limb_lengths(arm_s, fore_s)
+    sign = -1.0 if side == "left" else 1.0
+    hint = np.array([sign, -0.15, -0.55], dtype=np.float64)
+    wr, el = two_bone_ik(pose[sh_i], wrist, upper, fore, hint)
+    pose[wr_i] = wr
+    pose[el_i] = el
 
 
 def scale_head_toward_camera(pose: np.ndarray, amount: float) -> None:

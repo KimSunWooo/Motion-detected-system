@@ -66,4 +66,27 @@ class TrackPoseBuffer:
             for axis in (0, 1):
                 k_out[:, j, axis] = np.interp(grid, times, kpts[:, j, axis])
             c_out[:, j] = np.interp(grid, times, conf[:, j])
+        # Do not fabricate pose across a long detection gap.
+        long_gap = float(load_config().get("pose.long_gap_frames", 8)) / max(self.target_fps, 1.0)
+        for gi, gt in enumerate(grid):
+            nearest = float(np.min(np.abs(times - gt)))
+            if nearest > long_gap * 0.55:
+                k_out[gi] = np.nan
+                c_out[gi] = 0.0
         return k_out, c_out, grid
+
+    def completeness(self, track_id: int, expected_fps: float | None = None) -> float:
+        buf = self.raw(track_id)
+        if len(buf) < 2:
+            return 0.0 if not buf else 1.0
+        span = max(buf[-1].timestamp - buf[0].timestamp, 1e-6)
+        fps = float(expected_fps if expected_fps is not None else (buf[0].source_fps or self.target_fps))
+        expected = span * fps + 1.0
+        return float(min(1.0, len(buf) / max(expected, 1.0)))
+
+    def has_long_gap(self, track_id: int, gap_seconds: float = 0.25) -> bool:
+        buf = self.raw(track_id)
+        if len(buf) < 2:
+            return False
+        dts = np.diff([o.timestamp for o in buf])
+        return bool(np.any(dts > gap_seconds))
