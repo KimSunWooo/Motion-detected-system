@@ -1,0 +1,986 @@
+{
+  "max_gap_frames": 3,
+  "n_pos": 16,
+  "rows": [
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "SOFT_OCCLUSION",
+      "gap_frames": 1,
+      "joint_group": "BOTH_WRISTS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "SOFT_OCCLUSION",
+      "gap_frames": 1,
+      "joint_group": "LEFT_WRIST"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "SOFT_OCCLUSION",
+      "gap_frames": 2,
+      "joint_group": "BOTH_WRISTS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "SOFT_OCCLUSION",
+      "gap_frames": 2,
+      "joint_group": "LEFT_WRIST"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "SOFT_OCCLUSION",
+      "gap_frames": 3,
+      "joint_group": "BOTH_WRISTS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "SOFT_OCCLUSION",
+      "gap_frames": 3,
+      "joint_group": "LEFT_WRIST"
+    },
+    {
+      "remove_recall": 0.1875,
+      "fnr": 0.8125,
+      "fpr": 0.0,
+      "unknown_rate": 0.90625,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 3,
+        "UNKNOWN": 29
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "LEFT_WRIST"
+    },
+    {
+      "remove_recall": 0.1875,
+      "fnr": 0.8125,
+      "fpr": 0.0,
+      "unknown_rate": 0.90625,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 3,
+        "UNKNOWN": 29
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "RIGHT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 1.0,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "UNKNOWN": 32
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "BOTH_WRISTS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "LEFT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "RIGHT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "BOTH_EARS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "LEFT_ELBOW"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "RIGHT_ELBOW"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 5,
+      "joint_group": "HEAD_KEYPOINTS"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 1.0,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "UNKNOWN": 32
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "LEFT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 1.0,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "UNKNOWN": 32
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "RIGHT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 1.0,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "UNKNOWN": 32
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "BOTH_WRISTS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 5,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "LEFT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.40625,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 6,
+        "HELMET_ADJUST": 4,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 13
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "RIGHT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.40625,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 6,
+        "HELMET_ADJUST": 4,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 13
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "BOTH_EARS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "LEFT_ELBOW"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "RIGHT_ELBOW"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 6,
+        "HELMET_ADJUST": 5,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 10,
+      "joint_group": "HEAD_KEYPOINTS"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.90625,
+      "insufficient_pose_rate": 0.09375,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 3,
+        "UNKNOWN": 29
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "LEFT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.90625,
+      "insufficient_pose_rate": 0.09375,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 3,
+        "UNKNOWN": 29
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "RIGHT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.0,
+      "insufficient_pose_rate": 1.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 32
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "BOTH_WRISTS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 5,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "LEFT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.40625,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 6,
+        "HELMET_ADJUST": 4,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 13
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "RIGHT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.40625,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 6,
+        "HELMET_ADJUST": 4,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 13
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "BOTH_EARS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "LEFT_ELBOW"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "RIGHT_ELBOW"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 6,
+        "HELMET_ADJUST": 5,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 15,
+      "joint_group": "HEAD_KEYPOINTS"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.78125,
+      "insufficient_pose_rate": 0.21875,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 7,
+        "UNKNOWN": 25
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "LEFT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.78125,
+      "insufficient_pose_rate": 0.21875,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 7,
+        "UNKNOWN": 25
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "RIGHT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.0,
+      "insufficient_pose_rate": 1.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 32
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "BOTH_WRISTS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 5,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "LEFT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.40625,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 5,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 13
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "RIGHT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.40625,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 5,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 13
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "BOTH_EARS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "LEFT_ELBOW"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "RIGHT_ELBOW"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.28125,
+      "insufficient_pose_rate": 0.09375,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 6,
+        "HELMET_ADJUST": 5,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "INSUFFICIENT_POSE": 3,
+        "UNKNOWN": 9
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 20,
+      "joint_group": "HEAD_KEYPOINTS"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.46875,
+      "insufficient_pose_rate": 0.53125,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 17,
+        "UNKNOWN": 15
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "LEFT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.46875,
+      "insufficient_pose_rate": 0.53125,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 17,
+        "UNKNOWN": 15
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "RIGHT_WRIST"
+    },
+    {
+      "remove_recall": 0.0,
+      "fnr": 1.0,
+      "fpr": 0.0,
+      "unknown_rate": 0.0,
+      "insufficient_pose_rate": 1.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "INSUFFICIENT_POSE": 32
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "BOTH_WRISTS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0625,
+      "pred_counts": {
+        "HEAD_TOUCH": 7,
+        "HELMET_ADJUST": 4,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "LEFT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0625,
+      "pred_counts": {
+        "HEAD_TOUCH": 7,
+        "HELMET_ADJUST": 4,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "RIGHT_EAR"
+    },
+    {
+      "remove_recall": 0.25,
+      "fnr": 0.75,
+      "fpr": 0.0,
+      "unknown_rate": 0.375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0625,
+      "pred_counts": {
+        "HEAD_TOUCH": 7,
+        "HELMET_ADJUST": 4,
+        "HELMET_REMOVE": 4,
+        "IDLE": 5,
+        "UNKNOWN": 12
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "BOTH_EARS"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "LEFT_ELBOW"
+    },
+    {
+      "remove_recall": 0.3125,
+      "fnr": 0.6875,
+      "fpr": 0.0,
+      "unknown_rate": 0.34375,
+      "insufficient_pose_rate": 0.0,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 5,
+        "HELMET_ADJUST": 6,
+        "HELMET_REMOVE": 5,
+        "IDLE": 5,
+        "UNKNOWN": 11
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "RIGHT_ELBOW"
+    },
+    {
+      "remove_recall": 0.1875,
+      "fnr": 0.8125,
+      "fpr": 0.0,
+      "unknown_rate": 0.28125,
+      "insufficient_pose_rate": 0.375,
+      "false_safe_rate": 0.0,
+      "pred_counts": {
+        "HEAD_TOUCH": 2,
+        "HELMET_ADJUST": 3,
+        "HELMET_REMOVE": 3,
+        "IDLE": 3,
+        "INSUFFICIENT_POSE": 12,
+        "UNKNOWN": 9
+      },
+      "n": 32,
+      "kind": "HARD_OCCLUSION",
+      "gap_frames": 30,
+      "joint_group": "HEAD_KEYPOINTS"
+    }
+  ],
+  "by_gap": {
+    "5": {
+      "remove_recall_mean": 0.22916666666666666,
+      "fnr_mean": 0.7708333333333334,
+      "false_safe_rate_mean": 0.0,
+      "unknown_rate_mean": 0.5520833333333334,
+      "insufficient_pose_rate_mean": 0.0
+    },
+    "10": {
+      "remove_recall_mean": 0.1875,
+      "fnr_mean": 0.8125,
+      "false_safe_rate_mean": 0.0,
+      "unknown_rate_mean": 0.5833333333333334,
+      "insufficient_pose_rate_mean": 0.0
+    },
+    "15": {
+      "remove_recall_mean": 0.1875,
+      "fnr_mean": 0.8125,
+      "false_safe_rate_mean": 0.0,
+      "unknown_rate_mean": 0.4513888888888889,
+      "insufficient_pose_rate_mean": 0.13194444444444445
+    },
+    "20": {
+      "remove_recall_mean": 0.1875,
+      "fnr_mean": 0.8125,
+      "false_safe_rate_mean": 0.0,
+      "unknown_rate_mean": 0.4131944444444444,
+      "insufficient_pose_rate_mean": 0.1701388888888889
+    },
+    "30": {
+      "remove_recall_mean": 0.18055555555555555,
+      "fnr_mean": 0.8194444444444444,
+      "false_safe_rate_mean": 0.020833333333333332,
+      "unknown_rate_mean": 0.3333333333333333,
+      "insufficient_pose_rate_mean": 0.2708333333333333
+    }
+  },
+  "worst_keypoint": "BOTH_WRISTS",
+  "worst_gap": 5,
+  "worst_recall": 0.0,
+  "policy_checks": [
+    {
+      "case": "BOTH_WRISTS_20",
+      "action": "INSUFFICIENT_POSE",
+      "decision_status": "INSUFFICIENT_POSE",
+      "ok": true
+    },
+    {
+      "case": "LEFT_WRIST_2",
+      "interpolated": true,
+      "max_gap": 3,
+      "ok": true
+    },
+    {
+      "case": "BOTH_EARS_20",
+      "action": "UNKNOWN",
+      "phase_confidence": 0.25,
+      "decision_status": "UNKNOWN"
+    }
+  ],
+  "disclaimer": "Synthetic hard occlusion. Not CCTV performance."
+}

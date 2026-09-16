@@ -26,8 +26,8 @@ def main() -> int:
         generate_dataset.main(["--samples", "500", "--output", str(data), "--seed", "42"])
     npz_tr = np.load(data / "train.npz", allow_pickle=True)
     npz_te = np.load(data / "test.npz", allow_pickle=True)
-    v1 = train_eval_version(npz_tr, npz_te, "v1", 42, data.parent / "model_seed_42_v1.joblib")
-    v2 = train_eval_version(npz_tr, npz_te, "v2", 42, data.parent / "model_seed_42_v2.joblib")
+    v1 = train_eval_version(npz_tr, npz_te, "v1", 42, data.parent / "model_seed_42_v1.joblib", data)
+    v2 = train_eval_version(npz_tr, npz_te, "v2", 42, data.parent / "model_seed_42_v2.joblib", data)
     payload = {
         "name": "regression_500_stage4",
         "seed": 42,

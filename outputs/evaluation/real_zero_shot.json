@@ -1,0 +1,28 @@
+{
+  "dataset_available": false,
+  "status": "REAL DATASET: NOT AVAILABLE",
+  "metrics": null,
+  "note": "No processed real sequences. Do not invent real metrics.",
+  "validation": {
+    "processed_root": "data/real/processed",
+    "metadata_exists": false,
+    "n_sequences": 0,
+    "n_valid": 0,
+    "n_invalid": 0,
+    "load_errors": [],
+    "label_distribution": {},
+    "subject_distribution": {},
+    "camera_distribution": {},
+    "videos_with_sequences": {},
+    "n_short_sequences": 0,
+    "n_pose_detection_failures": 0,
+    "pose_detection_failure_rate": 0.0,
+    "mean_fps": 0.0,
+    "mean_duration_s": 0.0,
+    "mean_missing_keypoint_ratio": 0.0,
+    "mean_confidence": 0.0,
+    "subject_ids_preserved": true,
+    "sequences": [],
+    "available": false
+  }
+}

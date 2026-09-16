@@ -1,0 +1,199 @@
+{
+  "model": "outputs/evaluation/runs/model_seed_42.joblib",
+  "feature_version": "v1",
+  "n_per_family": 40,
+  "families": [
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.5,
+      "hybrid_fnr": 0.5,
+      "unknown_rate": 0.5,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "INSUFFICIENT_POSE": 3,
+        "UNKNOWN": 17,
+        "HELMET_REMOVE": 20
+      }
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.5,
+      "hybrid_fnr": 0.5,
+      "unknown_rate": 0.5,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "UNKNOWN": 14,
+        "HELMET_REMOVE": 20,
+        "INSUFFICIENT_POSE": 6
+      }
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.7,
+      "hybrid_fnr": 0.3,
+      "unknown_rate": 0.3,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "HELMET_REMOVE": 28,
+        "UNKNOWN": 6,
+        "INSUFFICIENT_POSE": 6
+      }
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.675,
+      "hybrid_fnr": 0.325,
+      "unknown_rate": 0.325,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "HELMET_REMOVE": 27,
+        "UNKNOWN": 7,
+        "INSUFFICIENT_POSE": 6
+      }
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.175,
+      "hybrid_fnr": 0.825,
+      "unknown_rate": 0.825,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "UNKNOWN": 29,
+        "INSUFFICIENT_POSE": 4,
+        "HELMET_REMOVE": 7
+      }
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.425,
+      "hybrid_fnr": 0.575,
+      "unknown_rate": 0.575,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "HELMET_REMOVE": 17,
+        "UNKNOWN": 17,
+        "INSUFFICIENT_POSE": 6
+      }
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.625,
+      "hybrid_fnr": 0.375,
+      "unknown_rate": 0.375,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "HELMET_REMOVE": 25,
+        "UNKNOWN": 14,
+        "INSUFFICIENT_POSE": 1
+      }
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.0,
+      "hybrid_fnr": 1.0,
+      "unknown_rate": 1.0,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "INSUFFICIENT_POSE": 40
+      }
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "sample_count": 40,
+      "accuracy": 1.0,
+      "remove_recall": 1.0,
+      "fnr": 0.0,
+      "hybrid_confirmed_recall": 0.0,
+      "hybrid_fnr": 1.0,
+      "unknown_rate": 1.0,
+      "head_touch_confusion": 0.0,
+      "helmet_adjust_confusion": 0.0,
+      "hybrid_false_safe_rate": 0.0,
+      "pred_counts": {
+        "HELMET_REMOVE": 40
+      },
+      "hybrid_pred_counts": {
+        "INSUFFICIENT_POSE": 6,
+        "UNKNOWN": 34
+      }
+    }
+  ],
+  "worst_subtype": "REMOVE_C_LOW_WRIST_CONF",
+  "worst_recall": 1.0,
+  "worst_fnr": 0.0,
+  "worst_hybrid_confirmed_recall": 0.0,
+  "n_false_negatives": 216,
+  "disclaimer": "Synthetic REMOVE_C subtypes only. ML FNR is argmax; hybrid_confirmed_recall requires HELMET_REMOVE confirmation."
+}

@@ -1,0 +1,3376 @@
+{
+  "n_false_negatives": 216,
+  "reason_counts": {
+    "NO_GRASP": 156,
+    "PHASE_INCONSISTENCY": 182,
+    "TRACK_FRAGMENTATION": 118,
+    "LATERAL_MOTION": 55,
+    "RULE_DISAGREES_WITH_ML": 171,
+    "NO_LIFT": 86,
+    "NO_SEPARATION": 54,
+    "WEAK_GRASP": 6,
+    "WEAK_SEPARATION": 5,
+    "STUTTER_MOTION": 12,
+    "UNKNOWN": 3,
+    "NO_APPROACH": 1,
+    "LOW_WRIST_CONFIDENCE": 40,
+    "WEAK_LIFT": 1
+  },
+  "reason_ratio": {
+    "PHASE_INCONSISTENCY": 0.8425925925925926,
+    "RULE_DISAGREES_WITH_ML": 0.7916666666666666,
+    "NO_GRASP": 0.7222222222222222,
+    "TRACK_FRAGMENTATION": 0.5462962962962963,
+    "NO_LIFT": 0.39814814814814814,
+    "LATERAL_MOTION": 0.25462962962962965,
+    "NO_SEPARATION": 0.25,
+    "LOW_WRIST_CONFIDENCE": 0.18518518518518517,
+    "STUTTER_MOTION": 0.05555555555555555,
+    "WEAK_GRASP": 0.027777777777777776,
+    "WEAK_SEPARATION": 0.023148148148148147,
+    "UNKNOWN": 0.013888888888888888,
+    "NO_APPROACH": 0.004629629629629629,
+    "WEAK_LIFT": 0.004629629629629629
+  },
+  "ranked": [
+    {
+      "reason": "PHASE_INCONSISTENCY",
+      "count": 182,
+      "ratio": 0.8425925925925926
+    },
+    {
+      "reason": "RULE_DISAGREES_WITH_ML",
+      "count": 171,
+      "ratio": 0.7916666666666666
+    },
+    {
+      "reason": "NO_GRASP",
+      "count": 156,
+      "ratio": 0.7222222222222222
+    },
+    {
+      "reason": "TRACK_FRAGMENTATION",
+      "count": 118,
+      "ratio": 0.5462962962962963
+    },
+    {
+      "reason": "NO_LIFT",
+      "count": 86,
+      "ratio": 0.39814814814814814
+    },
+    {
+      "reason": "LATERAL_MOTION",
+      "count": 55,
+      "ratio": 0.25462962962962965
+    },
+    {
+      "reason": "NO_SEPARATION",
+      "count": 54,
+      "ratio": 0.25
+    },
+    {
+      "reason": "LOW_WRIST_CONFIDENCE",
+      "count": 40,
+      "ratio": 0.18518518518518517
+    },
+    {
+      "reason": "STUTTER_MOTION",
+      "count": 12,
+      "ratio": 0.05555555555555555
+    },
+    {
+      "reason": "WEAK_GRASP",
+      "count": 6,
+      "ratio": 0.027777777777777776
+    },
+    {
+      "reason": "WEAK_SEPARATION",
+      "count": 5,
+      "ratio": 0.023148148148148147
+    },
+    {
+      "reason": "UNKNOWN",
+      "count": 3,
+      "ratio": 0.013888888888888888
+    },
+    {
+      "reason": "NO_APPROACH",
+      "count": 1,
+      "ratio": 0.004629629629629629
+    },
+    {
+      "reason": "WEAK_LIFT",
+      "count": 1,
+      "ratio": 0.004629629629629629
+    }
+  ],
+  "samples": [
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50000,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50017,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50034,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50068,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50085,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50170,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50187,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50204,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50221,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50238,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50289,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50323,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50357,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50459,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50527,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "WEAK_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50561,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50578,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50595,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50646,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "seed": 50663,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_LEFT",
+      "variant": "lateral_left",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51000,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51119,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51136,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51153,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51170,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51187,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51221,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "WEAK_SEPARATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51255,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51306,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51340,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51391,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51442,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51459,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51476,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51493,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51561,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51578,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51595,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51612,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "seed": 51646,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LATERAL_RIGHT",
+      "variant": "lateral_right",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52034,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_SEPARATION",
+        "STUTTER_MOTION"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52085,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "STUTTER_MOTION"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52119,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "STUTTER_MOTION"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52136,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "STUTTER_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52204,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "STUTTER_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52272,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_SEPARATION",
+        "STUTTER_MOTION"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52323,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "STUTTER_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52442,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "STUTTER_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52459,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "STUTTER_MOTION"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52527,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "STUTTER_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52578,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "STUTTER_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "seed": 52663,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "STUTTER_MOTION"
+      ],
+      "family": "REMOVE_C_STUTTER",
+      "variant": "stutter_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53017,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "WEAK_GRASP"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53102,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53136,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53153,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53255,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "WEAK_GRASP",
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53340,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53357,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53425,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53442,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "UNKNOWN"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53459,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "UNKNOWN"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53476,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53595,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "seed": 53629,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "WEAK_GRASP",
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_SLOW",
+      "variant": "slow_lift",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54000,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54017,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54034,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54051,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54068,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54085,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54119,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54136,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54153,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54170,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54187,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54204,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54221,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54255,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "WEAK_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54272,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54289,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54306,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54340,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54374,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "WEAK_GRASP",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54391,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54425,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54442,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54459,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54476,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_APPROACH",
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54493,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54510,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54527,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54544,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54561,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54612,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54629,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54646,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "seed": 54663,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_BRIM",
+      "variant": "brim_grasp",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55051,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "WEAK_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55068,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55085,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55119,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55136,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55187,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55204,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55238,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55289,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55323,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55340,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55408,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55442,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55476,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55493,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55510,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55527,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55544,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55561,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "UNKNOWN"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55578,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55612,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55629,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "seed": 55663,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_ONE_THEN_TWO",
+      "variant": "one_then_two",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56051,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56119,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56170,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56204,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56255,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56357,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56391,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56425,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56459,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56493,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56527,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56544,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56561,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56578,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LATERAL_MOTION"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_HEAD_ROTATION",
+      "seed": 56663,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "LATERAL_MOTION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_HEAD_ROTATION",
+      "variant": "head_rotation",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57000,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57017,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57034,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "WEAK_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57051,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57068,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57085,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57102,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57119,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57136,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57153,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57170,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57187,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57204,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57221,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57238,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57255,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "WEAK_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57272,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57289,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57306,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57323,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57340,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57357,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57374,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57391,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57408,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57425,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57442,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57459,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57476,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57493,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57510,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57527,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57544,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57561,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57578,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57595,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57612,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57629,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "LOW_WRIST_CONFIDENCE",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57646,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "seed": 57663,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "LOW_WRIST_CONFIDENCE",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_LOW_WRIST_CONF",
+      "variant": "remove_c_low_wrist_conf",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58000,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58017,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58034,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58051,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58068,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58085,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58102,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58119,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58136,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58153,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58170,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58187,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58204,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58221,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58238,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58255,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58272,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58289,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58306,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58323,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58340,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58357,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58374,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "WEAK_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58391,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58408,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58425,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58442,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58459,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58476,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "WEAK_GRASP",
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58493,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58510,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58527,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58544,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58561,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58578,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58595,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "INSUFFICIENT_POSE",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58612,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58629,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58646,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "NO_SEPARATION",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "seed": 58663,
+      "ml_pred": "HELMET_REMOVE",
+      "hybrid_pred": "UNKNOWN",
+      "reasons": [
+        "NO_GRASP",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "RULE_DISAGREES_WITH_ML"
+      ],
+      "family": "REMOVE_C_PARTIAL_OCCLUSION",
+      "variant": "remove_c_partial_occlusion",
+      "kind": "hybrid_abstain"
+    }
+  ],
+  "worst_subtype": "REMOVE_C_LOW_WRIST_CONF"
+}

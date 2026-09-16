@@ -69,17 +69,37 @@ def _ensure_dataset(data_dir: Path, samples: int, seed: int) -> Path:
     return data_dir
 
 
-def _predict(clf, npz):
-    labels = npz["labels"]
-    lengths = npz["lengths"]
-    y_pred, y_true, scores = [], [], []
-    for i in range(len(labels)):
-        t = int(lengths[i])
-        proba = clf.predict_proba(npz["keypoints"][i, :t], npz["confidences"][i, :t])
-        y_pred.append(max(proba, key=proba.get))
-        y_true.append(str(labels[i]))
-        scores.append(float(proba.get(REMOVE, 0.0)))
-    return np.array(y_true), np.array(y_pred), np.array(scores, dtype=np.float64)
+def _predict_matrix(clf, X: np.ndarray, y_true) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    raw = clf.estimator.predict_proba(X)
+    class_ids = np.asarray(clf.estimator.classes_)
+    names = [str(x) for x in clf.encoder.inverse_transform(class_ids)]
+    y_pred = np.array([names[int(i)] for i in np.argmax(raw, axis=1)])
+    scores = raw[:, names.index(REMOVE)] if REMOVE in names else np.zeros(len(y_pred), dtype=np.float64)
+    return np.asarray(y_true).astype(str), y_pred, np.asarray(scores, dtype=np.float64)
+
+
+def _features_path(data_dir: Path, version: str) -> Path:
+    return Path(data_dir) / f"features_{version}.npz"
+
+
+def _load_or_vectorize(npz, version: str, split: str, data_dir: Path) -> np.ndarray:
+    path = _features_path(data_dir, version)
+    if path.exists():
+        blob = np.load(path)
+        key = f"{split}"
+        if key in blob.files:
+            print(f"    reuse {version} {split} features {blob[key].shape}", flush=True)
+            return blob[key]
+    k, c = _trim(npz["keypoints"], npz["confidences"], npz["lengths"])
+    print(f"    vectorize {version} {split} n={len(k)}", flush=True)
+    X = vectorize_dataset(k, c, feature_version=version)
+    prev = {}
+    if path.exists():
+        with np.load(path) as blob:
+            prev = {k: blob[k] for k in blob.files}
+    prev[split] = X
+    np.savez_compressed(path, **prev)
+    return X
 
 
 def _flat(report, y_true, y_pred) -> dict:
@@ -101,13 +121,12 @@ def _flat(report, y_true, y_pred) -> dict:
     }
 
 
-def train_eval_version(npz_tr, npz_te, version: str, seed: int, model_path: Path) -> dict:
-    ktr, ctr = _trim(npz_tr["keypoints"], npz_tr["confidences"], npz_tr["lengths"])
-    print(f"    vectorize {version} train n={len(ktr)}", flush=True)
-    Xtr = vectorize_dataset(ktr, ctr, feature_version=version)
+def train_eval_version(npz_tr, npz_te, version: str, seed: int, model_path: Path, data_dir: Path) -> dict:
+    Xtr = _load_or_vectorize(npz_tr, version, "train", data_dir)
+    Xte = _load_or_vectorize(npz_te, version, "test", data_dir)
     clf = train_sklearn_classifier(Xtr, npz_tr["labels"], feature_version=version)
     clf.save(model_path)
-    yt, yp, sc = _predict(clf, npz_te)
+    yt, yp, sc = _predict_matrix(clf, Xte, npz_te["labels"])
     report = evaluate_predictions(yt, yp, y_score_remove=sc)
     flat = _flat(report, yt, yp)
     flat.update(
@@ -141,8 +160,8 @@ def main(argv: list[str] | None = None) -> int:
         data = _ensure_dataset(args.data_root / f"data_seed_{seed}", args.samples, seed)
         npz_tr = np.load(data / "train.npz", allow_pickle=True)
         npz_te = np.load(data / "test.npz", allow_pickle=True)
-        v1 = train_eval_version(npz_tr, npz_te, "v1", seed, args.data_root / f"model_seed_{seed}_v1.joblib")
-        v2 = train_eval_version(npz_tr, npz_te, "v2", seed, args.data_root / f"model_seed_{seed}_v2.joblib")
+        v1 = train_eval_version(npz_tr, npz_te, "v1", seed, args.data_root / f"model_seed_{seed}_v1.joblib", data)
+        v2 = train_eval_version(npz_tr, npz_te, "v2", seed, args.data_root / f"model_seed_{seed}_v2.joblib", data)
         print(
             f"  V1 F1={v1['macro_f1']:.3f} R={v1['helmet_remove_recall']:.3f} FNR={v1['helmet_remove_fnr']:.3f}",
             flush=True,

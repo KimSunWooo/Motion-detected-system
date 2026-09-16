@@ -154,19 +154,19 @@ def extract_features(seq_norm: np.ndarray) -> FeatureReport:
         d = np.linalg.norm(lw[sl] - rw[sl], axis=1)
         hs = np.array([head_scale_norm(seq_norm[i]) for i in range(e0, trail_end)])
 
-        dx_p = float(np.nanmedian(dx[pause_i : pause_i + pause_n]))
-        y_p = float(np.nanmedian(dy_mean[pause_i : pause_i + pause_n]))
-        r_p = float(np.nanmedian(r_mean[pause_i : pause_i + pause_n]))
-        d_p = float(np.nanmedian(d[pause_i : pause_i + pause_n]))
-        h_p = float(np.nanmedian(hs[pause_i : pause_i + pause_n]))
+        dx_p = float(np.nanmedian(dx[pause_i : pause_i + pause_n])) if np.isfinite(dx[pause_i : pause_i + pause_n]).any() else 0.0
+        y_p = float(np.nanmedian(dy_mean[pause_i : pause_i + pause_n])) if np.isfinite(dy_mean[pause_i : pause_i + pause_n]).any() else 0.0
+        r_p = float(np.nanmedian(r_mean[pause_i : pause_i + pause_n])) if np.isfinite(r_mean[pause_i : pause_i + pause_n]).any() else 0.0
+        d_p = float(np.nanmedian(d[pause_i : pause_i + pause_n])) if np.isfinite(d[pause_i : pause_i + pause_n]).any() else 0.0
+        h_p = float(np.nanmedian(hs[pause_i : pause_i + pause_n])) if np.isfinite(hs[pause_i : pause_i + pause_n]).any() else 0.0
 
-        feat.dx_spread = float(np.nanmax(dx[late]) - dx_p) if dx[late].size else 0.0
-        feat.co_rise_y = float(y_p - np.nanmin(dy_mean[late])) if dy_mean[late].size else 0.0
-        feat.radial_expand = float(np.nanmax(r_mean[late]) - r_p) if r_mean[late].size else 0.0
+        feat.dx_spread = float(np.nanmax(dx[late]) - dx_p) if np.isfinite(dx[late]).any() else 0.0
+        feat.co_rise_y = float(y_p - np.nanmin(dy_mean[late])) if np.isfinite(dy_mean[late]).any() else 0.0
+        feat.radial_expand = float(np.nanmax(r_mean[late]) - r_p) if np.isfinite(r_mean[late]).any() else 0.0
         feat.d_wrist_pause = d_p
-        feat.d_wrist_late = float(np.nanmax(d[late])) if d[late].size else d_p
+        feat.d_wrist_late = float(np.nanmax(d[late])) if np.isfinite(d[late]).any() else d_p
         feat.wrist_spread = feat.d_wrist_late - d_p
-        h_late = float(np.nanmax(hs[late])) if hs[late].size else h_p
+        h_late = float(np.nanmax(hs[late])) if np.isfinite(hs[late]).any() else h_p
         feat.head_scale_up = (h_late / max(h_p, 1e-6)) - 1.0
     return feat
 

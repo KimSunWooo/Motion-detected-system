@@ -40,10 +40,11 @@ def _eval_family(clf, hybrid, subtype: str, n: int, seed0: int) -> dict:
         y_pred_hy.append(dec.action.value)
         if ml != REMOVE:
             n_fn += 1
+        if ml != REMOVE or dec.action.value != REMOVE:
             tags = tag_failure_reasons(
                 seq,
                 conf,
-                y_pred=ml,
+                y_pred=ml if ml != REMOVE else dec.action.value,
                 ml_proba=proba,
                 rule_label=dec.rule_label,
                 meta=meta.to_dict(),
@@ -57,6 +58,7 @@ def _eval_family(clf, hybrid, subtype: str, n: int, seed0: int) -> dict:
                     "reasons": tags,
                     "family": meta.family,
                     "variant": meta.variant,
+                    "kind": "ml_fn" if ml != REMOVE else "hybrid_abstain",
                 }
             )
         if dec.action is ActionClass.UNKNOWN or dec.action is ActionClass.INSUFFICIENT_POSE:
@@ -67,20 +69,25 @@ def _eval_family(clf, hybrid, subtype: str, n: int, seed0: int) -> dict:
             n_adjust += 1
     yt = np.array([REMOVE] * n)
     yp = np.array(y_pred_ml)
+    yh = np.array(y_pred_hy)
     tp = int(np.sum(yp == REMOVE))
     fn = n - tp
+    hy_tp = int(np.sum(yh == REMOVE))
     return {
         "subtype": subtype,
         "sample_count": n,
         "accuracy": float(tp / n),
         "remove_recall": float(tp / n),
         "fnr": float(fn / n),
+        "hybrid_confirmed_recall": float(hy_tp / n),
+        "hybrid_fnr": float((n - hy_tp) / n),
         "unknown_rate": float(n_unknown / n),
         "head_touch_confusion": float(n_touch / n),
         "helmet_adjust_confusion": float(n_adjust / n),
-        "hybrid_false_safe_rate": false_safe_rate(yt, np.array(y_pred_hy)),
+        "hybrid_false_safe_rate": false_safe_rate(yt, yh),
         "false_negatives": reasons,
         "pred_counts": dict(Counter(y_pred_ml)),
+        "hybrid_pred_counts": dict(Counter(y_pred_hy)),
     }
 
 
@@ -100,13 +107,13 @@ def main(argv: list[str] | None = None) -> int:
         row = _eval_family(clf, hybrid, subtype, args.n_per_family, seed0=50_000 + i * 1000)
         print(
             f"  n={row['sample_count']} recall={row['remove_recall']:.3f} fnr={row['fnr']:.3f} "
-            f"UNK={row['unknown_rate']:.3f} TOUCH={row['head_touch_confusion']:.3f}",
+            f"hyR={row['hybrid_confirmed_recall']:.3f} UNK={row['unknown_rate']:.3f} TOUCH={row['head_touch_confusion']:.3f}",
             flush=True,
         )
         families.append({k: v for k, v in row.items() if k != "false_negatives"})
         all_fn.extend(row["false_negatives"])
 
-    worst = max(families, key=lambda r: r["fnr"])
+    worst = min(families, key=lambda r: (r["hybrid_confirmed_recall"], -r["unknown_rate"]))
     reason_summary = summarize_reasons(all_fn)
     payload = {
         "model": str(args.model),
@@ -116,8 +123,9 @@ def main(argv: list[str] | None = None) -> int:
         "worst_subtype": worst["subtype"],
         "worst_recall": worst["remove_recall"],
         "worst_fnr": worst["fnr"],
+        "worst_hybrid_confirmed_recall": worst["hybrid_confirmed_recall"],
         "n_false_negatives": len(all_fn),
-        "disclaimer": "Synthetic REMOVE_C subtypes only.",
+        "disclaimer": "Synthetic REMOVE_C subtypes only. ML FNR is argmax; hybrid_confirmed_recall requires HELMET_REMOVE confirmation.",
     }
     out = args.output
     out.mkdir(parents=True, exist_ok=True)

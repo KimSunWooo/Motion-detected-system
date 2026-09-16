@@ -10,6 +10,7 @@ outputs/evaluation/*
 !outputs/evaluation/*.csv
 outputs/evaluation/runs/
 outputs/evaluation/regression/
+!outputs/failures/
 outputs/failures/*
 !outputs/failures/*.json
 outputs/stress/
