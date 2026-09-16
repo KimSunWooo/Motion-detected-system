@@ -176,3 +176,29 @@ def apply_targeted_occlusion(
         out_s[idx, j] = np.nan
         out_c[idx, j] = 0.0
     return out_s, out_c
+
+
+def apply_consecutive_occlusion(
+    seq: np.ndarray,
+    conf: np.ndarray,
+    joints: list[int],
+    n_frames: int,
+    start: int | None = None,
+    rng: np.random.Generator | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Drop a consecutive block of frames for the given joints. Not random speckles."""
+    rng = rng or np.random.default_rng(0)
+    out_s = np.asarray(seq, dtype=np.float64).copy()
+    out_c = np.asarray(conf, dtype=np.float64).copy()
+    t = out_s.shape[0]
+    gap = int(np.clip(n_frames, 0, t))
+    if gap <= 0:
+        return out_s, out_c
+    if start is None:
+        start = int(rng.integers(0, max(t - gap, 1)))
+    start = int(np.clip(start, 0, max(t - 1, 0)))
+    end = min(t, start + gap)
+    for j in joints:
+        out_s[start:end, j] = np.nan
+        out_c[start:end, j] = 0.0
+    return out_s, out_c

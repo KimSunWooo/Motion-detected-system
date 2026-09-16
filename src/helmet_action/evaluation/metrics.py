@@ -68,6 +68,33 @@ def summarize_numeric(values: list[float] | np.ndarray) -> dict[str, float]:
     }
 
 
+def paired_delta_report(v2: list[float] | np.ndarray, v1: list[float] | np.ndarray, seed: int = 0) -> dict[str, float]:
+    """Seed-level paired comparison plus bootstrap CI of mean(V2-V1)."""
+    a = np.asarray(v2, dtype=np.float64)
+    b = np.asarray(v1, dtype=np.float64)
+    if a.size == 0 or a.size != b.size:
+        return {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0, "n_v2_better": 0, "n_ties": 0, "ci_low": 0.0, "ci_high": 0.0}
+    d = a - b
+    rng = np.random.default_rng(seed)
+    boots = []
+    n = d.size
+    for _ in range(2000):
+        idx = rng.integers(0, n, size=n)
+        boots.append(float(d[idx].mean()))
+    boots = np.asarray(boots)
+    return {
+        "mean": float(d.mean()),
+        "std": float(d.std(ddof=1) if n > 1 else 0.0),
+        "min": float(d.min()),
+        "max": float(d.max()),
+        "n_v2_better": int(np.sum(d > 0)),
+        "n_v1_better": int(np.sum(d < 0)),
+        "n_ties": int(np.sum(np.isclose(d, 0.0))),
+        "ci_low": float(np.percentile(boots, 2.5)),
+        "ci_high": float(np.percentile(boots, 97.5)),
+    }
+
+
 def aggregate_seed_results(per_seed: list[dict[str, Any]]) -> dict[str, Any]:
     keys = [
         "accuracy",

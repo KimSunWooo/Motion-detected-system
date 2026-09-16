@@ -50,6 +50,18 @@ ACTION_KO = {
     ActionClass.INSUFFICIENT_POSE: "관절 정보 부족",
 }
 
+# Confirmed non-remove actions. UNKNOWN / INSUFFICIENT_POSE are abstentions, not "safe".
+SAFE_CONFIRMED_ACTIONS = frozenset(
+    {
+        ActionClass.IDLE.value,
+        ActionClass.HEAD_SCRATCH.value,
+        ActionClass.HEAD_TOUCH.value,
+        ActionClass.HELMET_ADJUST.value,
+        ActionClass.HELMET_PUT_ON.value,
+    }
+)
+
+
 ML_CLASSES = [
     ActionClass.IDLE,
     ActionClass.HEAD_SCRATCH,

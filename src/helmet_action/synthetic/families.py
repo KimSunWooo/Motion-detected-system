@@ -44,6 +44,18 @@ DEFAULT_HOLDOUT_FAMILIES = [
     "PUTON_B",
 ]
 
+REMOVE_C_SUBTYPES = [
+    "REMOVE_C_LATERAL_LEFT",
+    "REMOVE_C_LATERAL_RIGHT",
+    "REMOVE_C_STUTTER",
+    "REMOVE_C_SLOW",
+    "REMOVE_C_BRIM",
+    "REMOVE_C_ONE_THEN_TWO",
+    "REMOVE_C_HEAD_ROTATION",
+    "REMOVE_C_LOW_WRIST_CONF",
+    "REMOVE_C_PARTIAL_OCCLUSION",
+]
+
 
 def families_for_scenario(scenario: str) -> list[str]:
     return list(SCENARIO_FAMILIES.get(scenario, [f"{scenario}_A"]))

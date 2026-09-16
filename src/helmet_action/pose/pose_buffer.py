@@ -66,11 +66,13 @@ class TrackPoseBuffer:
             for axis in (0, 1):
                 k_out[:, j, axis] = np.interp(grid, times, kpts[:, j, axis])
             c_out[:, j] = np.interp(grid, times, conf[:, j])
-        # Do not fabricate pose across a long detection gap.
-        long_gap = float(load_config().get("pose.long_gap_frames", 8)) / max(self.target_fps, 1.0)
+        # Do not fabricate pose across a gap longer than interpolation.max_gap_frames.
+        from helmet_action.pose.confidence import interpolation_max_gap
+
+        max_gap_s = float(interpolation_max_gap()) / max(self.target_fps, 1.0)
         for gi, gt in enumerate(grid):
             nearest = float(np.min(np.abs(times - gt)))
-            if nearest > long_gap * 0.55:
+            if nearest > max_gap_s:
                 k_out[gi] = np.nan
                 c_out[gi] = 0.0
         return k_out, c_out, grid

@@ -10,7 +10,8 @@ outputs/evaluation/*
 !outputs/evaluation/*.csv
 outputs/evaluation/runs/
 outputs/evaluation/regression/
-outputs/failures/
+outputs/failures/*
+!outputs/failures/*.json
 outputs/stress/
 .DS_Store
 .pytest_cache/
@@ -18,6 +19,10 @@ outputs/stress/
 .mypy_cache/
 data/synthetic/*.npz
 data/synthetic/metadata.json
+data/real/raw/**
+!data/real/raw/.gitkeep
+data/real/processed/**
+!data/real/processed/.gitkeep
 src/helmet_action.egg-info/
 *.pt
 yolo*.pt

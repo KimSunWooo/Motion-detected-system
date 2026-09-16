@@ -14,7 +14,15 @@ class KeypointStatus(str, Enum):
 
 class PoseQuality(str, Enum):
     OK = "OK"
+    LOW_CONFIDENCE = "LOW_CONFIDENCE"
     INSUFFICIENT_POSE = "INSUFFICIENT_POSE"
+
+
+class DecisionStatus(str, Enum):
+    VALID = "VALID"
+    LOW_CONFIDENCE = "LOW_CONFIDENCE"
+    INSUFFICIENT_POSE = "INSUFFICIENT_POSE"
+    UNKNOWN = "UNKNOWN"
 
 
 @dataclass
@@ -50,7 +58,12 @@ class PoseQualityReport:
     shoulder_valid_ratio: float = 1.0
     head_valid_ratio: float = 1.0
     notes: list[str] = field(default_factory=list)
+    score: float = 1.0
+    longest_missing_streak: int = 0
+    interpolation_ratio: float = 0.0
+    mean_confidence: float = 1.0
+    buffer_completeness: float = 1.0
 
     @property
     def usable(self) -> bool:
-        return self.quality is PoseQuality.OK
+        return self.quality is not PoseQuality.INSUFFICIENT_POSE

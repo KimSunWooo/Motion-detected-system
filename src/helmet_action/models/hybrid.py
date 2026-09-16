@@ -12,13 +12,15 @@ from helmet_action.models.labels import (
     ClassificationResult,
     LABEL_KO,
     RemovalPhase,
+    SAFE_CONFIRMED_ACTIONS,
     action_to_baseline,
     baseline_to_action,
 )
 from helmet_action.models.rule_based import RuleBasedActionClassifier
 from helmet_action.models.temporal_classifier import SklearnActionClassifier
 from helmet_action.pose.confidence import prepare_sequence
-from helmet_action.pose.types import PoseQuality
+from helmet_action.pose.quality import compute_pose_quality_score, phase_confidence
+from helmet_action.pose.types import DecisionStatus
 from helmet_action.state.action_state_machine import infer_phases
 from helmet_action.state.helmet_state import (
     ActionEvent,
@@ -48,6 +50,10 @@ class HybridDecision:
     explanation: list[str] = field(default_factory=list)
     features: dict = field(default_factory=dict)
     frame_labels: list[str] = field(default_factory=list)
+    action_probability: float = 0.0
+    pose_quality: float = 1.0
+    phase_confidence: float = 0.0
+    decision_status: str = "VALID"
 
     def to_dict(self) -> dict:
         return {
@@ -56,6 +62,11 @@ class HybridDecision:
             "label": self.baseline.value,
             "label_ko": LABEL_KO.get(self.baseline, self.action.value),
             "confidence": self.confidence,
+            "action": self.action.value,
+            "action_probability": self.action_probability,
+            "pose_quality": self.pose_quality,
+            "phase_confidence": self.phase_confidence,
+            "decision_status": self.decision_status,
             "rule_prediction": self.rule_label,
             "rule_confidence": self.rule_confidence,
             "ml_prediction": self.ml_label,
@@ -100,8 +111,17 @@ class HybridActionClassifier:
     ) -> HybridDecision:
         cfg = load_config()
         seq, quality = prepare_sequence(keypoints, confidence)
+        pq = compute_pose_quality_score(
+            keypoints,
+            confidence,
+            buffer_completeness=buffer_completeness,
+            interpolation_ratio=quality.interpolation_ratio,
+            repaired=seq,
+        )
+        pconf = 0.0
         notes: list[str] = []
-        if not quality.usable:
+        notes.extend(pq.notes)
+        if (not quality.usable) or pq.decision_status == DecisionStatus.INSUFFICIENT_POSE.value:
             notes.extend(quality.notes)
             notes.append("관절 신뢰도 부족 → UNKNOWN / INSUFFICIENT_POSE. 정상·위험 모두 확정하지 않습니다.")
             return HybridDecision(
@@ -120,6 +140,10 @@ class HybridActionClassifier:
                 alert=self.gate.update(0.0),
                 quality=quality.quality.value,
                 explanation=notes,
+                action_probability=0.0,
+                pose_quality=pq.score,
+                phase_confidence=0.0,
+                decision_status=DecisionStatus.INSUFFICIENT_POSE.value,
             )
 
         rule: ClassificationResult = self.rule.predict(seq)
@@ -149,6 +173,7 @@ class HybridActionClassifier:
 
         physically_ok = phase.saw_grasp and phase.saw_lift and phase.ordered
         physically_intent = phase.saw_approach or phase.saw_grasp
+        pconf = phase_confidence(phase.saw_approach, phase.saw_grasp, phase.saw_lift, phase.ordered)
 
         if self.ml is None:
             if rule.label is ActionLabel.HELMET_OFF:
@@ -238,6 +263,33 @@ class HybridActionClassifier:
                 if event is ActionEvent.REMOVE_CONFIRMED:
                     event = ActionEvent.REMOVE_INTENT if physically_intent else ActionEvent.NONE
 
+        # Pose-quality gate: never confirm a SAFE action or REMOVE when pose is not usable.
+        status = pq.decision_status
+        if status == DecisionStatus.UNKNOWN.value:
+            notes.append("PoseQualityScore → UNKNOWN (do not confirm SAFE or REMOVE).")
+            if action is ActionClass.HELMET_REMOVE:
+                event = ActionEvent.REMOVE_INTENT if physically_intent else ActionEvent.NONE
+            action = ActionClass.UNKNOWN
+            conf = min(conf, 0.35)
+            risk = min(risk, 0.25)
+        elif status == DecisionStatus.LOW_CONFIDENCE.value:
+            notes.append("PoseQualityScore → LOW_CONFIDENCE.")
+            if action is ActionClass.HELMET_REMOVE and not physically_ok:
+                action = ActionClass.UNKNOWN
+                event = ActionEvent.REMOVE_INTENT if physically_intent else ActionEvent.NONE
+                notes.append("low pose quality + incomplete phase → UNKNOWN, not a safe confirmation.")
+            if action.value in SAFE_CONFIRMED_ACTIONS and pq.longest_wrist_streak > 3:
+                action = ActionClass.UNKNOWN
+                conf = min(conf, 0.40)
+                notes.append("wrist gaps remain after max_gap interpolation → refuse SAFE confirmation.")
+
+        if action is ActionClass.UNKNOWN:
+            status = DecisionStatus.UNKNOWN.value
+        elif action is ActionClass.INSUFFICIENT_POSE:
+            status = DecisionStatus.INSUFFICIENT_POSE.value
+        elif status == DecisionStatus.VALID.value and quality.quality.value != "OK":
+            status = DecisionStatus.LOW_CONFIDENCE.value
+
         helmet = self.helmet_sm.update(event)
         alert = self.gate.update(risk)
         if alert and action is ActionClass.HELMET_REMOVE:
@@ -249,6 +301,7 @@ class HybridActionClassifier:
             "HelmetState는 검출기 없이 UNKNOWN을 유지합니다. "
             "Pose만으로 착용/미착용 정지 상태는 구분할 수 없습니다."
         )
+        action_p = float(ml_proba.get(action.value, conf)) if ml_proba else float(conf)
         return HybridDecision(
             action=action,
             baseline=action_to_baseline(action),
@@ -267,4 +320,8 @@ class HybridActionClassifier:
             explanation=notes,
             features=rule.features.__dict__,
             frame_labels=rule.frame_labels,
+            action_probability=float(np.clip(action_p, 0.0, 1.0)),
+            pose_quality=float(pq.score),
+            phase_confidence=float(pconf),
+            decision_status=status,
         )

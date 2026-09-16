@@ -157,6 +157,102 @@ def _style_for_family(family: str, rng: np.random.Generator, handed: str) -> dic
             "head_turn_deg": float(rng.uniform(-22, 22)),
             "ease": rng.choice(["cubic", "smoothstep", "ease_out"]),
         }
+    if family == "REMOVE_C_LATERAL_LEFT":
+        return {
+            "variant": "lateral_left",
+            "grasp_mode": "sides",
+            "lift_dir": "left",
+            "pause_mode": "short",
+            "speed_mode": "normal",
+            "one_then_two": False,
+            "dominant": handed,
+            "head_turn_deg": float(rng.uniform(-8, 8)),
+            "ease": "cubic",
+        }
+    if family == "REMOVE_C_LATERAL_RIGHT":
+        return {
+            "variant": "lateral_right",
+            "grasp_mode": "sides",
+            "lift_dir": "right",
+            "pause_mode": "short",
+            "speed_mode": "normal",
+            "one_then_two": False,
+            "dominant": handed,
+            "head_turn_deg": float(rng.uniform(-8, 8)),
+            "ease": "cubic",
+        }
+    if family == "REMOVE_C_STUTTER":
+        return {
+            "variant": "stutter_grasp",
+            "grasp_mode": "sides",
+            "lift_dir": "up",
+            "pause_mode": "stutter",
+            "speed_mode": "slow",
+            "one_then_two": False,
+            "dominant": handed,
+            "head_turn_deg": 0.0,
+            "ease": "smoothstep",
+        }
+    if family == "REMOVE_C_SLOW":
+        return {
+            "variant": "slow_lift",
+            "grasp_mode": "sides",
+            "lift_dir": "up",
+            "pause_mode": "short",
+            "speed_mode": "slow",
+            "one_then_two": False,
+            "dominant": handed,
+            "head_turn_deg": 0.0,
+            "ease": "ease_out",
+        }
+    if family == "REMOVE_C_BRIM":
+        return {
+            "variant": "brim_grasp",
+            "grasp_mode": "brim",
+            "lift_dir": "up",
+            "pause_mode": "short",
+            "speed_mode": "normal",
+            "one_then_two": False,
+            "dominant": handed,
+            "head_turn_deg": float(rng.uniform(-10, 10)),
+            "ease": "cubic",
+        }
+    if family == "REMOVE_C_ONE_THEN_TWO":
+        return {
+            "variant": "one_then_two",
+            "grasp_mode": "sides",
+            "lift_dir": "up",
+            "pause_mode": "short",
+            "speed_mode": "normal",
+            "one_then_two": True,
+            "dominant": handed,
+            "head_turn_deg": 0.0,
+            "ease": "bezier",
+        }
+    if family == "REMOVE_C_HEAD_ROTATION":
+        return {
+            "variant": "head_rotation",
+            "grasp_mode": "sides",
+            "lift_dir": "left",
+            "pause_mode": "short",
+            "speed_mode": "normal",
+            "one_then_two": False,
+            "dominant": handed,
+            "head_turn_deg": float(rng.choice([-28.0, 28.0])),
+            "ease": "cubic",
+        }
+    if family in ("REMOVE_C_LOW_WRIST_CONF", "REMOVE_C_PARTIAL_OCCLUSION"):
+        return {
+            "variant": family.lower(),
+            "grasp_mode": "sides",
+            "lift_dir": "up",
+            "pause_mode": "short",
+            "speed_mode": "normal",
+            "one_then_two": False,
+            "dominant": handed,
+            "head_turn_deg": 0.0,
+            "ease": "cubic",
+        }
     if family == "ADJUST_B":
         return {"variant": "near_remove_adjust", "grasp_mode": "sides", "pause_mode": "short", "dominant": handed}
     if family == "TOUCH_B":
@@ -552,6 +648,7 @@ def generate_one(
     nan_mask = ~np.isfinite(seq)
     if nan_mask.any():
         seq = np.where(nan_mask, 0.0, seq)
+    seq, conf = _apply_remove_c_sensor_faults(seq, conf, fam, rng)
     label = SCENARIO_TO_CLASS[scenario].value
     meta = SampleMeta(
         seed=int(seed),
@@ -572,6 +669,50 @@ def generate_one(
         pair_role=pair_role,
     )
     return seq, conf, meta
+
+
+def _apply_remove_c_sensor_faults(
+    seq: np.ndarray,
+    conf: np.ndarray,
+    family: str,
+    rng: np.random.Generator,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Post-projection faults that kinematics cannot express (confidence / occlusion)."""
+    seq = np.asarray(seq, dtype=np.float64).copy()
+    conf = np.asarray(conf, dtype=np.float64).copy()
+    t = seq.shape[0]
+    if family == "REMOVE_C_LOW_WRIST_CONF":
+        conf[:, [L_WRIST, R_WRIST]] = np.clip(conf[:, [L_WRIST, R_WRIST]] * 0.18, 0.02, 0.18)
+        seq[:, [L_WRIST, R_WRIST]] += rng.normal(0.0, 6.0, size=seq[:, [L_WRIST, R_WRIST]].shape)
+    elif family == "REMOVE_C_PARTIAL_OCCLUSION":
+        gap = min(12, max(6, t // 5))
+        start = max(4, t // 3)
+        end = min(t - 2, start + gap)
+        which = L_WRIST if rng.random() < 0.5 else R_WRIST
+        seq[start:end, which] = np.nan
+        conf[start:end, which] = 0.0
+    return seq, conf
+
+
+def generate_remove_c_subtype(
+    seed: int,
+    subtype: str,
+    split: str = "test",
+    apply_noise: bool = True,
+    **kwargs,
+) -> tuple[np.ndarray, np.ndarray, SampleMeta]:
+    from helmet_action.synthetic.families import REMOVE_C_SUBTYPES
+
+    if subtype not in REMOVE_C_SUBTYPES and subtype != "REMOVE_C":
+        raise ValueError(f"unknown REMOVE_C subtype: {subtype}")
+    return generate_one(
+        seed=seed,
+        scenario="HELMET_REMOVE",
+        split=split,
+        family=subtype,
+        apply_noise=apply_noise,
+        **kwargs,
+    )
 
 
 def generate_counterfactual_pair(

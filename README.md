@@ -11,6 +11,20 @@
 이 저장소는 실제 현장 영상을 대량으로 확보하기 전 단계의 **Pose Action Model** 입니다.
 인체 관절의 기하학, 궤적, 속도/가속도, 양손 협응, 동작 phase, Synthetic Pose Sequence를 사용합니다.
 
+## 프로젝트 진행 단계
+
+| Stage | 내용 | 상태 |
+|---|---|---|
+| 1 | Rule-based Pose prototype | **DONE** |
+| 2 | Synthetic ML pipeline (HistGradientBoosting, Feature V1 139-D) | **DONE** |
+| 3 | Synthetic OOD / robustness validation (families, stress, V2) | **DONE** |
+| 4 | Real Pose Zero-shot validation | **READY / WAITING FOR DATA** |
+| 5 | Real Pose fine-tuning (leave-one-subject) | **NOT STARTED** |
+| 6 | Temporal Deep Learning (LSTM / TCN / ST-GCN / Transformer) | **NOT STARTED** |
+
+Stage 6는 Real Pose Zero-shot 결과를 보기 전에는 시작하지 않습니다.
+이번 단계에서는 Deep Learning 모델을 추가하지 않습니다.
+
 ## 프로젝트 목표
 
 최종적으로 알고 싶은 것은 두 가지입니다.
@@ -248,13 +262,32 @@ Ultralytics가 없으면 synthetic demo / dashboard는 그대로 동작합니다
 오버레이: Track ID, Action, Action Probability, Helmet State, Removal Risk, skeleton.
 Helmet detector가 없으면 Helmet State는 **UNKNOWN** 이라고 표시됩니다.
 
+## Real Pose Zero-shot (Stage 4)
+
+실제 영상은 Git에 올리지 않습니다. 촬영 가이드: [`docs/REAL_DATA_COLLECTION.md`](docs/REAL_DATA_COLLECTION.md).
+
+```
+data/real/raw/P001/helmet_remove/*.mp4   # gitignored
+        │
+        ▼  scripts/extract_real_pose.py
+data/real/processed/sequences/*.npz     # gitignored
+        │
+        ▼  scripts/evaluate_real_pose.py  (synthetic model, no retrain)
+outputs/evaluation/real_zero_shot.json
+```
+
+영상이 아직 없으면 evaluator는 숫자를 만들지 않고 `REAL DATASET: NOT AVAILABLE` 을 출력합니다.
+
 ## 테스트
 
 ```bash
 PYTHONPATH=src python -m pytest tests -q
 PYTHONPATH=src python scripts/run_benchmark.py --samples 500 --seeds 42 --regression
-PYTHONPATH=src python scripts/run_benchmark.py --samples 10000 --seeds 42 101 202 303 404 --compare-features --compare-models
-PYTHONPATH=src python scripts/stress_test.py --model models/action_classifier.joblib --output outputs/stress
+PYTHONPATH=src python scripts/compare_v1_v2.py --samples 10000 --seeds 42 101 202 303 404
+PYTHONPATH=src python scripts/analyze_remove_c.py --model models/action_classifier.joblib
+PYTHONPATH=src python scripts/hard_occlusion_stress.py --model models/action_classifier.joblib
+PYTHONPATH=src python scripts/eval_temporal_ordering.py
+PYTHONPATH=src python scripts/evaluate_real_pose.py --data data/real/processed --model models/action_classifier.joblib
 ```
 
 정규화 후 어깨너비 ≈ 1, translation/scale 불변, scratch가 HELMET_REMOVE로 가지 않음,
@@ -297,6 +330,7 @@ Baseline은 `outputs/evaluation/baseline_v2.json`에 고정합니다. 이후 모
 ## Artifact policy
 
 - `data/synthetic/*.npz` 와 `metadata.json` 은 Git에 올리지 않습니다. seed로 재생성하세요.
+- `data/real/raw/*` 와 `data/real/processed/*` 는 Git에 올리지 않습니다. `.gitkeep` 만 허용합니다.
 - `models/action_classifier.joblib` 는 작은 sklearn 모델만 demo로 포함합니다. YOLO weight(`.pt`)나 대용량 네트워크는 Git에 올리지 마세요.
 - `outputs/evaluation/*.json|csv` 요약은 추적합니다. failure npz/png, stress plots, 대량 run 디렉터리는 ignore 합니다.
 
@@ -318,7 +352,9 @@ src/helmet_action/
   evaluation/    aggregate metrics, FN dump, stress plots
   inference/     pose_provider, ultralytics, video_pipeline
   visualization/ plots, dashboard payloads
-scripts/         generate_dataset, train, evaluate, run_benchmark, stress_test, run_video
+scripts/         generate_dataset, train, evaluate, run_benchmark, stress_test, run_video,
+                 compare_v1_v2, analyze_remove_c, hard_occlusion_stress, eval_temporal_ordering,
+                 extract_real_pose, validate_real_dataset, evaluate_real_pose
 tests/
 config/default.yaml
 pose_action_classifier.py   # 기존 CLI 호환 엔트리

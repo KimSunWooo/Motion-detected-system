@@ -9,6 +9,14 @@ from helmet_action.pose.constants import HEAD_IDX, L_WRIST, R_WRIST, SHOULDER_ID
 from helmet_action.pose.types import KeypointStatus, PoseQuality, PoseQualityReport
 
 
+def interpolation_max_gap(cfg=None) -> int:
+    cfg = cfg or load_config()
+    nested = cfg.get("pose.interpolation.max_gap_frames")
+    if nested is not None:
+        return int(nested)
+    return int(cfg.get("pose.short_gap_frames", 3))
+
+
 def classify_keypoint(conf: float, cfg=None) -> KeypointStatus:
     cfg = cfg or load_config()
     missing = float(cfg.get("pose.keypoint_missing", 0.10))
@@ -34,8 +42,8 @@ def mask_invalid(keypoints: np.ndarray, confidence: np.ndarray | None) -> np.nda
 
 
 def interpolate_short_gaps(seq: np.ndarray, max_gap: int | None = None) -> np.ndarray:
-    """Linear-fill NaN runs shorter than max_gap along time for each joint/axis."""
-    max_gap = max_gap if max_gap is not None else int(load_config().get("pose.short_gap_frames", 3))
+    """Linear-fill NaN runs of length <= max_gap. Longer runs stay MISSING."""
+    max_gap = interpolation_max_gap() if max_gap is None else int(max_gap)
     out = np.asarray(seq, dtype=np.float64).copy()
     t, j, _ = out.shape
     for ji in range(j):
@@ -130,6 +138,8 @@ def prepare_sequence(
     if seq.ndim == 2:
         seq = seq[None, ...]
     quality = assess_pose_quality(seq, confidence)
-    seq = interpolate_short_gaps(seq)
-    seq = hold_last_valid(seq)
-    return seq, quality
+    repaired = interpolate_short_gaps(seq)
+    # Do NOT hold-last-valid across gaps longer than max_gap — that hid hard occlusion.
+    filled = (~np.isfinite(seq).all(axis=-1)) & np.isfinite(repaired).all(axis=-1)
+    quality.interpolation_ratio = float(filled.mean()) if filled.size else 0.0
+    return repaired, quality

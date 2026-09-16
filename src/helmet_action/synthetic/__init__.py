@@ -2,6 +2,7 @@ from helmet_action.synthetic.camera import HighAngleCamera
 from helmet_action.synthetic.generator import (
     generate_counterfactual_pair,
     generate_one,
+    generate_remove_c_subtype,
     generate_scenario_sequence,
 )
 from helmet_action.synthetic.scenarios import (
@@ -18,6 +19,7 @@ __all__ = [
     "generate_helmet_off_sequence",
     "generate_idle_sequence",
     "generate_one",
+    "generate_remove_c_subtype",
     "generate_scratch_sequence",
     "generate_scenario_sequence",
 ]
