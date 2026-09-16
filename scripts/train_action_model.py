@@ -2,7 +2,7 @@
 """Train the lightweight temporal action classifier.
 
 python scripts/train_action_model.py
-python scripts/train_action_model.py --data data/synthetic --out models/action_classifier.joblib
+python scripts/train_action_model.py --data data/synthetic --output models/action_classifier.joblib
 """
 
 from __future__ import annotations
@@ -38,10 +38,11 @@ def _trim(kpts, conf, lengths):
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, default=ROOT / "data" / "synthetic")
-    parser.add_argument("--out", type=Path, default=ROOT / "models" / "action_classifier.joblib")
+    parser.add_argument("--out", "--output", dest="out", type=Path, default=ROOT / "models" / "action_classifier.joblib")
     parser.add_argument("--generate", type=int, default=0, help="generate this many samples first")
     parser.add_argument("--quick", action="store_true")
     parser.add_argument("--estimator", default=None)
+    parser.add_argument("--calibrate", action="store_true", help="fit sigmoid calibration on the validation split")
     args = parser.parse_args(argv)
 
     if not (args.data / "train.npz").exists():
@@ -56,17 +57,30 @@ def main(argv: list[str] | None = None) -> int:
     k_list, c_list = _trim(k, c, lengths)
     print(f"vectorizing {len(k_list)} train sequences…")
     X = vectorize_dataset(k_list, c_list)
-    clf = train_sklearn_classifier(X, y, estimator_name=args.estimator)
+    Xv = yc = None
+    kvl, cvl = _trim(kv, cv, lv)
+    if args.calibrate:
+        print(f"vectorizing {len(kvl)} validation sequences for calibration…")
+        Xv = vectorize_dataset(kvl, cvl)
+        yc = yv
+    clf = train_sklearn_classifier(X, y, estimator_name=args.estimator, X_calibrate=Xv, y_calibrate=yc)
     dest = clf.save(args.out)
     print(f"saved {dest}")
     print("classes:", clf.classes_)
+    print("feature_count:", len(clf.feature_names))
 
-    kvl, cvl = _trim(kv, cv, lv)
-    Xv = vectorize_dataset(kvl, cvl)
     pred = np.array([clf.predict(kvl[i], cvl[i]) for i in range(len(kvl))])
     acc = float((pred == yv).mean()) if len(yv) else 0.0
     print(f"validation accuracy (synthetic, not field): {acc:.3f}")
-    meta = {"model": str(dest), "train_n": int(len(y)), "val_acc_synthetic": acc, "classes": clf.classes_}
+    meta = {
+        "model": str(dest),
+        "train_n": int(len(y)),
+        "val_acc_synthetic": acc,
+        "classes": clf.classes_,
+        "feature_count": len(clf.feature_names),
+        "calibrated": bool(args.calibrate),
+        "disclaimer": "Synthetic validation accuracy is not field CCTV performance.",
+    }
     dest.with_suffix(".json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     return 0
 

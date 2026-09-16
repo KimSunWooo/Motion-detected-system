@@ -6,6 +6,7 @@ from typing import Protocol
 
 import joblib
 import numpy as np
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 
@@ -118,6 +119,8 @@ def train_sklearn_classifier(
     X: np.ndarray,
     y: np.ndarray,
     estimator_name: str | None = None,
+    X_calibrate: np.ndarray | None = None,
+    y_calibrate: np.ndarray | None = None,
 ) -> SklearnActionClassifier:
     cfg = load_config()
     name = estimator_name or str(cfg.get("ml.estimator", "hist_gradient_boosting"))
@@ -125,6 +128,10 @@ def train_sklearn_classifier(
     y_idx = enc.fit_transform(y)
     est = _estimator(name, cfg)
     est.fit(X, y_idx)
+    if X_calibrate is not None and y_calibrate is not None and len(y_calibrate):
+        y_cal = enc.transform(y_calibrate)
+        est = CalibratedClassifierCV(est, method="sigmoid", cv="prefit")
+        est.fit(X_calibrate, y_cal)
     classes = [str(c) for c in enc.classes_]
     return SklearnActionClassifier(
         estimator=est,

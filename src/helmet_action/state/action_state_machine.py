@@ -64,7 +64,9 @@ def infer_phases(keypoints: np.ndarray) -> PhaseTrace:
         spread = dx - dx[g0]
         co_rise = mean_xy[g0, 1] - mean_xy[:, 1]
         expand = r_mean - r_mean[g0]
-        lift[g0:] = (spread[g0:] > lift_spread) | (co_rise[g0:] > lift_rise) | (expand[g0:] > lift_rad)
+        going_down = mean_xy[:, 1] > (mean_xy[g0, 1] + 0.02)
+        candidate = (spread[g0:] > lift_spread) | (co_rise[g0:] > lift_rise) | (expand[g0:] > lift_rad)
+        lift[g0:] = candidate & ~going_down[g0:]
 
     history: list[str] = []
     for i in range(t):
@@ -105,6 +107,32 @@ def infer_phases(keypoints: np.ndarray) -> PhaseTrace:
         saw_lift=saw_lift,
         ordered=bool(ordered and saw_grasp and saw_lift),
     )
+
+
+def phase_debug_table(keypoints: np.ndarray, classifier=None) -> dict:
+    seq, _ = normalize_keypoints(keypoints)
+    trace = infer_phases(keypoints)
+    heads = np.stack([head_center_norm(seq[i]) for i in range(len(seq))])
+    lw, rw = seq[:, L_WRIST], seq[:, R_WRIST]
+    d_l = np.linalg.norm(lw - heads, axis=1)
+    d_r = np.linalg.norm(rw - heads, axis=1)
+    sep = np.linalg.norm(lw - rw, axis=1)
+    radial_v = np.gradient(np.minimum(d_l, d_r))
+    p_rm = None
+    if classifier is not None:
+        p_rm = float(classifier.predict_proba(keypoints).get("HELMET_REMOVE", 0.0))
+    rows = [
+        {
+            "frame": i,
+            "phase": trace.history[i],
+            "lw_head": float(d_l[i]),
+            "rw_head": float(d_r[i]),
+            "wrist_sep": float(sep[i]),
+            "radial_v": float(radial_v[i]),
+        }
+        for i in range(len(seq))
+    ]
+    return {"final_phase": trace.phase.value, "p_remove": p_rm, "ordered": trace.ordered, "rows": rows}
 
 
 class ActionPhaseMachine:

@@ -1,5 +1,11 @@
 # Motion-detected-system
 
+> **경고 / Warning**
+>
+> - **Synthetic evaluation results are NOT real-world CCTV performance.**
+> - **Pose alone cannot determine static helmet presence.**
+> - **Helmet State remains UNKNOWN without a helmet-presence detector.**
+
 공사장·제조·산업 현장 CCTV에서 **작업자가 안전모를 벗으려 하는지** 를 자세(pose) 시계열로 판단하는 시스템입니다.
 
 이 저장소는 실제 현장 영상을 대량으로 확보하기 전 단계의 **Pose Action Model** 입니다.
@@ -209,25 +215,34 @@ Hysteresis: `risk_enter=0.75`, `risk_exit=0.45`, 최근 N window 투표.
 ## 학습 / 평가
 
 ```bash
-python scripts/train_action_model.py
-python scripts/evaluate_action_model.py
+export PYTHONPATH=src
+python scripts/generate_dataset.py --samples 500 --output data/synthetic --seed 42
+python scripts/train_action_model.py --data data/synthetic --output models/action_classifier.joblib
+python scripts/evaluate_action_model.py --data data/synthetic --model models/action_classifier.joblib
+python scripts/evaluate_action_model.py --data data/synthetic/test.npz --model models/action_classifier.joblib
 ```
 
-평가 출력: Accuracy, per-class Precision/Recall/F1, Macro F1, Confusion Matrix,
-HELMET_REMOVE False Negative Rate, remove를 다른 행동으로 본 사례 / 다른 행동을 remove로 본 사례.
+`--calibrate` 는 validation split으로 sigmoid calibration을 붙이는 옵션입니다.
+`predict_proba` 는 현장 confidence가 아닙니다. Synthetic 확률 분포일 뿐입니다.
 
-숫자는 synthetic OOD test에 대한 것입니다. 현장 정확도로 인용하지 마세요.
+평가 출력: Accuracy, Macro Precision/Recall/F1, per-class Precision/Recall/F1, Confusion Matrix,
+HELMET_REMOVE binary TP/FP/TN/FN, FNR, FPR, PR-AUC, hard-negative → REMOVE 수.
+
+숫자는 synthetic OOD test에 대한 것입니다. **현장 정확도로 인용하지 마세요.**
 
 ## 실제 영상 실행
 
 ```bash
 pip install ultralytics opencv-python-headless
-python scripts/run_video.py --source sample.mp4 --pose-model yolo11n-pose.pt
-python scripts/run_video.py --source 0
-python scripts/run_video.py --source rtsp://192.168.0.10:554/stream
+export POSE_MODEL_PATH=yolo11n-pose.pt
+python scripts/smoke_ultralytics.py
+python scripts/run_video.py --source sample.mp4 --pose-model "$POSE_MODEL_PATH"
+python scripts/run_video.py --source 0 --pose-model "$POSE_MODEL_PATH"
+python scripts/run_video.py --source rtsp://192.168.0.10:554/stream --pose-model "$POSE_MODEL_PATH"
 ```
 
-`POSE_MODEL_PATH` 환경변수로 모델 경로를 바꿀 수 있습니다.
+모델 이름은 코드에 고정하지 않습니다. `--pose-model` 또는 `POSE_MODEL_PATH` 또는 `config/default.yaml` 의 `pose.model_path` 를 사용합니다.
+정수 source는 웹캠, 존재하는 파일 경로는 파일이 우선입니다. RTSP userinfo는 로그에 출력하지 않습니다.
 Ultralytics가 없으면 synthetic demo / dashboard는 그대로 동작합니다.
 
 오버레이: Track ID, Action, Action Probability, Helmet State, Removal Risk, skeleton.
@@ -241,7 +256,14 @@ PYTHONPATH=src python -m pytest tests -q
 
 정규화 후 어깨너비 ≈ 1, translation/scale 불변, scratch가 HELMET_REMOVE로 가지 않음,
 helmet-off의 removal probability, idle 오탐 없음, keypoint missing 시 crash 없음,
-confidence 부족 시 UNKNOWN, 동일 seed 재현, 모델 save/load 후 예측 동일.
+confidence 부족 시 UNKNOWN, 동일 seed 재현, 모델 save/load 후 예측 동일,
+track buffer 격리, Helmet UNKNOWN 유지.
+
+## Artifact policy
+
+- `data/synthetic/*.npz` 와 `metadata.json` 은 Git에 올리지 않습니다. seed로 재생성하세요.
+- `models/action_classifier.joblib` 는 작은 sklearn 모델만 demo로 포함합니다. YOLO weight(`.pt`)나 대용량 네트워크는 Git에 올리지 마세요.
+- `outputs/`, `.venv*`, `__pycache__`, `.pytest_cache` 는 ignore 됩니다.
 
 ## 설정
 
@@ -259,7 +281,7 @@ src/helmet_action/
   state/         action_state_machine, helmet_state
   inference/     pose_provider, ultralytics, video_pipeline
   visualization/ plots, dashboard payloads
-scripts/         generate_dataset, train, evaluate, run_video
+scripts/         generate_dataset, train, evaluate, run_video, smoke_ultralytics
 tests/
 config/default.yaml
 pose_action_classifier.py   # 기존 CLI 호환 엔트리

@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+.venv-test/
 venv/
 outputs/
 .DS_Store
@@ -10,3 +11,7 @@ outputs/
 data/synthetic/*.npz
 data/synthetic/metadata.json
 src/helmet_action.egg-info/
+*.pt
+yolo*.pt
+runs/
+

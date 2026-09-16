@@ -19,6 +19,8 @@ def test_unknown_not_flipped_by_pose_action():
     assert sm.state is HelmetState.UNKNOWN
     sm.update(ActionEvent.REMOVE_CONFIRMED)
     assert sm.state is HelmetState.UNKNOWN
+    sm.update(ActionEvent.PUT_ON_CONFIRMED)
+    assert sm.state is HelmetState.UNKNOWN
 
 
 def test_worn_to_not_worn_after_confirmed_remove():
