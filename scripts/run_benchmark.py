@@ -334,7 +334,13 @@ def main(argv: list[str] | None = None) -> int:
     last = None
     for seed in args.seeds:
         print(f"\n=== seed {seed} samples={args.samples} feature={args.feature_version} ===")
-        last = _run_one_seed(seed, args.samples, work, args.feature_version, dump_failures=not args.skip_failures)
+        last = _run_one_seed(
+            seed,
+            args.samples,
+            work,
+            args.feature_version,
+            dump_failures=(not args.skip_failures and seed == args.seeds[0]),
+        )
         per_seed.append(last["flat"])
         b = last["flat"]
         print(

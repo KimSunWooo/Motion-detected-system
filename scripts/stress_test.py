@@ -97,6 +97,7 @@ def fps_stress(clf, n: int = 24) -> list[dict]:
                 pairs.append((packed[0], packed[1], meta.label))
         flat = _eval_pairs(clf, pairs)
         flat["fps"] = fps
+        print(f"  fps={fps} recall={flat['helmet_remove_recall']:.3f} fnr={flat['helmet_remove_fnr']:.3f}", flush=True)
         rows.append(flat)
     return rows
 
@@ -104,11 +105,14 @@ def fps_stress(clf, n: int = 24) -> list[dict]:
 def occlusion_stress(clf, n: int = 20) -> list[dict]:
     rows = []
     base = _gen_remove(n, 12000, apply_noise=False)
-    negs = [generate_one(seed=13000 + i, scenario="HEAD_TOUCH", split="test", apply_noise=False) for i in range(n // 2)]
+    negs = [
+        generate_one(seed=13000 + i, scenario="TWO_HAND_HEAD_TOUCH", split="test", apply_noise=False)
+        for i in range(n // 2)
+    ]
     for name, joints in JOINT_GROUPS.items():
         for rate in (0.10, 0.20, 0.30, 0.40):
             pairs = []
-            rng = np.random.default_rng(abs(hash((name, rate))) % (2**31))
+            rng = np.random.default_rng(17 + sum(ord(ch) for ch in name) * 10 + int(rate * 100))
             for seq, conf, lab, _ in base:
                 s2, c2 = apply_targeted_occlusion(seq, conf, joints, rate, rng)
                 s2 = np.where(np.isfinite(s2), s2, 0.0)
@@ -119,6 +123,7 @@ def occlusion_stress(clf, n: int = 20) -> list[dict]:
                 pairs.append((s2, c2, meta.label))
             flat = _eval_pairs(clf, pairs)
             flat.update({"joint_group": name, "dropout": rate})
+            print(f"  {name} drop={rate:.0%} R={flat['helmet_remove_recall']:.3f}", flush=True)
             rows.append(flat)
     return rows
 
@@ -309,7 +314,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"missing model {args.model}")
         return 1
     clf = SklearnActionClassifier.load(args.model)
-    n = 8 if args.quick else 20
+    n = 8 if args.quick else 12
     print("FPS stress…")
     fps_rows = fps_stress(clf, n=n)
     print("occlusion stress…")

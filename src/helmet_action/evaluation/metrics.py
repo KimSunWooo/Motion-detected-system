@@ -6,9 +6,9 @@ from collections import Counter
 from typing import Any
 
 import numpy as np
-from sklearn.metrics import precision_recall_fscore_support
+from sklearn.metrics import average_precision_score
 
-from helmet_action.models.training import REMOVE, binary_remove_metrics, evaluate_predictions
+from helmet_action.models.training import REMOVE, binary_remove_metrics
 
 
 def bootstrap_binary_ci(
@@ -147,18 +147,24 @@ def permutation_importance_report(
     seed: int = 17,
 ) -> list[dict[str, float]]:
     from sklearn.inspection import permutation_importance
-    from sklearn.metrics import make_scorer
 
     y_idx = encoder.transform(y) if encoder is not None else y
 
-    def _remove_recall(y_t, y_p):
+    def _remove_ap(estimator, X, y_true):
+        proba = estimator.predict_proba(X)
+        classes = list(estimator.classes_)
         if encoder is not None:
-            labels = encoder.inverse_transform(np.asarray(y_t).astype(int))
-            preds = encoder.inverse_transform(np.asarray(y_p).astype(int))
+            labels = [str(x) for x in encoder.inverse_transform(np.asarray(classes).astype(int))]
         else:
-            labels, preds = np.asarray(y_t), np.asarray(y_p)
-        b = binary_remove_metrics(labels, preds)
-        return b["recall"]
+            labels = [str(c) for c in classes]
+        if REMOVE not in labels:
+            return 0.0
+        col = labels.index(REMOVE)
+        y_bin = encoder.inverse_transform(np.asarray(y_true).astype(int)) if encoder is not None else np.asarray(y_true)
+        y_bin = (np.asarray(y_bin).astype(str) == REMOVE).astype(int)
+        if y_bin.min() == y_bin.max():
+            return 0.0
+        return float(average_precision_score(y_bin, proba[:, col]))
 
     r = permutation_importance(
         estimator,
@@ -166,7 +172,7 @@ def permutation_importance_report(
         y_idx,
         n_repeats=n_repeats,
         random_state=seed,
-        scoring=make_scorer(_remove_recall),
+        scoring=_remove_ap,
     )
     rows = []
     for i, name in enumerate(feature_names):

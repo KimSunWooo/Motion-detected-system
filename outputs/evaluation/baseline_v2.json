@@ -5,23 +5,6 @@
   "feature_version": "v1",
   "classifier": "HistGradientBoostingClassifier",
   "feature_count": 139,
-  "config_note": "Frozen metrics from the verified pre-robustness HistGradientBoosting V1 run. Current generator_version in tree is 2.0.0; do not confuse with these numbers.",
-  "dataset_seed": 42,
-  "dataset_size": 500,
-  "accuracy": 0.89,
-  "macro_f1": 0.89,
-  "helmet_remove_precision": 1.0,
-  "helmet_remove_recall": 0.857,
-  "helmet_remove_fnr": 0.143,
-  "helmet_remove_fpr": 0.0,
-  "helmet_remove_tp": 12,
-  "helmet_remove_fp": 0,
-  "helmet_remove_fn": 2,
-  "fn_pattern": "HELMET_REMOVE → HEAD_TOUCH (2/2)",
-  "hard_negative_remove_fp": 0,
-  "ood_test_n": 100,
-  "ood_remove_positives": 14,
-  "disclaimer": "Synthetic OOD only. Not construction-site CCTV performance.",
   "config": {
     "pose": {
       "model_path": "yolo11n-pose.pt",
@@ -319,5 +302,18 @@
       ]
     }
   },
-  "config_snapshot_note": "Config snapshot of the robustness tree. Frozen metrics belong to git_commit f86f095 / generator 1.0.0 / 139-D V1."
+  "dataset_seed": 42,
+  "dataset_size": 500,
+  "note": "Frozen from the verified pre-robustness run (OOD test n=100, 14 HELMET_REMOVE). These numbers are the comparison baseline; they are synthetic-only.",
+  "accuracy": 0.89,
+  "macro_f1": 0.89,
+  "helmet_remove_precision": 1.0,
+  "helmet_remove_recall": 0.857,
+  "helmet_remove_fnr": 0.143,
+  "helmet_remove_fpr": 0.0,
+  "helmet_remove_tp": 12,
+  "helmet_remove_fp": 0,
+  "helmet_remove_fn": 2,
+  "fn_pattern": "HELMET_REMOVE → HEAD_TOUCH (2/2)",
+  "hard_negative_remove_fp": 0
 }
