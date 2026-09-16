@@ -1,0 +1,22 @@
+{
+  "selected": {
+    "w_ml": 0.4,
+    "w_rule": 0.2,
+    "w_phase": 0.3,
+    "w_motion": 0.1,
+    "alert_threshold": 0.58,
+    "watch_threshold": 0.52
+  },
+  "selected_metrics": {
+    "confirmed_remove_recall": 0.8125,
+    "unknown_rate": 0.09375,
+    "false_safe_rate": 0.0,
+    "false_alarm_rate": 0.0,
+    "objective": 0.79375,
+    "feasible": 1.0
+  },
+  "n_candidates": 48,
+  "n_validation": 32,
+  "note": "Weights chosen on train-family validation only (16 REMOVE + 16 negative). Test/REMOVE_C/OOD evaluated once after freeze.",
+  "split": "validation_train_families_only"
+}

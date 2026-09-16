@@ -55,15 +55,15 @@ decision:
   insufficient_min_shoulder_ratio: 0.70
   hybrid_version: v1
   pose_critical: 0.32
-  ear_refuse_safe_streak: 20
+  ear_refuse_safe_streak: 5
   fusion:
     # Frozen after validation-only search. Do not retune on test/OOD.
     w_ml: 0.40
     w_rule: 0.20
     w_phase: 0.30
     w_motion: 0.10
-    alert_threshold: 0.62
-    watch_threshold: 0.48
+    alert_threshold: 0.58
+    watch_threshold: 0.52
     min_windows_for_alert: 2
 
 state:

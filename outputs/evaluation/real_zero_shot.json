@@ -2,6 +2,17 @@
   "dataset_available": false,
   "status": "REAL DATASET: NOT AVAILABLE",
   "metrics": null,
+  "REAL METRICS": "REAL DATASET: NOT AVAILABLE",
+  "overall": null,
+  "helmet_remove": null,
+  "decision": null,
+  "safety": null,
+  "pose": null,
+  "per_subject": {},
+  "per_condition": {
+    "distance": {},
+    "speed": {}
+  },
   "note": "No processed real sequences. Do not invent real metrics.",
   "validation": {
     "processed_root": "data/real/processed",

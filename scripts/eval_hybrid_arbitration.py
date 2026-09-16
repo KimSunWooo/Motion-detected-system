@@ -103,7 +103,7 @@ def _validation_sequences(n_pos: int, n_neg: int) -> list[tuple[np.ndarray, np.n
     for i in range(n_pos):
         seq, conf, meta = generate_one(seed=8_000 + i, scenario="HELMET_REMOVE", split="train", apply_noise=True)
         out.append((seq, conf, meta.label))
-    negs = ("HELMET_ADJUST", "HEAD_SCRATCH", "HEAD_TOUCH", "IDLE", "TWO_HAND_HEAD_TOUCH")
+    negs = ("HELMET_ADJUST", "HEAD_SCRATCH", "ONE_HAND_HEAD_TOUCH", "IDLE", "TWO_HAND_HEAD_TOUCH")
     for i in range(n_neg):
         scen = negs[i % len(negs)]
         seq, conf, meta = generate_one(seed=9_000 + i, scenario=scen, split="train", apply_noise=True)
@@ -125,6 +125,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--n-per-family", type=int, default=24)
     parser.add_argument("--n-occlusion", type=int, default=12)
     parser.add_argument("--n-val", type=int, default=16)
+    parser.add_argument("--skip-search", action="store_true")
     parser.add_argument("--output", type=Path, default=ROOT / "outputs" / "evaluation")
     args = parser.parse_args(argv)
 
@@ -134,9 +135,25 @@ def main(argv: list[str] | None = None) -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     print("=== validation-only fusion search ===", flush=True)
-    val_seq = _validation_sequences(args.n_val, args.n_val)
-    fusion_search = select_fusion_weights_on_validation(hybrid, val_seq)
-    print("selected", fusion_search["selected"], fusion_search["selected_metrics"], flush=True)
+    if args.skip_search:
+        from helmet_action.models.fusion import DEFAULT_FUSION
+        from helmet_action.config import load_config
+
+        cfg = load_config()
+        selected = dict(cfg.section("decision.fusion") or DEFAULT_FUSION.as_dict())
+        fusion_search = {
+            "selected": {k: selected.get(k, v) for k, v in DEFAULT_FUSION.as_dict().items()},
+            "selected_metrics": {"note": "skipped; using frozen validation weights from config"},
+            "n_candidates": 0,
+            "n_validation": 0,
+            "note": "Weights frozen after validation-only search. Test/OOD evaluated once.",
+            "candidates": [],
+        }
+        print("using frozen", fusion_search["selected"], flush=True)
+    else:
+        val_seq = _validation_sequences(args.n_val, args.n_val)
+        fusion_search = select_fusion_weights_on_validation(hybrid, val_seq)
+        print("selected", fusion_search["selected"], fusion_search["selected_metrics"], flush=True)
     (out / "fusion_val_search.json").write_text(json.dumps(fusion_search, indent=2), encoding="utf-8")
 
     print("=== REMOVE_C Hybrid V1 vs V2 ===", flush=True)

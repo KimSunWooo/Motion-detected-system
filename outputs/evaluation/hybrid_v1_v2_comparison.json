@@ -1,0 +1,975 @@
+{
+  "fusion_selected": {
+    "w_ml": 0.4,
+    "w_rule": 0.2,
+    "w_phase": 0.3,
+    "w_motion": 0.1,
+    "alert_threshold": 0.58,
+    "watch_threshold": 0.52
+  },
+  "fusion_val_metrics": {
+    "confirmed_remove_recall": 0.8125,
+    "unknown_rate": 0.09375,
+    "false_safe_rate": 0.0,
+    "false_alarm_rate": 0.0,
+    "objective": 0.79375,
+    "feasible": 1.0,
+    "n_validation": 32,
+    "split": "train-family validation only"
+  },
+  "hybrid_v1_overall": {
+    "ml_recall": 0.984375,
+    "hybrid_confirmed_recall": 0.4739583333333333,
+    "unknown_rate": 0.3287037037037037,
+    "false_safe_rate": 0.005208333333333333,
+    "false_alarm_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "unknown_on_positive_rate": 0.5208333333333334,
+    "insufficient_pose_rate": 0.19444444444444445,
+    "risk_counts": {
+      "ALERT": 90,
+      "UNKNOWN": 113,
+      "SAFE": 12,
+      "WATCH": 1
+    },
+    "risk_rates": {
+      "ALERT": 0.4166666666666667,
+      "UNKNOWN": 0.5231481481481481,
+      "SAFE": 0.05555555555555555,
+      "WATCH": 0.004629629629629629
+    },
+    "pred_counts": {
+      "HELMET_REMOVE": 91,
+      "UNKNOWN": 71,
+      "INSUFFICIENT_POSE": 42,
+      "HEAD_TOUCH": 9,
+      "HEAD_SCRATCH": 1,
+      "IDLE": 1,
+      "HELMET_ADJUST": 1
+    },
+    "n": 216
+  },
+  "hybrid_v2_overall": {
+    "ml_recall": 0.984375,
+    "hybrid_confirmed_recall": 0.671875,
+    "unknown_rate": 0.1574074074074074,
+    "false_safe_rate": 0.0,
+    "false_alarm_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "unknown_on_positive_rate": 0.328125,
+    "insufficient_pose_rate": 0.19444444444444445,
+    "risk_counts": {
+      "ALERT": 129,
+      "UNKNOWN": 64,
+      "WATCH": 12,
+      "SAFE": 11
+    },
+    "risk_rates": {
+      "ALERT": 0.5972222222222222,
+      "UNKNOWN": 0.2962962962962963,
+      "WATCH": 0.05555555555555555,
+      "SAFE": 0.05092592592592592
+    },
+    "pred_counts": {
+      "HELMET_REMOVE": 129,
+      "UNKNOWN": 34,
+      "INSUFFICIENT_POSE": 42,
+      "HEAD_SCRATCH": 1,
+      "HEAD_TOUCH": 8,
+      "IDLE": 1,
+      "HELMET_ADJUST": 1
+    },
+    "n": 216
+  },
+  "remove_c": [
+    {
+      "subtype": "REMOVE_C_LATERAL_LEFT",
+      "v1": {
+        "ml_recall": 0.9583333333333334,
+        "hybrid_confirmed_recall": 0.4583333333333333,
+        "unknown_rate": 0.5,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.5416666666666666,
+        "insufficient_pose_rate": 0.041666666666666664,
+        "risk_counts": {
+          "ALERT": 11,
+          "UNKNOWN": 13
+        },
+        "risk_rates": {
+          "ALERT": 0.4583333333333333,
+          "UNKNOWN": 0.5416666666666666
+        },
+        "pred_counts": {
+          "HELMET_REMOVE": 11,
+          "UNKNOWN": 12,
+          "INSUFFICIENT_POSE": 1
+        },
+        "n": 24
+      },
+      "v2": {
+        "ml_recall": 0.9583333333333334,
+        "hybrid_confirmed_recall": 0.7916666666666666,
+        "unknown_rate": 0.16666666666666666,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.20833333333333334,
+        "insufficient_pose_rate": 0.041666666666666664,
+        "risk_counts": {
+          "ALERT": 19,
+          "UNKNOWN": 4,
+          "WATCH": 1
+        },
+        "risk_rates": {
+          "ALERT": 0.7916666666666666,
+          "UNKNOWN": 0.16666666666666666,
+          "WATCH": 0.041666666666666664
+        },
+        "pred_counts": {
+          "HELMET_REMOVE": 19,
+          "UNKNOWN": 4,
+          "INSUFFICIENT_POSE": 1
+        },
+        "n": 24
+      }
+    },
+    {
+      "subtype": "REMOVE_C_LATERAL_RIGHT",
+      "v1": {
+        "ml_recall": 0.9583333333333334,
+        "hybrid_confirmed_recall": 0.7083333333333334,
+        "unknown_rate": 0.25,
+        "false_safe_rate": 0.041666666666666664,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.25,
+        "insufficient_pose_rate": 0.0,
+        "risk_counts": {
+          "ALERT": 17,
+          "UNKNOWN": 6,
+          "SAFE": 1
+        },
+        "risk_rates": {
+          "ALERT": 0.7083333333333334,
+          "UNKNOWN": 0.25,
+          "SAFE": 0.041666666666666664
+        },
+        "pred_counts": {
+          "HELMET_REMOVE": 17,
+          "UNKNOWN": 6,
+          "HEAD_TOUCH": 1
+        },
+        "n": 24
+      },
+      "v2": {
+        "ml_recall": 0.9583333333333334,
+        "hybrid_confirmed_recall": 0.9166666666666666,
+        "unknown_rate": 0.08333333333333333,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.08333333333333333,
+        "insufficient_pose_rate": 0.0,
+        "risk_counts": {
+          "ALERT": 22,
+          "WATCH": 2
+        },
+        "risk_rates": {
+          "ALERT": 0.9166666666666666,
+          "WATCH": 0.08333333333333333
+        },
+        "pred_counts": {
+          "HELMET_REMOVE": 22,
+          "UNKNOWN": 2
+        },
+        "n": 24
+      }
+    },
+    {
+      "subtype": "REMOVE_C_STUTTER",
+      "v1": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.9166666666666666,
+        "unknown_rate": 0.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.08333333333333333,
+        "insufficient_pose_rate": 0.08333333333333333,
+        "risk_counts": {
+          "UNKNOWN": 2,
+          "ALERT": 21,
+          "WATCH": 1
+        },
+        "risk_rates": {
+          "UNKNOWN": 0.08333333333333333,
+          "ALERT": 0.875,
+          "WATCH": 0.041666666666666664
+        },
+        "pred_counts": {
+          "INSUFFICIENT_POSE": 2,
+          "HELMET_REMOVE": 22
+        },
+        "n": 24
+      },
+      "v2": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.9166666666666666,
+        "unknown_rate": 0.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.08333333333333333,
+        "insufficient_pose_rate": 0.08333333333333333,
+        "risk_counts": {
+          "UNKNOWN": 2,
+          "ALERT": 22
+        },
+        "risk_rates": {
+          "UNKNOWN": 0.08333333333333333,
+          "ALERT": 0.9166666666666666
+        },
+        "pred_counts": {
+          "INSUFFICIENT_POSE": 2,
+          "HELMET_REMOVE": 22
+        },
+        "n": 24
+      }
+    },
+    {
+      "subtype": "REMOVE_C_SLOW",
+      "v1": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.8333333333333334,
+        "unknown_rate": 0.041666666666666664,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.16666666666666666,
+        "insufficient_pose_rate": 0.125,
+        "risk_counts": {
+          "ALERT": 20,
+          "UNKNOWN": 4
+        },
+        "risk_rates": {
+          "ALERT": 0.8333333333333334,
+          "UNKNOWN": 0.16666666666666666
+        },
+        "pred_counts": {
+          "HELMET_REMOVE": 20,
+          "UNKNOWN": 1,
+          "INSUFFICIENT_POSE": 3
+        },
+        "n": 24
+      },
+      "v2": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.875,
+        "unknown_rate": 0.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.125,
+        "insufficient_pose_rate": 0.125,
+        "risk_counts": {
+          "ALERT": 21,
+          "UNKNOWN": 3
+        },
+        "risk_rates": {
+          "ALERT": 0.875,
+          "UNKNOWN": 0.125
+        },
+        "pred_counts": {
+          "HELMET_REMOVE": 21,
+          "INSUFFICIENT_POSE": 3
+        },
+        "n": 24
+      }
+    },
+    {
+      "subtype": "REMOVE_C_BRIM",
+      "v1": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.20833333333333334,
+        "unknown_rate": 0.75,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.7916666666666666,
+        "insufficient_pose_rate": 0.041666666666666664,
+        "risk_counts": {
+          "UNKNOWN": 19,
+          "ALERT": 5
+        },
+        "risk_rates": {
+          "UNKNOWN": 0.7916666666666666,
+          "ALERT": 0.20833333333333334
+        },
+        "pred_counts": {
+          "UNKNOWN": 18,
+          "HELMET_REMOVE": 5,
+          "INSUFFICIENT_POSE": 1
+        },
+        "n": 24
+      },
+      "v2": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.5,
+        "unknown_rate": 0.4583333333333333,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.5,
+        "insufficient_pose_rate": 0.041666666666666664,
+        "risk_counts": {
+          "ALERT": 12,
+          "UNKNOWN": 8,
+          "WATCH": 4
+        },
+        "risk_rates": {
+          "ALERT": 0.5,
+          "UNKNOWN": 0.3333333333333333,
+          "WATCH": 0.16666666666666666
+        },
+        "pred_counts": {
+          "HELMET_REMOVE": 12,
+          "UNKNOWN": 11,
+          "INSUFFICIENT_POSE": 1
+        },
+        "n": 24
+      }
+    },
+    {
+      "subtype": "REMOVE_C_ONE_THEN_TWO",
+      "v1": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.6666666666666666,
+        "unknown_rate": 0.25,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.3333333333333333,
+        "insufficient_pose_rate": 0.08333333333333333,
+        "risk_counts": {
+          "UNKNOWN": 8,
+          "ALERT": 16
+        },
+        "risk_rates": {
+          "UNKNOWN": 0.3333333333333333,
+          "ALERT": 0.6666666666666666
+        },
+        "pred_counts": {
+          "INSUFFICIENT_POSE": 2,
+          "UNKNOWN": 6,
+          "HELMET_REMOVE": 16
+        },
+        "n": 24
+      },
+      "v2": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.8333333333333334,
+        "unknown_rate": 0.08333333333333333,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.16666666666666666,
+        "insufficient_pose_rate": 0.08333333333333333,
+        "risk_counts": {
+          "UNKNOWN": 3,
+          "ALERT": 20,
+          "WATCH": 1
+        },
+        "risk_rates": {
+          "UNKNOWN": 0.125,
+          "ALERT": 0.8333333333333334,
+          "WATCH": 0.041666666666666664
+        },
+        "pred_counts": {
+          "INSUFFICIENT_POSE": 2,
+          "HELMET_REMOVE": 20,
+          "UNKNOWN": 2
+        },
+        "n": 24
+      }
+    },
+    {
+      "subtype": "REMOVE_C_LOW_WRIST_CONF",
+      "v1": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.0,
+        "unknown_rate": 0.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 1.0,
+        "insufficient_pose_rate": 1.0,
+        "risk_counts": {
+          "UNKNOWN": 24
+        },
+        "risk_rates": {
+          "UNKNOWN": 1.0
+        },
+        "pred_counts": {
+          "INSUFFICIENT_POSE": 24
+        },
+        "n": 24
+      },
+      "v2": {
+        "ml_recall": 1.0,
+        "hybrid_confirmed_recall": 0.0,
+        "unknown_rate": 0.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 1.0,
+        "insufficient_pose_rate": 1.0,
+        "risk_counts": {
+          "UNKNOWN": 24
+        },
+        "risk_rates": {
+          "UNKNOWN": 1.0
+        },
+        "pred_counts": {
+          "INSUFFICIENT_POSE": 24
+        },
+        "n": 24
+      }
+    },
+    {
+      "subtype": "REMOVE_C_PARTIAL_OCCLUSION",
+      "v1": {
+        "ml_recall": 0.9583333333333334,
+        "hybrid_confirmed_recall": 0.0,
+        "unknown_rate": 0.75,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 1.0,
+        "insufficient_pose_rate": 0.25,
+        "risk_counts": {
+          "UNKNOWN": 24
+        },
+        "risk_rates": {
+          "UNKNOWN": 1.0
+        },
+        "pred_counts": {
+          "INSUFFICIENT_POSE": 6,
+          "UNKNOWN": 18
+        },
+        "n": 24
+      },
+      "v2": {
+        "ml_recall": 0.9583333333333334,
+        "hybrid_confirmed_recall": 0.5416666666666666,
+        "unknown_rate": 0.20833333333333334,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "unknown_on_positive_rate": 0.4583333333333333,
+        "insufficient_pose_rate": 0.25,
+        "risk_counts": {
+          "UNKNOWN": 7,
+          "ALERT": 13,
+          "WATCH": 4
+        },
+        "risk_rates": {
+          "UNKNOWN": 0.2916666666666667,
+          "ALERT": 0.5416666666666666,
+          "WATCH": 0.16666666666666666
+        },
+        "pred_counts": {
+          "INSUFFICIENT_POSE": 6,
+          "UNKNOWN": 5,
+          "HELMET_REMOVE": 13
+        },
+        "n": 24
+      }
+    }
+  ],
+  "worst_subtype_v1": "REMOVE_C_PARTIAL_OCCLUSION",
+  "worst_subtype_v2": "REMOVE_C_LOW_WRIST_CONF",
+  "unknown_reasons": {
+    "v1": {
+      "n_unknown": 100,
+      "reason_catalog": [
+        "LOW_WRIST_CONFIDENCE",
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LOW_POSE_QUALITY",
+        "LOW_BUFFER_COMPLETENESS",
+        "RULE_ML_DISAGREEMENT",
+        "TEMPORAL_INCOMPLETE",
+        "BOTH_WRISTS_MISSING",
+        "ID_SWITCH",
+        "SHORT_SEQUENCE",
+        "NO_PHASE_HISTORY",
+        "LOW_EAR_QUALITY",
+        "POSE_CRITICAL",
+        "HARD_SAFETY_GATE"
+      ],
+      "ranked": [
+        {
+          "reason": "RULE_ML_DISAGREEMENT",
+          "count": 46,
+          "ratio": 0.46,
+          "ml_remove_probability_mean": 0.9721480335658236,
+          "phase_confidence_mean": 0.4066975637897422,
+          "pose_quality_mean": 0.7037352579231672
+        },
+        {
+          "reason": "PHASE_INCONSISTENCY",
+          "count": 43,
+          "ratio": 0.43,
+          "ml_remove_probability_mean": 0.9524922554951405,
+          "phase_confidence_mean": 0.46261347244692475,
+          "pose_quality_mean": 0.7040805484846013
+        },
+        {
+          "reason": "POSE_CRITICAL",
+          "count": 39,
+          "ratio": 0.39,
+          "ml_remove_probability_mean": 0.0,
+          "phase_confidence_mean": 0.0,
+          "pose_quality_mean": 0.3650047073268039
+        },
+        {
+          "reason": "HARD_SAFETY_GATE",
+          "count": 39,
+          "ratio": 0.39,
+          "ml_remove_probability_mean": 0.0,
+          "phase_confidence_mean": 0.0,
+          "pose_quality_mean": 0.3650047073268039
+        },
+        {
+          "reason": "NO_LIFT",
+          "count": 22,
+          "ratio": 0.22,
+          "ml_remove_probability_mean": 0.9424806203261994,
+          "phase_confidence_mean": 0.31672680321388497,
+          "pose_quality_mean": 0.7101806650526852
+        },
+        {
+          "reason": "LOW_WRIST_CONFIDENCE",
+          "count": 19,
+          "ratio": 0.19,
+          "ml_remove_probability_mean": 0.9695700267334683,
+          "phase_confidence_mean": 0.6745164261561307,
+          "pose_quality_mean": 0.5815815413850052
+        },
+        {
+          "reason": "NO_GRASP",
+          "count": 18,
+          "ratio": 0.18,
+          "ml_remove_probability_mean": 0.9774142661834238,
+          "phase_confidence_mean": 0.3254875450409511,
+          "pose_quality_mean": 0.7125879183595578
+        },
+        {
+          "reason": "NO_PHASE_HISTORY",
+          "count": 1,
+          "ratio": 0.01,
+          "ml_remove_probability_mean": 0.9788519423806266,
+          "phase_confidence_mean": 0.036000000000000004,
+          "pose_quality_mean": 0.7578420847093219
+        },
+        {
+          "reason": "LOW_POSE_QUALITY",
+          "count": 1,
+          "ratio": 0.01,
+          "ml_remove_probability_mean": 0.9933741445906893,
+          "phase_confidence_mean": 0.31783333333333336,
+          "pose_quality_mean": 0.5013819814245529
+        }
+      ],
+      "reason_counts": {
+        "RULE_ML_DISAGREEMENT": 46,
+        "PHASE_INCONSISTENCY": 43,
+        "POSE_CRITICAL": 39,
+        "HARD_SAFETY_GATE": 39,
+        "NO_LIFT": 22,
+        "LOW_WRIST_CONFIDENCE": 19,
+        "NO_GRASP": 18,
+        "NO_PHASE_HISTORY": 1,
+        "LOW_POSE_QUALITY": 1
+      },
+      "reason_ratio": {
+        "RULE_ML_DISAGREEMENT": 0.46,
+        "PHASE_INCONSISTENCY": 0.43,
+        "POSE_CRITICAL": 0.39,
+        "HARD_SAFETY_GATE": 0.39,
+        "NO_LIFT": 0.22,
+        "LOW_WRIST_CONFIDENCE": 0.19,
+        "NO_GRASP": 0.18,
+        "NO_PHASE_HISTORY": 0.01,
+        "LOW_POSE_QUALITY": 0.01
+      }
+    },
+    "v2": {
+      "n_unknown": 63,
+      "reason_catalog": [
+        "LOW_WRIST_CONFIDENCE",
+        "NO_GRASP",
+        "NO_LIFT",
+        "PHASE_INCONSISTENCY",
+        "TRACK_FRAGMENTATION",
+        "LOW_POSE_QUALITY",
+        "LOW_BUFFER_COMPLETENESS",
+        "RULE_ML_DISAGREEMENT",
+        "TEMPORAL_INCOMPLETE",
+        "BOTH_WRISTS_MISSING",
+        "ID_SWITCH",
+        "SHORT_SEQUENCE",
+        "NO_PHASE_HISTORY",
+        "LOW_EAR_QUALITY",
+        "POSE_CRITICAL",
+        "HARD_SAFETY_GATE"
+      ],
+      "ranked": [
+        {
+          "reason": "HARD_SAFETY_GATE",
+          "count": 41,
+          "ratio": 0.6507936507936508,
+          "ml_remove_probability_mean": 0.03131371067844033,
+          "phase_confidence_mean": 0.02234959349593496,
+          "pose_quality_mean": 0.38069567342741245
+        },
+        {
+          "reason": "POSE_CRITICAL",
+          "count": 39,
+          "ratio": 0.6190476190476191,
+          "ml_remove_probability_mean": 0.0,
+          "phase_confidence_mean": 0.0,
+          "pose_quality_mean": 0.3650047073268039
+        },
+        {
+          "reason": "RULE_ML_DISAGREEMENT",
+          "count": 22,
+          "ratio": 0.3492063492063492,
+          "ml_remove_probability_mean": 0.96468533537342,
+          "phase_confidence_mean": 0.29468279622250676,
+          "pose_quality_mean": 0.7103447038876619
+        },
+        {
+          "reason": "NO_LIFT",
+          "count": 16,
+          "ratio": 0.25396825396825395,
+          "ml_remove_probability_mean": 0.9262645752076742,
+          "phase_confidence_mean": 0.26538952989007836,
+          "pose_quality_mean": 0.7044221948138857
+        },
+        {
+          "reason": "PHASE_INCONSISTENCY",
+          "count": 16,
+          "ratio": 0.25396825396825395,
+          "ml_remove_probability_mean": 0.9026675715256947,
+          "phase_confidence_mean": 0.379690981582535,
+          "pose_quality_mean": 0.7150003943526977
+        },
+        {
+          "reason": "NO_GRASP",
+          "count": 11,
+          "ratio": 0.1746031746031746,
+          "ml_remove_probability_mean": 0.9659512282502308,
+          "phase_confidence_mean": 0.23669174037004126,
+          "pose_quality_mean": 0.7150044013870969
+        },
+        {
+          "reason": "LOW_WRIST_CONFIDENCE",
+          "count": 4,
+          "ratio": 0.06349206349206349,
+          "ml_remove_probability_mean": 0.9983045046556945,
+          "phase_confidence_mean": 0.29605833333333337,
+          "pose_quality_mean": 0.5735416730330805
+        },
+        {
+          "reason": "BOTH_WRISTS_MISSING",
+          "count": 2,
+          "ratio": 0.031746031746031744,
+          "ml_remove_probability_mean": 0.6419310689080269,
+          "phase_confidence_mean": 0.45816666666666667,
+          "pose_quality_mean": 0.6866695123892794
+        },
+        {
+          "reason": "NO_PHASE_HISTORY",
+          "count": 1,
+          "ratio": 0.015873015873015872,
+          "ml_remove_probability_mean": 0.9788519423806266,
+          "phase_confidence_mean": 0.036000000000000004,
+          "pose_quality_mean": 0.7578420847093219
+        },
+        {
+          "reason": "LOW_POSE_QUALITY",
+          "count": 1,
+          "ratio": 0.015873015873015872,
+          "ml_remove_probability_mean": 0.9933741445906893,
+          "phase_confidence_mean": 0.31783333333333336,
+          "pose_quality_mean": 0.5013819814245529
+        }
+      ],
+      "reason_counts": {
+        "HARD_SAFETY_GATE": 41,
+        "POSE_CRITICAL": 39,
+        "RULE_ML_DISAGREEMENT": 22,
+        "NO_LIFT": 16,
+        "PHASE_INCONSISTENCY": 16,
+        "NO_GRASP": 11,
+        "LOW_WRIST_CONFIDENCE": 4,
+        "BOTH_WRISTS_MISSING": 2,
+        "NO_PHASE_HISTORY": 1,
+        "LOW_POSE_QUALITY": 1
+      },
+      "reason_ratio": {
+        "HARD_SAFETY_GATE": 0.6507936507936508,
+        "POSE_CRITICAL": 0.6190476190476191,
+        "RULE_ML_DISAGREEMENT": 0.3492063492063492,
+        "NO_LIFT": 0.25396825396825395,
+        "PHASE_INCONSISTENCY": 0.25396825396825395,
+        "NO_GRASP": 0.1746031746031746,
+        "LOW_WRIST_CONFIDENCE": 0.06349206349206349,
+        "BOTH_WRISTS_MISSING": 0.031746031746031744,
+        "NO_PHASE_HISTORY": 0.015873015873015872,
+        "LOW_POSE_QUALITY": 0.015873015873015872
+      }
+    }
+  },
+  "phase": {
+    "n_remove_c": 192,
+    "unknown_n_v1": 100,
+    "unknown_n_v2": 63,
+    "NO_GRASP_unknown_v1": 18,
+    "NO_GRASP_unknown_v2": 11,
+    "NO_GRASP_reduction": 7.0,
+    "PHASE_INCONSISTENCY_unknown_v1": 43,
+    "PHASE_INCONSISTENCY_unknown_v2": 16,
+    "PHASE_INCONSISTENCY_reduction": 27.0
+  },
+  "ear_occlusion": {
+    "v1": {
+      "5": {
+        "confirmed_remove_recall": 0.4166666666666667,
+        "unknown_rate": 0.7916666666666666,
+        "unknown_on_positive_rate": 0.5833333333333334,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 0.7916666666666666,
+        "n": 24
+      },
+      "10": {
+        "confirmed_remove_recall": 0.4166666666666667,
+        "unknown_rate": 0.7916666666666666,
+        "unknown_on_positive_rate": 0.5833333333333334,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 0.7916666666666666,
+        "n": 24
+      },
+      "20": {
+        "confirmed_remove_recall": 0.25,
+        "unknown_rate": 0.875,
+        "unknown_on_positive_rate": 0.75,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 0.875,
+        "n": 24
+      },
+      "30": {
+        "confirmed_remove_recall": 0.16666666666666666,
+        "unknown_rate": 0.9166666666666666,
+        "unknown_on_positive_rate": 0.8333333333333334,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 0.9166666666666666,
+        "n": 24
+      }
+    },
+    "v2": {
+      "5": {
+        "confirmed_remove_recall": 0.75,
+        "unknown_rate": 0.625,
+        "unknown_on_positive_rate": 0.25,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 0.625,
+        "n": 24
+      },
+      "10": {
+        "confirmed_remove_recall": 0.75,
+        "unknown_rate": 0.625,
+        "unknown_on_positive_rate": 0.25,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 0.625,
+        "n": 24
+      },
+      "20": {
+        "confirmed_remove_recall": 0.5833333333333334,
+        "unknown_rate": 0.7083333333333334,
+        "unknown_on_positive_rate": 0.4166666666666667,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 0.7083333333333334,
+        "n": 24
+      },
+      "30": {
+        "confirmed_remove_recall": 0.3333333333333333,
+        "unknown_rate": 0.8333333333333334,
+        "unknown_on_positive_rate": 0.6666666666666666,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 0.8333333333333334,
+        "n": 24
+      }
+    }
+  },
+  "both_wrist_occlusion": {
+    "v1": {
+      "5": {
+        "confirmed_remove_recall": 0.0,
+        "unknown_rate": 1.0,
+        "unknown_on_positive_rate": 1.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 1.0,
+        "n": 24
+      },
+      "10": {
+        "confirmed_remove_recall": 0.0,
+        "unknown_rate": 1.0,
+        "unknown_on_positive_rate": 1.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 1.0,
+        "n": 24
+      },
+      "20": {
+        "confirmed_remove_recall": 0.0,
+        "unknown_rate": 0.0,
+        "unknown_on_positive_rate": 1.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 1.0,
+        "abstain_rate": 1.0,
+        "n": 24
+      },
+      "30": {
+        "confirmed_remove_recall": 0.0,
+        "unknown_rate": 0.0,
+        "unknown_on_positive_rate": 1.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 1.0,
+        "abstain_rate": 1.0,
+        "n": 24
+      }
+    },
+    "v2": {
+      "5": {
+        "confirmed_remove_recall": 0.0,
+        "unknown_rate": 1.0,
+        "unknown_on_positive_rate": 1.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 1.0,
+        "n": 24
+      },
+      "10": {
+        "confirmed_remove_recall": 0.0,
+        "unknown_rate": 1.0,
+        "unknown_on_positive_rate": 1.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 0.0,
+        "abstain_rate": 1.0,
+        "n": 24
+      },
+      "20": {
+        "confirmed_remove_recall": 0.0,
+        "unknown_rate": 0.0,
+        "unknown_on_positive_rate": 1.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 1.0,
+        "abstain_rate": 1.0,
+        "n": 24
+      },
+      "30": {
+        "confirmed_remove_recall": 0.0,
+        "unknown_rate": 0.0,
+        "unknown_on_positive_rate": 1.0,
+        "false_safe_rate": 0.0,
+        "false_alarm_rate": 0.0,
+        "insufficient_pose_rate": 1.0,
+        "abstain_rate": 1.0,
+        "n": 24
+      }
+    }
+  },
+  "risk": {
+    "v1": {
+      "ALERT": 0.4166666666666667,
+      "UNKNOWN": 0.5231481481481481,
+      "SAFE": 0.05555555555555555,
+      "WATCH": 0.004629629629629629
+    },
+    "v2": {
+      "ALERT": 0.5972222222222222,
+      "UNKNOWN": 0.2962962962962963,
+      "WATCH": 0.05555555555555555,
+      "SAFE": 0.05092592592592592
+    }
+  },
+  "feature_default": {
+    "default": "v1",
+    "reason": "Feature V2 wins Macro F1 on 5/5 identical seeds but REMOVE recall/FNR CIs include 0 (2/5 seeds slightly worse recall). Production model remains Feature V1 139-D. Hybrid V2 is an arbitration layer, not a new feature extractor.",
+    "v2_macro_f1_better_seeds": "5/5",
+    "remove_recall_ci_includes_zero": true
+  },
+  "real_pose": {
+    "pipeline_ready": true,
+    "manifest_ready": true,
+    "dataset_present": false,
+    "REAL_METRICS": "NOT AVAILABLE",
+    "raw_smoke": {
+      "raw_root": "/workspace/data/real/raw",
+      "exists": true,
+      "n_videos": 0,
+      "videos": [],
+      "present_action_dirs": [
+        "P001/helmet_remove",
+        "P001/helmet_adjust",
+        "P001/head_scratch",
+        "P001/head_touch",
+        "P002/helmet_remove",
+        "P002/helmet_adjust",
+        "P002/head_scratch",
+        "P002/head_touch",
+        "P003/helmet_remove",
+        "P003/helmet_adjust",
+        "P003/head_scratch",
+        "P003/head_touch"
+      ],
+      "missing_action_dirs": [],
+      "invalid_non_video_files": [],
+      "dataset_present": false,
+      "status": "READY_FOR_CAPTURE",
+      "note": "No dummy real metrics. Empty dirs are valid before the 180-clip pilot."
+    }
+  },
+  "n_per_family": 24,
+  "disclaimer": "Synthetic REMOVE_C / occlusion only. Not real CCTV performance."
+}

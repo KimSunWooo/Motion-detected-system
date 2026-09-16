@@ -28,7 +28,7 @@ from helmet_action.models.labels import (
 from helmet_action.models.risk import RiskEscalator, apply_escalation_to_action, propose_risk_level
 from helmet_action.models.rule_based import RuleBasedActionClassifier
 from helmet_action.models.temporal_classifier import SklearnActionClassifier
-from helmet_action.pose.confidence import prepare_sequence
+from helmet_action.pose.confidence import interpolation_max_gap, prepare_sequence
 from helmet_action.pose.quality import compute_pose_quality_score, phase_confidence, phase_score_from_confidences
 from helmet_action.pose.types import DecisionStatus
 from helmet_action.state.action_state_machine import infer_phases
@@ -105,7 +105,7 @@ class HybridDecision:
 def _ear_blocks_safe(pq, cfg) -> bool:
     streak = int(getattr(pq, "longest_ear_streak", 0) or 0)
     ear_q = float(getattr(pq, "ear_quality", 1.0) or 1.0)
-    refuse_streak = int(cfg.get("decision.ear_refuse_safe_streak", 20))
+    refuse_streak = int(cfg.get("decision.ear_refuse_safe_streak", interpolation_max_gap() + 1))
     return streak >= refuse_streak or ear_q < 0.35
 
 
@@ -365,6 +365,7 @@ def _decide_v2_fusion(
         pose_critical=pose_critical,
         min_frames=min_frames,
         both_wrist_long=15,
+        both_wrist_unknown=interpolation_max_gap() + 1,
     )
     evidence.safety_gate_triggered = gate.triggered
     evidence.rejection_reasons.extend(gate.reasons)

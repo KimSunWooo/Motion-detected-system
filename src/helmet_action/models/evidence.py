@@ -121,6 +121,7 @@ def evaluate_safety_gates(
     pose_critical: float = 0.32,
     min_frames: int = 12,
     both_wrist_long: int = 15,
+    both_wrist_unknown: int = 4,
 ) -> SafetyGateResult:
     """Hard safety: never emit REMOVE_CONFIRMED / ALERT regardless of ML probability."""
     reasons: list[str] = []
@@ -140,6 +141,10 @@ def evaluate_safety_gates(
         reasons.append("BOTH_WRISTS_MISSING")
         notes.append(f"both wrists missing {evidence.both_wrist_streak} frames")
         force_insufficient = True
+    elif evidence.both_wrist_streak >= both_wrist_unknown:
+        reasons.append("BOTH_WRISTS_MISSING")
+        notes.append(f"both-wrist hard gap {evidence.both_wrist_streak} ≥ {both_wrist_unknown} → UNKNOWN, do not force REMOVE")
+        force_unknown = True
     if evidence.id_switched:
         reasons.append("ID_SWITCH")
         notes.append("tracking ID switch")

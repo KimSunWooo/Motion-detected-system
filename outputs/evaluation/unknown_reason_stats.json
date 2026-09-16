@@ -1,0 +1,246 @@
+{
+  "v1": {
+    "n_unknown": 100,
+    "reason_catalog": [
+      "LOW_WRIST_CONFIDENCE",
+      "NO_GRASP",
+      "NO_LIFT",
+      "PHASE_INCONSISTENCY",
+      "TRACK_FRAGMENTATION",
+      "LOW_POSE_QUALITY",
+      "LOW_BUFFER_COMPLETENESS",
+      "RULE_ML_DISAGREEMENT",
+      "TEMPORAL_INCOMPLETE",
+      "BOTH_WRISTS_MISSING",
+      "ID_SWITCH",
+      "SHORT_SEQUENCE",
+      "NO_PHASE_HISTORY",
+      "LOW_EAR_QUALITY",
+      "POSE_CRITICAL",
+      "HARD_SAFETY_GATE"
+    ],
+    "ranked": [
+      {
+        "reason": "RULE_ML_DISAGREEMENT",
+        "count": 46,
+        "ratio": 0.46,
+        "ml_remove_probability_mean": 0.9721480335658236,
+        "phase_confidence_mean": 0.4066975637897422,
+        "pose_quality_mean": 0.7037352579231672
+      },
+      {
+        "reason": "PHASE_INCONSISTENCY",
+        "count": 43,
+        "ratio": 0.43,
+        "ml_remove_probability_mean": 0.9524922554951405,
+        "phase_confidence_mean": 0.46261347244692475,
+        "pose_quality_mean": 0.7040805484846013
+      },
+      {
+        "reason": "POSE_CRITICAL",
+        "count": 39,
+        "ratio": 0.39,
+        "ml_remove_probability_mean": 0.0,
+        "phase_confidence_mean": 0.0,
+        "pose_quality_mean": 0.3650047073268039
+      },
+      {
+        "reason": "HARD_SAFETY_GATE",
+        "count": 39,
+        "ratio": 0.39,
+        "ml_remove_probability_mean": 0.0,
+        "phase_confidence_mean": 0.0,
+        "pose_quality_mean": 0.3650047073268039
+      },
+      {
+        "reason": "NO_LIFT",
+        "count": 22,
+        "ratio": 0.22,
+        "ml_remove_probability_mean": 0.9424806203261994,
+        "phase_confidence_mean": 0.31672680321388497,
+        "pose_quality_mean": 0.7101806650526852
+      },
+      {
+        "reason": "LOW_WRIST_CONFIDENCE",
+        "count": 19,
+        "ratio": 0.19,
+        "ml_remove_probability_mean": 0.9695700267334683,
+        "phase_confidence_mean": 0.6745164261561307,
+        "pose_quality_mean": 0.5815815413850052
+      },
+      {
+        "reason": "NO_GRASP",
+        "count": 18,
+        "ratio": 0.18,
+        "ml_remove_probability_mean": 0.9774142661834238,
+        "phase_confidence_mean": 0.3254875450409511,
+        "pose_quality_mean": 0.7125879183595578
+      },
+      {
+        "reason": "NO_PHASE_HISTORY",
+        "count": 1,
+        "ratio": 0.01,
+        "ml_remove_probability_mean": 0.9788519423806266,
+        "phase_confidence_mean": 0.036000000000000004,
+        "pose_quality_mean": 0.7578420847093219
+      },
+      {
+        "reason": "LOW_POSE_QUALITY",
+        "count": 1,
+        "ratio": 0.01,
+        "ml_remove_probability_mean": 0.9933741445906893,
+        "phase_confidence_mean": 0.31783333333333336,
+        "pose_quality_mean": 0.5013819814245529
+      }
+    ],
+    "reason_counts": {
+      "RULE_ML_DISAGREEMENT": 46,
+      "PHASE_INCONSISTENCY": 43,
+      "POSE_CRITICAL": 39,
+      "HARD_SAFETY_GATE": 39,
+      "NO_LIFT": 22,
+      "LOW_WRIST_CONFIDENCE": 19,
+      "NO_GRASP": 18,
+      "NO_PHASE_HISTORY": 1,
+      "LOW_POSE_QUALITY": 1
+    },
+    "reason_ratio": {
+      "RULE_ML_DISAGREEMENT": 0.46,
+      "PHASE_INCONSISTENCY": 0.43,
+      "POSE_CRITICAL": 0.39,
+      "HARD_SAFETY_GATE": 0.39,
+      "NO_LIFT": 0.22,
+      "LOW_WRIST_CONFIDENCE": 0.19,
+      "NO_GRASP": 0.18,
+      "NO_PHASE_HISTORY": 0.01,
+      "LOW_POSE_QUALITY": 0.01
+    }
+  },
+  "v2": {
+    "n_unknown": 63,
+    "reason_catalog": [
+      "LOW_WRIST_CONFIDENCE",
+      "NO_GRASP",
+      "NO_LIFT",
+      "PHASE_INCONSISTENCY",
+      "TRACK_FRAGMENTATION",
+      "LOW_POSE_QUALITY",
+      "LOW_BUFFER_COMPLETENESS",
+      "RULE_ML_DISAGREEMENT",
+      "TEMPORAL_INCOMPLETE",
+      "BOTH_WRISTS_MISSING",
+      "ID_SWITCH",
+      "SHORT_SEQUENCE",
+      "NO_PHASE_HISTORY",
+      "LOW_EAR_QUALITY",
+      "POSE_CRITICAL",
+      "HARD_SAFETY_GATE"
+    ],
+    "ranked": [
+      {
+        "reason": "HARD_SAFETY_GATE",
+        "count": 41,
+        "ratio": 0.6507936507936508,
+        "ml_remove_probability_mean": 0.03131371067844033,
+        "phase_confidence_mean": 0.02234959349593496,
+        "pose_quality_mean": 0.38069567342741245
+      },
+      {
+        "reason": "POSE_CRITICAL",
+        "count": 39,
+        "ratio": 0.6190476190476191,
+        "ml_remove_probability_mean": 0.0,
+        "phase_confidence_mean": 0.0,
+        "pose_quality_mean": 0.3650047073268039
+      },
+      {
+        "reason": "RULE_ML_DISAGREEMENT",
+        "count": 22,
+        "ratio": 0.3492063492063492,
+        "ml_remove_probability_mean": 0.96468533537342,
+        "phase_confidence_mean": 0.29468279622250676,
+        "pose_quality_mean": 0.7103447038876619
+      },
+      {
+        "reason": "NO_LIFT",
+        "count": 16,
+        "ratio": 0.25396825396825395,
+        "ml_remove_probability_mean": 0.9262645752076742,
+        "phase_confidence_mean": 0.26538952989007836,
+        "pose_quality_mean": 0.7044221948138857
+      },
+      {
+        "reason": "PHASE_INCONSISTENCY",
+        "count": 16,
+        "ratio": 0.25396825396825395,
+        "ml_remove_probability_mean": 0.9026675715256947,
+        "phase_confidence_mean": 0.379690981582535,
+        "pose_quality_mean": 0.7150003943526977
+      },
+      {
+        "reason": "NO_GRASP",
+        "count": 11,
+        "ratio": 0.1746031746031746,
+        "ml_remove_probability_mean": 0.9659512282502308,
+        "phase_confidence_mean": 0.23669174037004126,
+        "pose_quality_mean": 0.7150044013870969
+      },
+      {
+        "reason": "LOW_WRIST_CONFIDENCE",
+        "count": 4,
+        "ratio": 0.06349206349206349,
+        "ml_remove_probability_mean": 0.9983045046556945,
+        "phase_confidence_mean": 0.29605833333333337,
+        "pose_quality_mean": 0.5735416730330805
+      },
+      {
+        "reason": "BOTH_WRISTS_MISSING",
+        "count": 2,
+        "ratio": 0.031746031746031744,
+        "ml_remove_probability_mean": 0.6419310689080269,
+        "phase_confidence_mean": 0.45816666666666667,
+        "pose_quality_mean": 0.6866695123892794
+      },
+      {
+        "reason": "NO_PHASE_HISTORY",
+        "count": 1,
+        "ratio": 0.015873015873015872,
+        "ml_remove_probability_mean": 0.9788519423806266,
+        "phase_confidence_mean": 0.036000000000000004,
+        "pose_quality_mean": 0.7578420847093219
+      },
+      {
+        "reason": "LOW_POSE_QUALITY",
+        "count": 1,
+        "ratio": 0.015873015873015872,
+        "ml_remove_probability_mean": 0.9933741445906893,
+        "phase_confidence_mean": 0.31783333333333336,
+        "pose_quality_mean": 0.5013819814245529
+      }
+    ],
+    "reason_counts": {
+      "HARD_SAFETY_GATE": 41,
+      "POSE_CRITICAL": 39,
+      "RULE_ML_DISAGREEMENT": 22,
+      "NO_LIFT": 16,
+      "PHASE_INCONSISTENCY": 16,
+      "NO_GRASP": 11,
+      "LOW_WRIST_CONFIDENCE": 4,
+      "BOTH_WRISTS_MISSING": 2,
+      "NO_PHASE_HISTORY": 1,
+      "LOW_POSE_QUALITY": 1
+    },
+    "reason_ratio": {
+      "HARD_SAFETY_GATE": 0.6507936507936508,
+      "POSE_CRITICAL": 0.6190476190476191,
+      "RULE_ML_DISAGREEMENT": 0.3492063492063492,
+      "NO_LIFT": 0.25396825396825395,
+      "PHASE_INCONSISTENCY": 0.25396825396825395,
+      "NO_GRASP": 0.1746031746031746,
+      "LOW_WRIST_CONFIDENCE": 0.06349206349206349,
+      "BOTH_WRISTS_MISSING": 0.031746031746031744,
+      "NO_PHASE_HISTORY": 0.015873015873015872,
+      "LOW_POSE_QUALITY": 0.015873015873015872
+    }
+  }
+}
