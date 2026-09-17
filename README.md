@@ -19,11 +19,12 @@
 | 2 | Synthetic ML pipeline (HistGradientBoosting, Feature V1 139-D) | **DONE** |
 | 3 | Synthetic OOD / robustness validation (families, stress, V2) | **DONE** |
 | 4 | Real Pose Zero-shot validation | **READY / WAITING FOR DATA** |
+| 4.5 | Realtime inference architecture (v0.5 ROI pipeline) | **DONE** |
 | 5 | Real Pose fine-tuning (leave-one-subject) | **NOT STARTED** |
 | 6 | Temporal Deep Learning (LSTM / TCN / ST-GCN / Transformer) | **NOT STARTED** |
 
-Stage 6는 Real Pose Zero-shot 결과를 보기 전에는 시작하지 않습니다.
-이번 단계에서는 Deep Learning 모델을 추가하지 않습니다.
+Stage 6는 Human detection / Tracking / ROI Pose / latency가 안정화된 뒤에만 시작합니다.
+v0.5는 classification 재학습이 아니라 **inference pipeline 안정성**이 목표입니다.
 
 ## 프로젝트 목표
 
@@ -65,6 +66,50 @@ Helmet State는 기본적으로 **UNKNOWN** 입니다. 가짜 착용 검출을 �
 * 한 프레임만 보고 탈착 확정
 
 ## 전체 Architecture
+
+### v0.5 Realtime (ROI Pose — default)
+
+```
+Camera / HTTP / RTSP / MP4
+        │
+        ▼
+ LatestFrameCapture   (LIVE: latest-frame only; OFFLINE MP4: sequential)
+        │
+        ├─ Original frame
+        └─ Downscaled detection frame
+                │
+                ▼
+         HumanDetector (yolo11n, ~5 FPS)
+                │
+                ▼
+         PersonTracker (IoU / stable gate)
+                │
+                ▼
+         Human ROI (+ margin) → PoseEstimator (yolo11n-pose on ROI)
+                │
+                ▼
+         PoseObservation (global coords) → PoseQualityGate
+                │
+                ▼
+         TrackPoseBuffer → HybridActionClassifier (기존 모델 유지)
+```
+
+Baseline 비교: `--pipeline full-pose` (기존 full-frame YOLO Pose).
+
+```bash
+# ROI pose (v0.5)
+python scripts/run_video.py --source "http://HOST:8080/video" \
+  --pipeline roi-pose --human-model yolo11n.pt --pose-model yolo11n-pose.pt \
+  --detector-fps 5 --pose-fps 10 --roi-margin 0.15 --latest-frame --debug-overlay --show
+
+# Full-frame pose baseline
+python scripts/run_video.py --source sample.mp4 --pipeline full-pose --sequential --show
+
+# Benchmark
+python scripts/benchmark_realtime_pipeline.py --source sample.mp4 --compare --max-frames 60
+```
+
+### Legacy / offline evaluation path
 
 ```
 Video / Webcam / RTSP / Synthetic

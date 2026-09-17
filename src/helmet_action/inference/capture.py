@@ -62,9 +62,15 @@ class LatestFrameBuffer:
             return int(self._dropped)
 
     def close(self) -> None:
+        """Hard close: drop buffered frame (used on capture shutdown)."""
         with self._lock:
             self._closed = True
             self._item = None
+
+    def mark_ended(self) -> None:
+        """Soft EOF: stop accepting frames but keep last unread frame for drain."""
+        with self._lock:
+            self._closed = True
 
     def put(self, frame: np.ndarray, index: int, timestamp: float) -> None:
         with self._lock:
@@ -91,6 +97,57 @@ class LatestFrameBuffer:
     def depth(self) -> int:
         with self._lock:
             return 0 if self._item is None else 1
+
+
+class LatestFrameCapture:
+    """Alias / thin wrapper: always keeps at most one frame (live sources)."""
+
+    def __init__(self, source: str | int, *, rotate: int = 0) -> None:
+        self._inner = FrameCapture(source, rotate=rotate, latest_frame=True)
+
+    @property
+    def latest_frame(self):
+        return self._inner._buf._item
+
+    @property
+    def latest_frame_index(self) -> int | None:
+        item = self._inner._buf._item
+        return None if item is None else int(item.index)
+
+    @property
+    def latest_timestamp(self) -> float | None:
+        item = self._inner._buf._item
+        return None if item is None else float(item.timestamp)
+
+    def start(self) -> None:
+        self._inner.start()
+
+    def read(self):
+        return self._inner.read()
+
+    def dropped_frames(self) -> int:
+        return self._inner.dropped_frames()
+
+    def buffer_depth(self) -> int:
+        return self._inner.buffer_depth()
+
+    def close(self) -> None:
+        self._inner.close()
+
+    def __enter__(self) -> "LatestFrameCapture":
+        self.start()
+        return self
+
+    def __exit__(self, *args: Any) -> None:
+        self.close()
+
+    @property
+    def source_fps(self) -> float:
+        return self._inner.source_fps
+
+    @property
+    def raw_fps_metadata(self) -> float:
+        return self._inner.raw_fps_metadata
 
 
 class FrameCapture:
@@ -140,13 +197,13 @@ class FrameCapture:
             while not self._stop.is_set():
                 ok, frame = self._read_one()
                 if not ok or frame is None:
-                    self._buf.close()
+                    self._buf.mark_ended()
                     break
                 self._buf.put(frame, self._capture_index, time.monotonic())
                 self._capture_index += 1
         except Exception as exc:  # pragma: no cover — surfaced via error
             self._error = str(exc)
-            self._buf.close()
+            self._buf.mark_ended()
 
     def read(self) -> CapturedFrame | None:
         if self.latest_frame:
