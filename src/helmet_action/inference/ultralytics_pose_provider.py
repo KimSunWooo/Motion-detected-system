@@ -6,6 +6,7 @@ from collections.abc import Iterator
 import numpy as np
 
 from helmet_action.config import load_config
+from helmet_action.inference.capture import sanitize_fps
 from helmet_action.inference.pose_provider import PoseProvider
 from helmet_action.pose.types import PoseObservation
 
@@ -13,7 +14,13 @@ from helmet_action.pose.types import PoseObservation
 class UltralyticsPoseProvider(PoseProvider):
     """Optional Ultralytics YOLO-Pose backend. Model path comes from config / env."""
 
-    def __init__(self, model_path: str | None = None, conf: float | None = None, track: bool = True) -> None:
+    def __init__(
+        self,
+        model_path: str | None = None,
+        conf: float | None = None,
+        track: bool = True,
+        imgsz: int | None = None,
+    ) -> None:
         try:
             from ultralytics import YOLO
         except ImportError as exc:
@@ -23,9 +30,17 @@ class UltralyticsPoseProvider(PoseProvider):
             ) from exc
         cfg = load_config()
         path = model_path or os.environ.get("POSE_MODEL_PATH") or cfg.get("pose.model_path")
+        self.model_path = str(path)
         self.conf = float(conf if conf is not None else cfg.get("pose.confidence_threshold", 0.35))
         self.track = bool(track)
+        self.imgsz = int(imgsz) if imgsz is not None else None
         self.model = YOLO(path)
+
+    def _kwargs(self) -> dict:
+        kw: dict = {"verbose": False, "conf": self.conf}
+        if self.imgsz is not None:
+            kw["imgsz"] = int(self.imgsz)
+        return kw
 
     def _observations(self, result, frame_index: int, fps: float) -> list[PoseObservation]:
         observations: list[PoseObservation] = []
@@ -61,17 +76,25 @@ class UltralyticsPoseProvider(PoseProvider):
             )
         return observations
 
-    def infer_frame(self, frame: np.ndarray, frame_index: int = 0, fps: float = 20.0, track: bool | None = None) -> list[PoseObservation]:
+    def infer_frame(
+        self,
+        frame: np.ndarray,
+        frame_index: int = 0,
+        fps: float = 20.0,
+        track: bool | None = None,
+    ) -> list[PoseObservation]:
         use_track = self.track if track is None else track
+        kw = self._kwargs()
         if use_track:
-            results = self.model.track(frame, persist=True, verbose=False, conf=self.conf)
+            results = self.model.track(frame, persist=True, **kw)
         else:
-            results = self.model.predict(frame, verbose=False, conf=self.conf)
+            results = self.model.predict(frame, **kw)
         if not results:
             return []
         return self._observations(results[0], frame_index, fps)
 
     def iter_frames(self, source: str | int) -> Iterator[tuple[np.ndarray, list[PoseObservation]]]:
+        """Backward-compatible sequential capture (no latest-frame / rotate)."""
         try:
             import cv2
         except ImportError as exc:
@@ -80,7 +103,7 @@ class UltralyticsPoseProvider(PoseProvider):
         stream = cv2.VideoCapture(source)
         if not stream.isOpened():
             raise FileNotFoundError("cannot open video source")
-        fps = float(stream.get(cv2.CAP_PROP_FPS) or 20.0)
+        fps = sanitize_fps(float(stream.get(cv2.CAP_PROP_FPS) or 0.0), fallback=20.0)
         idx = 0
         try:
             while True:

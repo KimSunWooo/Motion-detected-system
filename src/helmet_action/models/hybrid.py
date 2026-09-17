@@ -499,17 +499,23 @@ def _decide_v2_fusion(
     return action, event, float(conf), float(risk), notes, status, proposed
 
 
+_ML_AUTOLOAD = object()
+
+
 class HybridActionClassifier:
     def __init__(
         self,
-        ml: SklearnActionClassifier | None = None,
+        ml: SklearnActionClassifier | None | object = _ML_AUTOLOAD,
         helmet_sm: HelmetStateMachine | None = None,
         alert_gate: AlertGate | None = None,
         version: str | None = None,
         escalator: RiskEscalator | None = None,
     ) -> None:
         self.rule = RuleBasedActionClassifier()
-        self.ml = ml if ml is not None else SklearnActionClassifier.try_load()
+        if ml is _ML_AUTOLOAD:
+            self.ml = SklearnActionClassifier.try_load()
+        else:
+            self.ml = ml  # type: ignore[assignment]
         self.helmet_sm = helmet_sm or HelmetStateMachine()
         cfg = load_config()
         self.gate = alert_gate or AlertGate(
