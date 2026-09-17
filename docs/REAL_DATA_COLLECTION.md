@@ -20,6 +20,33 @@ Stage 4 of this repo is **ready and waiting for data**. Do not commit raw video.
 `data/real/raw/` and `data/real/processed/` are gitignored except `.gitkeep`
 and the empty capture folders.
 
+## Pre-pilot smoke test (12 clips)
+
+Before the 180-clip pilot, run a **pipeline smoke test** only (not an accuracy study):
+
+| | Count |
+|---|---|
+| Subject | `P001` |
+| Actions | HELMET_REMOVE × 3, HELMET_ADJUST × 3, HEAD_SCRATCH × 3, HEAD_TOUCH × 3 |
+| Total | **12** clips |
+
+Purpose:
+
+```
+Video → YOLO Pose → sequence extraction → validation → feature → ML → hybrid → report
+```
+
+Place MP4 files under the existing empty folders:
+
+```
+data/real/raw/P001/helmet_remove/
+data/real/raw/P001/helmet_adjust/
+data/real/raw/P001/head_scratch/
+data/real/raw/P001/head_touch/
+```
+
+Empty input must print `REAL DATASET: NOT AVAILABLE` and must not invent metrics.
+
 ## Pilot protocol (first 180 clips)
 
 This data is **not used for training**. The only goal of the first pilot is

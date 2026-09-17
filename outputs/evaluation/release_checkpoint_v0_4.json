@@ -1,0 +1,248 @@
+{
+  "git_head_hint": "see git rev-parse HEAD",
+  "core_regression": {
+    "feature_dim_v1": 139,
+    "feature_dim_v2": 194,
+    "shoulder_width_after_norm": 1.0,
+    "helmet_remove_phase": "REMOVAL_CONFIRMED",
+    "helmet_remove_confirmed": true,
+    "scratch_not_confirmed_remove": true,
+    "adjust_v1_not_remove": true,
+    "adjust_v2_not_remove_confirmed": true,
+    "adjust_v1": "HELMET_ADJUST",
+    "adjust_v2": "HELMET_ADJUST",
+    "unknown_ne_safe": true,
+    "both_wrist_hard": {
+      "action": "INSUFFICIENT_POSE",
+      "status": "INSUFFICIENT_POSE",
+      "ok": true
+    },
+    "long_ear": {
+      "v1": "HELMET_REMOVE",
+      "v2": "HELMET_REMOVE",
+      "v1_not_safe": true,
+      "v2_not_safe": true
+    },
+    "low_wrist_conf": {
+      "action": "INSUFFICIENT_POSE",
+      "status": "INSUFFICIENT_POSE",
+      "safety_gate_kept": true
+    },
+    "partial_occlusion": {
+      "v1": "UNKNOWN",
+      "v2": "HELMET_REMOVE",
+      "v2_evidence": {
+        "ml_remove_probability": 0.9999246065215359,
+        "rule_score": 0.9881019710586988,
+        "phase": "HELMET_GRASP",
+        "grasp_confidence": 0.8999999999999999,
+        "lift_confidence": 0.0,
+        "separation_confidence": 1.0,
+        "pose_quality": 0.7520370370370371,
+        "wrist_quality": 0.8240740740740742,
+        "ear_quality": 1.0,
+        "tracking_quality": 1.0,
+        "risk_level": "ALERT",
+        "final_decision": "HELMET_REMOVE",
+        "rejection_reasons": [],
+        "hybrid_version": "v2",
+        "decision_status": "UNKNOWN"
+      },
+      "v2_fusion_active": true
+    }
+  },
+  "evidence_dump": {
+    "HELMET_REMOVE": {
+      "seed_meta": {
+        "seed": 3,
+        "label": "HELMET_REMOVE",
+        "family": "REMOVE_B"
+      },
+      "ml_remove_probability": 0.7306617403392023,
+      "rule_score": 0.13999999999999999,
+      "phase": "LIFT_OR_SEPARATE",
+      "grasp_confidence": 0.42,
+      "lift_confidence": 1.0,
+      "separation_confidence": 0.9271693069849809,
+      "pose_quality": 1.0,
+      "wrist_quality": 1.0,
+      "ear_quality": 1.0,
+      "tracking_quality": 1.0,
+      "risk_level": "WATCH",
+      "final_decision": "UNKNOWN",
+      "rejection_reasons": [
+        "PHASE_INCONSISTENCY"
+      ],
+      "hybrid_version": "v2",
+      "decision_status": "UNKNOWN",
+      "explanation_tail": [
+        "bbox 체류=35fr (right), 양귀 파지=0fr.",
+        "통계량: r=0.154, σ_xy=0.1193, osc=2, Δx=0.000, −Δȳ=0.000, Δr=0.000.",
+        "긁기 진동과 양손 팽창 모두 임계값을 못 넘겨 판정을 보류합니다.",
+        "V2 fusion evidence: ml=0.73 rule=0.14 phase=0.76 motion=0.00 grasp=0.42 lift=1.00 sep=0.93",
+        "V2 evidence is partial → WATCH / UNKNOWN (not SAFE, not ALERT).",
+        "HelmetState는 검출기 없이 UNKNOWN을 유지합니다. Pose만으로 착용/미착용 정지 상태는 구분할 수 없습니다."
+      ]
+    },
+    "HELMET_ADJUST": {
+      "seed_meta": {
+        "seed": 21,
+        "label": "HELMET_ADJUST",
+        "family": "ADJUST_A"
+      },
+      "ml_remove_probability": 2.8834567625300746e-06,
+      "rule_score": 0.8098781258690327,
+      "phase": "HELMET_GRASP",
+      "grasp_confidence": 0.72,
+      "lift_confidence": 0.0,
+      "separation_confidence": 1.0,
+      "pose_quality": 1.0,
+      "wrist_quality": 1.0,
+      "ear_quality": 1.0,
+      "tracking_quality": 1.0,
+      "risk_level": "SAFE",
+      "final_decision": "HELMET_ADJUST",
+      "rejection_reasons": [],
+      "hybrid_version": "v2",
+      "decision_status": "VALID",
+      "explanation_tail": [
+        "bbox 체류=19fr (left), 양귀 파지=12fr.",
+        "하이브리드 통계량: pause_σ=0.0058, Δ|x_R−x_L|=0.424 (τ=0.08), −Δȳ=-0.069 (τ=0.05), Δr=0.814 (τ=0.08), Δd_ear=0.023 (τ=0.07).",
+        "규칙 HELMET_OFF: 양손이 귀 부근에서 멈춘 뒤 X축 벌어짐 · 동반 Y상승(y 감소) · 방사형/겉보기 팽창 중 하나가 발생.",
+        "예방 알림: 안전모 벗기 시도로 판정합니다.",
+        "V2 fusion evidence: ml=0.00 rule=0.81 phase=0.49 motion=0.70 grasp=0.72 lift=0.00 sep=1.00",
+        "HelmetState는 검출기 없이 UNKNOWN을 유지합니다. Pose만으로 착용/미착용 정지 상태는 구분할 수 없습니다."
+      ]
+    },
+    "HEAD_SCRATCH": {
+      "seed_meta": {
+        "seed": 11,
+        "label": "HEAD_SCRATCH",
+        "family": "SCRATCH_A"
+      },
+      "ml_remove_probability": 0.0007662740883169737,
+      "rule_score": 0.13999999999999999,
+      "phase": "LIFT_OR_SEPARATE",
+      "grasp_confidence": 0.15000000000000002,
+      "lift_confidence": 1.0,
+      "separation_confidence": 0.13312241301971692,
+      "pose_quality": 1.0,
+      "wrist_quality": 1.0,
+      "ear_quality": 1.0,
+      "tracking_quality": 1.0,
+      "risk_level": "SAFE",
+      "final_decision": "HEAD_SCRATCH",
+      "rejection_reasons": [],
+      "hybrid_version": "v2",
+      "decision_status": "VALID",
+      "explanation_tail": [
+        "정규화: p̂ = (p − neck) / shoulder_width. 하체·골반 길이는 쓰지 않는다.",
+        "bbox 체류=39fr (left), 양귀 파지=0fr.",
+        "통계량: r=0.131, σ_xy=0.1124, osc=2, Δx=0.000, −Δȳ=0.000, Δr=0.000.",
+        "긁기 진동과 양손 팽창 모두 임계값을 못 넘겨 판정을 보류합니다.",
+        "V2 fusion evidence: ml=0.00 rule=0.14 phase=0.49 motion=0.00 grasp=0.15 lift=1.00 sep=0.13",
+        "HelmetState는 검출기 없이 UNKNOWN을 유지합니다. Pose만으로 착용/미착용 정지 상태는 구분할 수 없습니다."
+      ]
+    }
+  },
+  "hybrid_metrics": {
+    "v1": {
+      "confirmed_recall": 0.5833333333333334,
+      "unknown_rate": 0.375,
+      "false_safe": 0.08333333333333333,
+      "false_alarm": 0.0,
+      "n": 24,
+      "n_pos": 12,
+      "n_neg": 12
+    },
+    "v2": {
+      "confirmed_recall": 0.75,
+      "unknown_rate": 0.2916666666666667,
+      "false_safe": 0.08333333333333333,
+      "false_alarm": 0.0,
+      "n": 24,
+      "n_pos": 12,
+      "n_neg": 12
+    }
+  },
+  "baseline_compare": {
+    "baseline_v1": {
+      "confirmed_recall": 0.4739583333333333,
+      "unknown_rate": 0.3287037037037037,
+      "false_safe": 0.005208333333333333,
+      "false_alarm": 0.0
+    },
+    "baseline_v2": {
+      "confirmed_recall": 0.671875,
+      "unknown_rate": 0.1574074074074074,
+      "false_safe": 0.0,
+      "false_alarm": 0.0
+    },
+    "fixed_regression": {
+      "v1": {
+        "confirmed_recall": 0.5833333333333334,
+        "unknown_rate": 0.375,
+        "false_safe": 0.08333333333333333,
+        "false_alarm": 0.0,
+        "n": 24,
+        "n_pos": 12,
+        "n_neg": 12
+      },
+      "v2": {
+        "confirmed_recall": 0.75,
+        "unknown_rate": 0.2916666666666667,
+        "false_safe": 0.08333333333333333,
+        "false_alarm": 0.0,
+        "n": 24,
+        "n_pos": 12,
+        "n_neg": 12
+      }
+    },
+    "note": "Fixed regression uses a smaller fixed-seed pack (24 pos + 24 neg). Compare directionally to baseline; do not retune thresholds on this pack."
+  },
+  "real_pose": {
+    "empty_evaluator_status": "REAL DATASET: NOT AVAILABLE",
+    "empty_metrics": null,
+    "NOT_AVAILABLE_token": "REAL DATASET: NOT AVAILABLE",
+    "raw_layout": {
+      "raw_root": "/workspace/data/real/raw",
+      "exists": true,
+      "n_videos": 0,
+      "videos": [],
+      "present_action_dirs": [
+        "P001/helmet_remove",
+        "P001/helmet_adjust",
+        "P001/head_scratch",
+        "P001/head_touch",
+        "P002/helmet_remove",
+        "P002/helmet_adjust",
+        "P002/head_scratch",
+        "P002/head_touch",
+        "P003/helmet_remove",
+        "P003/helmet_adjust",
+        "P003/head_scratch",
+        "P003/head_touch"
+      ],
+      "missing_action_dirs": [],
+      "invalid_non_video_files": [],
+      "dataset_present": false,
+      "status": "READY_FOR_CAPTURE",
+      "note": "No dummy real metrics. Empty dirs are valid before the 180-clip pilot."
+    },
+    "edge_cases": {
+      "no_pose_conf": "INSUFFICIENT_POSE",
+      "two_tracks_ok": true,
+      "two_tracks_n": 2,
+      "id_switch_decision": "HELMET_REMOVE",
+      "low_wrist_decision": "INSUFFICIENT_POSE",
+      "missing_ear_decision": "HELMET_REMOVE",
+      "short_invalid_fps_issues": [
+        "sequence shorter than 8 frames",
+        "invalid fps"
+      ],
+      "short_ok": false,
+      "variable_duration_ok": true,
+      "corrupt_npz_invalid": true
+    }
+  }
+}

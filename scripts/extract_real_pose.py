@@ -30,7 +30,11 @@ from helmet_action.real.dataset import (  # noqa: E402
 
 
 def _extract_video(path: Path, raw_root: Path, provider, min_frames: int = 8) -> tuple[list[RealSequence], dict]:
-    info = parse_raw_video_path(path, raw_root)
+    try:
+        info = parse_raw_video_path(path, raw_root)
+    except Exception as exc:
+        return [], {"source_video": str(path), "error": f"invalid path / metadata: {exc}", "n_frames": 0}
+
     tracks: dict[int, dict[str, list]] = defaultdict(lambda: {
         "k": [],
         "c": [],
@@ -49,14 +53,20 @@ def _extract_video(path: Path, raw_root: Path, provider, min_frames: int = 8) ->
 
     cap = cv2.VideoCapture(str(path))
     if not cap.isOpened():
-        return [], {"source_video": str(path), "error": "cannot open video", "n_frames": 0}
-    fps = float(cap.get(cv2.CAP_PROP_FPS) or 20.0)
+        return [], {"source_video": str(path), "error": "cannot open video / decode failure", "n_frames": 0}
+    raw_fps = float(cap.get(cv2.CAP_PROP_FPS) or 0.0)
+    fps = raw_fps if raw_fps > 1e-3 else 20.0
     try:
         while True:
             ok, frame = cap.read()
             if not ok:
                 break
-            obs = provider.infer_frame(frame, frame_index=n_frames, fps=fps)
+            try:
+                obs = provider.infer_frame(frame, frame_index=n_frames, fps=fps)
+            except Exception:
+                n_empty += 1
+                n_frames += 1
+                continue
             n_frames += 1
             if not obs:
                 n_empty += 1
@@ -89,7 +99,7 @@ def _extract_video(path: Path, raw_root: Path, provider, min_frames: int = 8) ->
                 fps=fps,
                 camera_id=info["camera_id"],
                 detection_confidence=np.asarray(bucket["det"], dtype=np.float64),
-                notes=[],
+                notes=[] if raw_fps > 1e-3 else ["fps metadata missing/invalid; defaulted to 20.0"],
             )
         )
     stats = {
@@ -98,10 +108,13 @@ def _extract_video(path: Path, raw_root: Path, provider, min_frames: int = 8) ->
         "label": info["label"],
         "camera_id": info["camera_id"],
         "fps": fps,
+        "raw_fps_metadata": raw_fps,
         "frame_count": n_frames,
         "empty_frames": n_empty,
         "n_sequences": len(sequences),
         "pose_fail_rate": float(n_empty / max(n_frames, 1)),
+        "n_tracks_seen": len(tracks),
+        "short_tracks_dropped": int(sum(1 for b in tracks.values() if len(b["k"]) < min_frames)),
     }
     return sequences, stats
 
